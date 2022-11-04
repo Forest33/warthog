@@ -33,3 +33,17 @@
 ## Download
 
 Visit the [Releases](https://github.com/Forest33/warthog/releases) page for the latest downloads.
+
+## Install
+
+### Linux
+
+[Download](https://github.com/Forest33/warthog/releases) and unarchive `Warthog*-linux-x86-64.tar.gz` and run.
+
+### MacOS
+
+[Download](https://github.com/Forest33/warthog/releases) and open `Warthog*-darwin-x86-64.dmg`, drag `warthog` to the `Applications` folder and run from `Applications`.
+
+### Windows
+
+[Download](https://github.com/Forest33/warthog/releases) and run `Warthog*-windows-x86-64.exe`.
