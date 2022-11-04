@@ -1,0 +1,120 @@
+syntax = "proto3";
+package test.proto.v1;
+import "google/protobuf/any.proto";
+option go_package = "./;test_proto";
+
+message User {
+  enum Source {
+    UNKNOWN = 0;
+    SOURCE1 = 1;
+    SOURCE2 = 2;
+    SOURCE3 = 3;
+  }
+
+  string id = 1;
+  string name = 2;
+  bool status = 3;
+  uint32 age = 4;
+  repeated uint32 flag = 5;
+  repeated M1.NestedM1.NestedM2.NestedEnum repeated_nested_enum = 6;
+}
+
+message M1 {
+  message NestedM1 {
+    message NestedM2 {
+      enum NestedEnum {
+        A = 0;
+        B = 1;
+        C = 2;
+      }
+
+      uint64 n2_id = 1;
+      string n2_name = 2;
+    }
+
+    uint64 n_id = 1;
+    string n_name = 2;
+    repeated NestedM2 repeatedNested_m2 = 3;
+    repeated EnumM1 repeated_enum_value = 4;
+    NestedM2 nested_m2 = 5;
+
+    oneof nestedM1_oneof {
+      int32 int_oneof = 6;
+      NestedM2 nestedM2_oneof = 7;
+    }
+  }
+
+  enum EnumM1 {
+    NULL = 0;
+    FIRST = 1;
+    SECOND = 2;
+  }
+
+  int32 int_val = 1;
+  repeated string repeated_string_val = 2;
+  NestedM1 nested_m1 = 3;
+  repeated NestedM1 repeated_nested_m1 = 4;
+  map<string, NestedM1> string2NestedM1 = 5;
+  map<string, User> string2User = 6;
+  map<string, string> string2string = 7;
+  map<int64, string> int2string = 8;
+  map<string, int64> string2int = 9;
+  map<string, M2> string2M2 = 10;
+  map<int64, EnumM1> int2enum = 11;
+  bool bool_value = 12;
+  repeated bool repeated_bool_value = 13;
+  EnumM1 enum_value = 14;
+  repeated EnumM1 repeated_enum_value = 15;
+  User.Source source = 16;
+  repeated User user = 17;
+  repeated User repeated_user = 18;
+  map<string, M4> string2M4 = 19;
+
+  oneof test_oneof {
+    string string_oneof = 20;
+    NestedM1 nestedM1_oneof = 21;
+  }
+
+  google.protobuf.Any any = 22;
+  map<string, google.protobuf.Any> any_map = 23;
+  repeated OneOf repeated_oneof = 24;
+}
+
+message OneOf {
+  oneof test_oneof {
+    string string_oneof = 1;
+    float float_oneof = 2;
+  }
+}
+
+message M2 {
+  int64 m2_id = 1;
+  string m2_name = 2;
+  map<string, M3> m2_string2M2 = 3;
+}
+
+message M3 {
+  int64 m3_id = 1;
+  string m3_name = 2;
+}
+
+message M4 {
+  string name = 1;
+  repeated M1.EnumM1 repeated_enum_value = 2;
+  repeated bool repeated_bool = 3;
+  repeated double repeated_double = 4;
+}
+
+message StreamMessage {
+  oneof test_stream {
+    M3 header = 1;
+    M4 payload = 2;
+  }
+}
+
+service test_proto {
+  rpc Unary(M1) returns (M1);
+  rpc ClientStream(stream StreamMessage) returns(StreamMessage);
+  rpc ServerStream(StreamMessage) returns(stream StreamMessage);
+  rpc ClientServerStream(stream StreamMessage) returns(stream StreamMessage);
+}
