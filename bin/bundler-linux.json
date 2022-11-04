@@ -1,0 +1,10 @@
+{
+  "app_name": "warthog",
+  "output_path": "../../bin/distr",
+  "working_directory_path": "../../bin/tmp",
+  "icon_path_darwin": "resources/icons/app.icns",
+  "icon_path_linux": "resources/icons/app.png",
+  "icon_path_windows": "resources/icons/app.ico",
+  "version_electron": "13.6.9",
+  "version_astilectron": "0.56.0"
+}

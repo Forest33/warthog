@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Warthog</title>
+<!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+<!--<link href="css/font-awesome.min.css" rel="stylesheet">-->
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/bootstrap-treeview.css" rel="stylesheet">
+    <link href="css/themes/light-2/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/jquery-3.6.1.min.js"
+            type="text/javascript"
+            onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap-treeview.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/server.js"></script>
+    <script src="js/query.js"></script>
+    <script src="js/template.js"></script>
+    <script src="js/request.js"></script>
+    <script src="js/workspace.modal.js"></script>
+    <script src="js/tree.js"></script>
+</head>
+<body>
+
+<div id="wrapper">
+    <div id="container">
+        <div id="sidebarLeft" class="noselect">
+
+            <div class="d-flex flex-row bd-highlight mb-3" id="left-select">
+                <select class="form-select" aria-label="Services" id="sidebar-services-list" disabled></select>
+                <select class="form-select" aria-label="Methods" id="sidebar-methods-list" disabled></select>
+                <button type="button" class="btn btn-success disabled bi bi-play-fill" id="request-run" style="font-size:20px;padding-left:2rem;padding-right:2rem"></button>
+            </div>
+
+            <nav>
+
+                <div class="nav nav-tabs justify-content-end" id="nav-tab" role="tablist">
+
+                    <div class="btn-group-sm" role="group" style="margin-right:auto;margin-left:10px;">
+                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" href="#offcanvasTree" role="button"
+                           aria-controls="offcanvasTree" title="Workspaces">
+                            <i class="bi bi-list"></i>
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#workspaceModal" role="button" title="New workspace">
+                            <i class="bi bi-server"></i>
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm disabled" role="button" id="workspace-reload" title="Reload workspace">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </a>
+                    </div>
+
+                    <button class="nav-link active" id="nav-request-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-request" type="button" role="tab" aria-controls="nav-request"
+                            aria-selected="true">Request
+                    </button>
+                    <button class="nav-link" id="nav-metadata-tab" data-bs-toggle="tab" style="margin-right: 10px"
+                            data-bs-target="#nav-metadata" type="button" role="tab" aria-controls="nav-metadata"
+                            aria-selected="false">Metadata
+                    </button>
+
+                </div>
+
+            </nav>
+
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-request" role="tabpanel" aria-labelledby="nav-request-tab">
+
+                    <div class="row" style="margin-right:0;margin-top:10px;">
+                        <div class="col" style="max-width:0;">
+                            <h6 id="nav-request-data-title" style="line-height:0.7"></h6>
+                        </div>
+                        <div class="col" style="margin-right:0;">
+                            <div style="text-align:right;">
+                                <div class="btn-group-sm" role="group" id="request-edit-buttons">
+                                    <button type="button" class="btn btn-light btn-sm bi bi-save" id="save-query" data-toggle="popover" data-html="true" data-bs-container="body"
+                                            data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="popover" title="Save request">
+                                    </button>
+                                    <a class="btn btn-light btn-sm" role="button" id="edit-server" title="Edit workspace">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form>
+                        <div id="nav-request-data">
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="nav-metadata" role="tabpanel" aria-labelledby="nav-metadata-tab">
+                    <div id="nav-request-metadata">
+                        <div class="d-flex flex-row bd-highlight mb-2 metadata-row">
+                            <div class="col" style="margin-right: 5px;">
+                                <input type="text" class="form-control metadata-key" placeholder="key" aria-label="key" data-metadata-key-id="1" onclick="addMetadataRow(this)">
+                            </div>
+                            <div class="col" style="margin-right: 5px;">
+                                <input type="text" class="form-control metadata-value" placeholder="value" aria-label="value">
+                            </div>
+                            <div class="mb-2 form-group">
+                                <button type="button" class="btn btn-outline-primary btn-sm request-metadata-button-delete" onclick="removeMetadataRow(this)"><i class="bi bi-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="resizerLeft"></div>
+
+        <div id="main">
+            <div class="d-flex flex-row bd-highlight mb-3 noselect" id="right-info">
+                <div class="badge bg-success" id="badge-result">
+                    &nbsp;
+                </div>
+                <div id="time-spent"></div>
+            </div>
+
+            <nav>
+                <div class="nav nav-tabs justify-content-end noselect" id="nav-right-tab" role="tablist">
+
+                    <button class="nav-link active" id="nav-result-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-result" type="button" role="tab" aria-controls="nav-result"
+                            aria-selected="true">Payload
+                    </button>
+                    <button class="nav-link" id="nav-headers-tab" data-bs-toggle="tab" style="margin-right:10px;"
+                            data-bs-target="#nav-headers" type="button" role="tab" aria-controls="nav-headers"
+                            aria-selected="false">Headers/Trailers
+                    </button>
+
+                </div>
+            </nav>
+
+            <div class="tab-content" id="right-nav-tab">
+                <div class="tab-pane fade show active" id="nav-result" role="tabpanel" aria-labelledby="nav-result-tab">
+                    <div id="query-error"></div>
+                    <pre id="query-result"></pre>
+                </div>
+                <div class="tab-pane fade" id="nav-headers" role="tabpanel" aria-labelledby="nav-result-headers-tab">
+                    <div id="nav-result-headers">
+                        <div class="header">
+                            <h6>Headers</h6>
+                            <pre id="query-result-headers"></pre>
+                        </div>
+                        <div class="trailer">
+                            <h6>Trailers</h6>
+                            <pre id="query-result-trailers"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start noselect" tabindex="-1" id="offcanvasTree" data-bs-scroll="true" data-bs-backdrop="true"
+     aria-labelledby="offcanvasTreeLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasTreeLabel">Workspaces</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div>
+            <div id="tree"></div>
+        </div>
+    </div>
+</div>
+
+<div id="query-popover">
+    <form>
+        <div class="mb-3">
+            <label for="query-popover-query-name" class="form-label">Name</label>
+            <input type="text" class="form-control query-popover-query-name" id="query-popover-query-name" required>
+        </div>
+        <div class="mb-3">
+            <label for="query-popover-query-description" class="form-label">Description (optional)</label>
+            <textarea class="form-control query-popover-query-description" id="query-popover-query-description" rows="2"></textarea>
+        </div>
+        <div style="text-align: right;">
+            <button type="button" class="btn btn-secondary query-popover-close" style="margin-right:5px;">Close</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+
+<div data-include="modal.workspace.html"></div>
+
+</body>
+</html>
