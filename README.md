@@ -1,8 +1,8 @@
-<div style="text-align:center">
+<p align="center">
 <img src="resources/icons/app.png" style="width:150px" width="150" alt="Warthog" />
-<h2>Warthog</h2>
-<h4>Cross platform gRPC client</h4>
-</div>
+<h2 align="center">Warthog</h2>
+<h4 align="center">Cross platform gRPC client</h4>
+</p>
 
 ## Features
 
