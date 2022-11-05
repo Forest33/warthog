@@ -69,9 +69,9 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 
 	ctx = addMetadata(ctx, requestMetadata)
 
-	var header, trailer metadata.MD
-
 	var (
+		header   metadata.MD
+		trailer  metadata.MD
 		resp     proto.Message
 		jsonResp string
 	)
@@ -81,7 +81,8 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 
 	switch {
 	case method.Descriptor.IsClientStreaming() && method.Descriptor.IsServerStreaming():
-		stream, err := stub.InvokeRpcBidiStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
+		var stream *grpcdynamic.BidiStream
+		stream, err = stub.InvokeRpcBidiStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +97,8 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 		}
 		trailer = stream.Trailer()
 	case method.Descriptor.IsClientStreaming():
-		stream, err := stub.InvokeRpcClientStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
+		var stream *grpcdynamic.ClientStream
+		stream, err = stub.InvokeRpcClientStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +107,8 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 		}
 		resp, err = stream.CloseAndReceive()
 	case method.Descriptor.IsServerStreaming():
-		stream, err := stub.InvokeRpcServerStream(ctx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
+		var stream *grpcdynamic.ServerStream
+		stream, err = stub.InvokeRpcServerStream(ctx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
 		}
