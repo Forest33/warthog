@@ -39,12 +39,17 @@ $(document).ready(function () {
     let includes = $('[data-include]')
     $.each(includes, function () {
         $(this).load($(this).data('include'), function () {
-            initSidebars()
-            initOffcanvas()
-            initWorkspaceModal()
-            initQueryPopover()
+            switch ($(this).attr('data-include')) {
+                case 'modal.workspace.html':
+                    initWorkspaceModal()
+                    break
+            }
         })
-    });
+    })
+
+    initSidebars()
+    initOffcanvas()
+    initQueryPopover()
 
     const shell = require('electron').shell;
     $(document).on('click', 'a[href^="http"]', function(event) {
