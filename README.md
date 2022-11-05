@@ -4,7 +4,7 @@
 <h4 align="center">Cross platform gRPC client</h4>
 </p>
 <p align="center">
-<a href="https://goreportcard.com/report/github.com/forest33/warthog"><img src="https://goreportcard.com/badge/github.com/forest33/warthog"/></a>
+<a href="https://goreportcard.com/report/github.com/forest33/warthog" target=”_blank”><img src="https://goreportcard.com/badge/github.com/forest33/warthog"/></a>
 <img src="https://img.shields.io/github/go-mod/go-version/forest33/warthog?style=flat-square"/>
 </p>
 
