@@ -11,7 +11,7 @@ import (
 	"github.com/jhump/protoreflect/grpcreflect"
 	rpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 
-	"github.com/Forest33/warthog/business/entity"
+	"github.com/forest33/warthog/business/entity"
 )
 
 func (c *Client) AddProtobuf(path ...string) {

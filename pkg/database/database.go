@@ -4,9 +4,9 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/Forest33/warthog/business/entity"
-	"github.com/Forest33/warthog/pkg/logger"
-	"github.com/Forest33/warthog/pkg/resources"
+	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/pkg/logger"
+	"github.com/forest33/warthog/pkg/resources"
 )
 
 type Database struct {

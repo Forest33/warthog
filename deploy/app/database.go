@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Forest33/warthog/deploy/app/migrations"
-	"github.com/Forest33/warthog/pkg/database"
+	"github.com/forest33/warthog/deploy/app/migrations"
+	"github.com/forest33/warthog/pkg/database"
 )
 
 //go:generate go-bindata -o ./migrations/migrations.bindata.go -pkg migrations -ignore=\\*.go ./migrations/...

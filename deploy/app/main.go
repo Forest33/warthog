@@ -7,14 +7,14 @@ import (
 	"github.com/asticode/go-astilectron"
 	"golang.org/x/net/context"
 
-	db "github.com/Forest33/warthog/adapter/database"
-	"github.com/Forest33/warthog/adapter/grpc"
-	"github.com/Forest33/warthog/business/entity"
-	"github.com/Forest33/warthog/business/usecase"
-	"github.com/Forest33/warthog/pkg/logger"
-	"github.com/Forest33/warthog/pkg/resources"
+	db "github.com/forest33/warthog/adapter/database"
+	"github.com/forest33/warthog/adapter/grpc"
+	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/business/usecase"
+	"github.com/forest33/warthog/pkg/logger"
+	"github.com/forest33/warthog/pkg/resources"
 
-	"github.com/Forest33/warthog/pkg/database"
+	"github.com/forest33/warthog/pkg/database"
 )
 
 var (

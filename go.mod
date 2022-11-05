@@ -1,4 +1,4 @@
-module github.com/Forest33/warthog
+module github.com/forest33/warthog
 
 go 1.19
 

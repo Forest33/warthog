@@ -3,7 +3,7 @@ package grpc
 import (
 	"sort"
 
-	"github.com/Forest33/warthog/business/entity"
+	"github.com/forest33/warthog/business/entity"
 )
 
 func (c *Client) sortServicesByName(services []*entity.Service) {

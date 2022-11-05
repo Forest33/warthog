@@ -6,8 +6,8 @@ import (
 	"github.com/asticode/go-astilectron"
 	bootstrap "github.com/asticode/go-astilectron-bootstrap"
 
-	"github.com/Forest33/warthog/business/entity"
-	"github.com/Forest33/warthog/pkg/resources"
+	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/pkg/resources"
 )
 
 func getWindow() []*bootstrap.Window {
