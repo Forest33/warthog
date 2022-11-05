@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
-#genisoimage -V Warthog -D -R -apple -no-pad -o Warthog.dmg ../../distr/darwin-amd64/
+version=$(cat ../../version)
+
 create-dmg \
   --volname "Warthog Installer" \
   --volicon "app.icns" \
@@ -10,5 +11,5 @@ create-dmg \
   --icon "Warthog.app" 200 190 \
   --hide-extension "Warthog.app" \
   --app-drop-link 600 185 \
-  "Warthog.dmg" \
+  "Warthog-${version}-darwin-x86-64.dmg" \
   "../../distr/darwin-amd64/"

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=`cat version`
+version=$(cat version)
 
 #go install github.com/asticode/go-astilectron-bundler/astilectron-bundler
 
