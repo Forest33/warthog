@@ -5,8 +5,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"warthog/business/entity"
-	"warthog/pkg/logger"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/logger"
 )
 
 const (

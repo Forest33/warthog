@@ -17,6 +17,8 @@ $(document).ready(function () {
                     loadWorkspace = true
                     loadServer({id: message.payload.id})
                     break
+                case "menu.about":
+                    showAbout(message.payload)
             }
         });
 
@@ -42,6 +44,12 @@ $(document).ready(function () {
             initWorkspaceModal()
             initQueryPopover()
         })
+    });
+
+    const shell = require('electron').shell;
+    $(document).on('click', 'a[href^="http"]', function(event) {
+        event.preventDefault();
+        shell.openExternal(this.href);
     });
 
     $("#workspace-reload").click(function () {
@@ -232,6 +240,18 @@ function onTreeNodeRender(node) {
             break
     }
     return node;
+}
+
+function showAbout(data) {
+    let modal = $('#aboutModal')
+    modal.find('.app-name').html(data.app_name)
+    modal.find('.app-version').html(data.app_version)
+    modal.find('.app-url').html(data.app_url).attr('href', data.app_url)
+    modal.find('.go-version').html(data.go_version)
+    modal.find('.astilectron-version').html(data.astilectron_version)
+    modal.find('.electron-version').html(data.electron_version)
+    modal.find('.built-at').html(data.built_at)
+    modal.modal('show');
 }
 
 function isNull(v) {

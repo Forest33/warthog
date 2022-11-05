@@ -172,11 +172,25 @@ label {
     margin: 0;
 }
 
-.string { color: green; }
-.number { color: darkorange; }
-.boolean { color: blue; }
-.null { color: magenta; }
-.key { color: red; }
+.string {
+    color: green;
+}
+
+.number {
+    color: darkorange;
+}
+
+.boolean {
+    color: blue;
+}
+
+.null {
+    color: magenta;
+}
+
+.key {
+    color: red;
+}
 
 #query-error {
     width: 100%;
@@ -263,10 +277,10 @@ label {
 }
 
 #workspace-modal-folder-title {
-    border-bottom-left-radius:0;
-    border-top-width:0;
-    border-left-width:0;
-    border-right-width:0;
+    border-bottom-left-radius: 0;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
 }
 
 #workspace-modal-badge-server-id {
@@ -308,4 +322,46 @@ label {
     display: none;
 }
 
+#aboutModal .modal-body {
+    overflow: hidden;
+}
+
+#aboutModal .modal-body .header, #aboutModal .modal-body .body {
+    text-align: center;
+}
+
+#aboutModal .modal-body img {
+    width: 128px;
+    margin-bottom: 0.3rem;
+}
+
+#aboutModal .modal-body .mb-3 {
+    margin-bottom: 0 !important;
+}
+
+#aboutModal .modal-header {
+    background-color: #f8f5f0;
+}
+
+#aboutModal .label {
+    font-size: 0.7rem;
+    color: #8e8c84;
+}
+
+#aboutModal a {
+    font-size: 0.7rem;
+}
+
+#aboutModal .title {
+    text-align: right;
+}
+
+#aboutModal .version {
+    text-align: left;
+}
+
+#aboutModal .body label {
+    font-size: 0.8rem;
+    color: #8e8c84;
+}
 

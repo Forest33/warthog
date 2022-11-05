@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 func eventsHandler(r *entity.GUIRequest) *entity.GUIResponse {

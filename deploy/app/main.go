@@ -7,14 +7,14 @@ import (
 	"github.com/asticode/go-astilectron"
 	"golang.org/x/net/context"
 
-	dbadapter "warthog/adapter/database"
-	"warthog/adapter/grpc"
-	"warthog/business/entity"
-	"warthog/business/usecase"
-	"warthog/pkg/logger"
-	"warthog/pkg/resources"
+	db "github.com/Forest33/warthog/adapter/database"
+	"github.com/Forest33/warthog/adapter/grpc"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/business/usecase"
+	"github.com/Forest33/warthog/pkg/logger"
+	"github.com/Forest33/warthog/pkg/resources"
 
-	"warthog/pkg/database"
+	"github.com/Forest33/warthog/pkg/database"
 )
 
 var (
@@ -24,19 +24,20 @@ var (
 
 var (
 	AppName            string
-	AppVersion         string = "debug"
-	BuiltAt            string = "debug"
-	VersionAstilectron string = "0.56.0"
-	VersionElectron    string = "13.6.9"
-	UseBootstrap       string
+	AppVersion         string
+	AppURL             = "https://github.com/forest33/warthog"
+	BuiltAt            string
+	VersionAstilectron string
+	VersionElectron    string
+	UseBootstrap       = "false"
 )
 
 var (
 	cfg = &entity.Config{}
-	db  *database.Database
+	dbi *database.Database
 
-	guiConfigRepo *dbadapter.GUIConfigRepository
-	workspaceRepo *dbadapter.WorkspaceRepository
+	guiConfigRepo *db.GUIConfigRepository
+	workspaceRepo *db.WorkspaceRepository
 	grpcClient    *grpc.Client
 
 	guiConfigUseCase *usecase.GUIConfigUseCase
@@ -109,8 +110,8 @@ func main() {
 }
 
 func initAdapters() {
-	guiConfigRepo = dbadapter.NewGUIConfigRepository(ctx, db)
-	workspaceRepo = dbadapter.NewWorkspaceRepository(ctx, db)
+	guiConfigRepo = db.NewGUIConfigRepository(ctx, dbi)
+	workspaceRepo = db.NewWorkspaceRepository(ctx, dbi)
 	grpcClient = grpc.New(ctx, cfg.Grpc)
 }
 
@@ -123,5 +124,5 @@ func initUseCases() {
 
 func shutdown() {
 	cancel()
-	db.Close()
+	dbi.Close()
 }

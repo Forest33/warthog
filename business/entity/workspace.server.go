@@ -3,7 +3,7 @@ package entity
 import (
 	"fmt"
 
-	"warthog/pkg/structs"
+	"github.com/Forest33/warthog/pkg/structs"
 )
 
 type ServerRequest struct {

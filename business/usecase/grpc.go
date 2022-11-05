@@ -6,9 +6,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"warthog/adapter/grpc"
-	"warthog/business/entity"
-	"warthog/pkg/logger"
+	"github.com/Forest33/warthog/adapter/grpc"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/logger"
 )
 
 type GrpcUseCase struct {

@@ -11,7 +11,7 @@ import (
 	"github.com/jhump/protoreflect/grpcreflect"
 	rpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 func (c *Client) AddProtobuf(path ...string) {
@@ -121,7 +121,7 @@ func getMethodType(md *desc.MethodDescriptor) string {
 	return entity.MethodTypeUnary
 }
 
-func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescriptor) []*entity.Field { // todo обработка oneof
+func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescriptor) []*entity.Field {
 	fields := make([]*entity.Field, 0, len(fd))
 
 	for _, f := range fd {

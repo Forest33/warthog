@@ -1,5 +1,5 @@
 {
-  "app_name": "warthog",
+  "app_name": "Warthog",
   "output_path": "../../bin/distr",
   "working_directory_path": "../../bin/tmp",
   "icon_path_darwin": "resources/icons/app.icns",

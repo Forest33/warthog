@@ -173,7 +173,7 @@ function createWorkspace(parent) {
         importPath.push($(this).val())
     });
 
-    // TODO валидация
+    // todo validation
 
     let req = {
         name: "server.create",

@@ -4,5 +4,6 @@
 *.env
 *.exe
 *.dmg
+*.tar.gz
 tmp
 bin/distr

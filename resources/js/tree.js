@@ -368,7 +368,7 @@ function showTree(data) {
         data: data,
         expandIcon: "bi bi-caret-right",
         collapseIcon: "bi bi-caret-down",
-        onNodeExpanded: function (event, node) { // todo сохранять состояние дерева в бд
+        onNodeExpanded: function (event, node) {
             treeNodeExpand(node, true)
         },
         onNodeCollapsed: function (event, node) {
