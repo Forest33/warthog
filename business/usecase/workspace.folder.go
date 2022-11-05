@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/Forest33/warthog/business/entity"
+	"github.com/forest33/warthog/business/entity"
 )
 
 func (uc *WorkspaceUseCase) CreateFolder(payload map[string]interface{}) *entity.GUIResponse {

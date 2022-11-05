@@ -9,8 +9,8 @@ import (
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
 
-	"github.com/Forest33/warthog/business/entity"
-	"github.com/Forest33/warthog/pkg/resources"
+	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/pkg/resources"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/Forest33/warthog/pkg/structs"
+	"github.com/forest33/warthog/pkg/structs"
 )
 
 const (

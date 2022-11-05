@@ -10,10 +10,10 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/Forest33/warthog/business/entity"
-	"github.com/Forest33/warthog/pkg/database"
-	"github.com/Forest33/warthog/pkg/database/types"
-	"github.com/Forest33/warthog/pkg/structs"
+	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/pkg/database"
+	"github.com/forest33/warthog/pkg/database/types"
+	"github.com/forest33/warthog/pkg/structs"
 )
 
 const (
