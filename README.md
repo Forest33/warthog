@@ -2,9 +2,12 @@
 <img src="resources/icons/app.png" style="width:150px" width="150" alt="Warthog" />
 <h2 align="center">Warthog</h2>
 <h4 align="center">Cross platform gRPC client</h4>
+</p>
+<p align="center">
 <a href="https://goreportcard.com/report/github.com/forest33/warthog"><img src="https://goreportcard.com/badge/github.com/forest33/warthog"/></a>
 <img src="https://img.shields.io/github/go-mod/go-version/forest33/warthog?style=flat-square"/>
 </p>
+
 
 ## Features
 
