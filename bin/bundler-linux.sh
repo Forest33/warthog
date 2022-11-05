@@ -16,4 +16,4 @@ mv bind.go.tmp bind.go
 rm bind_linux_amd64.go
 
 cd ../../bin/distr/linux-amd64
-upx -9 warthog
+upx -9 Warthog

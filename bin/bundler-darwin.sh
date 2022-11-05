@@ -19,6 +19,6 @@ mv bind.go.tmp bind.go
 rm bind_darwin_amd64.go
 
 cd ../../bin/distr/darwin-amd64/warthog.app/Contents/MacOS/
-upx -9 warthog
+upx -9 Warthog
 
 
