@@ -42,7 +42,7 @@ Visit the [Releases](https://github.com/Forest33/warthog/releases) page for the 
 
 ### MacOS
 
-[Download](https://github.com/Forest33/warthog/releases) and open `Warthog*-darwin-x86-64.dmg`, drag `warthog` to the `Applications` folder and run from `Applications`.
+[Download](https://github.com/Forest33/warthog/releases) and open `Warthog*-darwin-x86-64.dmg`, drag `Warthog` to the `Applications` folder and run from `Applications`.
 
 ### Windows
 
