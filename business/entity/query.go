@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"warthog/pkg/structs"
+	"github.com/Forest33/warthog/pkg/structs"
 )
 
 const (

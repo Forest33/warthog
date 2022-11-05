@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	"warthog/pkg/logger"
-	"warthog/testprotos"
+	"github.com/Forest33/warthog/pkg/logger"
+	test_proto "github.com/Forest33/warthog/testprotos"
 )
 
 const (

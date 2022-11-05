@@ -1,7 +1,6 @@
 package entity
 
 const (
-	CmdDevTools            GUICommand = "dev.tools.show"
 	CmdGetWorkspace        GUICommand = "workspace.get"
 	CmdSortingWorkspace    GUICommand = "workspace.sorting"
 	CmdDeleteWorkspace     GUICommand = "workspace.delete"
@@ -17,6 +16,8 @@ const (
 	CmdUpdateQuery         GUICommand = "query.update"
 	CmdRunQuery            GUICommand = "query.run"
 	CmdCancelQuery         GUICommand = "query.cancel"
+	CmdDevTools            GUICommand = "dev.tools.show"
+	CmdMenuAbout           GUICommand = "menu.about"
 )
 
 type GUICommand string

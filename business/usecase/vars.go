@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 var (

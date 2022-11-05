@@ -2,12 +2,15 @@ package main
 
 import (
 	"os"
+	"runtime"
+	"strings"
+	"time"
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
 
-	"warthog/business/entity"
-	"warthog/pkg/resources"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/resources"
 )
 
 const (
@@ -56,7 +59,6 @@ func getWindowOptions() *astilectron.WindowOptions {
 		WebPreferences: &astilectron.WebPreferences{
 			NodeIntegrationInWorker: astikit.BoolPtr(true),
 			EnableRemoteModule:      astikit.BoolPtr(true),
-			//DevTools:                astikit.BoolPtr(entity.IsDebug()),
 		},
 	}
 }
@@ -67,14 +69,14 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 			Label: astikit.StrPtr("File"),
 			SubMenu: []*astilectron.MenuItemOptions{
 				{
-					Label: astikit.StrPtr("DevTools"),
-					Role:  astilectron.MenuItemRoleToggleDevTools,
-					//Visible: astikit.BoolPtr(entity.IsDebug()),
+					Label:   astikit.StrPtr("DevTools"),
+					Role:    astilectron.MenuItemRoleToggleDevTools,
+					Visible: astikit.BoolPtr(entity.IsDebug()),
 				},
 				{
-					Label: astikit.StrPtr("Refresh"),
-					Role:  astilectron.MenuItemRoleForceReload,
-					//Visible: astikit.BoolPtr(entity.IsDebug()),
+					Label:   astikit.StrPtr("Refresh"),
+					Role:    astilectron.MenuItemRoleForceReload,
+					Visible: astikit.BoolPtr(entity.IsDebug()),
 				},
 				{
 					Label: astikit.StrPtr("Exit"),
@@ -137,6 +139,7 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 				{
 					Label: astikit.StrPtr("About"),
 					OnClick: func(e astilectron.Event) (deleteListener bool) {
+						menuAbout()
 						return
 					},
 				},
@@ -227,6 +230,32 @@ func loadWorkspace() {
 	req := &entity.GUIRequest{
 		Cmd:     entity.CmdLoadServer,
 		Payload: map[string]interface{}{"id": *workspaceID},
+	}
+
+	err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
+	if err != nil {
+		zlog.Error().Msgf("failed to send message: %v", err)
+	}
+}
+
+func menuAbout() {
+	if b := strings.Split(BuiltAt, " m="); len(b) > 0 {
+		if bt, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", b[0]); err == nil {
+			BuiltAt = bt.Format("2006-01-02 15:04:05")
+		}
+	}
+
+	req := &entity.GUIRequest{
+		Cmd: entity.CmdMenuAbout,
+		Payload: map[string]interface{}{
+			"app_name":            AppName,
+			"app_version":         AppVersion,
+			"app_url":             AppURL,
+			"astilectron_version": VersionAstilectron,
+			"electron_version":    VersionElectron,
+			"built_at":            BuiltAt,
+			"go_version":          strings.ReplaceAll(runtime.Version(), "go", ""),
+		},
 	}
 
 	err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})

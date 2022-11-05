@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 func (uc *WorkspaceUseCase) CreateServer(payload map[string]interface{}) *entity.GUIResponse {

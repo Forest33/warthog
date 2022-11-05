@@ -81,7 +81,7 @@ function getRequestData(field, root) {
             }
             break
         case protoTypeMessage:
-            if (field.map !== undefined) {  // todo валидация дублей ключей
+            if (field.map !== undefined) {  // todo validate dup keys
                 if (field.map.fields === undefined) {
                     let items = {}
                     root.find('.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]').each(function () {

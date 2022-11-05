@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 type Client struct {

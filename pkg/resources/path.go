@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"warthog/business/entity"
-	"warthog/pkg/logger"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/logger"
 )
 
 const (

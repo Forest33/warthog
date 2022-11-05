@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"warthog/business/entity"
+	"github.com/Forest33/warthog/business/entity"
 )
 
 func (c *Client) Query(method *entity.Method, data map[string]interface{}, requestMetadata []string) (qResp *entity.QueryResponse, err error) {

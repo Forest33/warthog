@@ -6,9 +6,9 @@ import (
 
 	"golang.org/x/net/context"
 
-	"warthog/business/entity"
-	"warthog/pkg/database"
-	"warthog/pkg/database/types"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/database"
+	"github.com/Forest33/warthog/pkg/database/types"
 )
 
 const (

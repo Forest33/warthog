@@ -5,8 +5,8 @@ import (
 
 	"github.com/asticode/go-astilectron"
 
-	"warthog/business/entity"
-	"warthog/pkg/resources"
+	"github.com/Forest33/warthog/business/entity"
+	"github.com/Forest33/warthog/pkg/resources"
 )
 
 func createWindow() error {
