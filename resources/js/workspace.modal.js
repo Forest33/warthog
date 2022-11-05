@@ -227,7 +227,7 @@ function addProtoFiles() {
 }
 
 function addImportPath() {
-    const {dialog} = require('electron').remote;
+    //const {dialog} = require('electron').remote;
     let path = dialog.showOpenDialogSync({
         properties: ['openDirectory', 'multiSelections']
     });

@@ -20,9 +20,19 @@ const (
 	defaultWindowY         = 50
 	defaultMinWindowWidth  = 800
 	defaultMinWindowHeight = 600
+
+	defaultVersionAstilectron = "0.56.0"
+	defaultVersionElectron    = "13.6.9"
 )
 
 func getAstilectronOptions() astilectron.Options {
+	if VersionAstilectron == "" {
+		VersionAstilectron = defaultVersionAstilectron
+	}
+	if VersionElectron == "" {
+		VersionElectron = defaultVersionElectron
+	}
+
 	iconPath := resources.GetApplicationIcon()
 
 	zlog.Debug().
