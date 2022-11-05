@@ -88,8 +88,7 @@ func (db *Database) migrate() (uint, error) {
 	case migrate.ErrDirty:
 		prevVersion, err := sourceInstance.Prev(uint(handlingErr.Version))
 		if err != nil && !os.IsExist(err) {
-			err = nil
-			prevVersion = 0
+			return 0, errors.New("can't rollback to previous database version")
 		} else if err != nil {
 			break
 		}
