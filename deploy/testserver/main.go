@@ -1,3 +1,4 @@
+// Package main gRPC debug server
 package main
 
 import (

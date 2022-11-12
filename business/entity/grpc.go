@@ -1,9 +1,11 @@
+// Package entity provides entities for business logic.
 package entity
 
 import (
 	"github.com/jhump/protoreflect/desc"
 )
 
+// constants for gRPC client
 const (
 	ReflectionServiceFQN         = "grpc.reflection.v1alpha.ServerReflection"
 	MethodTypeUnary              = "u"
