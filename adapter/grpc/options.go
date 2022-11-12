@@ -1,3 +1,4 @@
+// Package grpc provides basic gRPC functions.
 package grpc
 
 // ClientOptions represents Client options

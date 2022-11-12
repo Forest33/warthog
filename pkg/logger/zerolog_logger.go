@@ -1,4 +1,4 @@
-// Package logger provides low level operations with database.
+// Package logger wrapper for zerolog
 package logger
 
 import (
