@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Warthog</title>
-<!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
-<!--<link href="css/font-awesome.min.css" rel="stylesheet">-->
+    <!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link href="css/font-awesome.min.css" rel="stylesheet">-->
     <link href="css/bootstrap-icons.css" rel="stylesheet">
     <link href="css/bootstrap-treeview.css" rel="stylesheet">
     <link href="css/themes/light/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,8 @@
             <div class="d-flex flex-row bd-highlight mb-3" id="left-select">
                 <select class="form-select" aria-label="Services" id="sidebar-services-list" disabled></select>
                 <select class="form-select" aria-label="Methods" id="sidebar-methods-list" disabled></select>
-                <button type="button" class="btn btn-success disabled bi bi-play-fill" id="request-run" style="font-size:20px;padding-left:2rem;padding-right:2rem"></button>
+                <button type="button" class="btn btn-success disabled bi bi-play-fill" id="request-run"
+                        style="font-size:20px;padding-left:2rem;padding-right:2rem"></button>
             </div>
 
             <nav>
@@ -40,14 +41,17 @@
                 <div class="nav nav-tabs justify-content-end" id="nav-tab" role="tablist">
 
                     <div class="btn-group-sm" role="group" style="margin-right:auto;margin-left:10px;">
-                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" href="#offcanvasTree" role="button"
+                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" href="#offcanvasTree"
+                           role="button"
                            aria-controls="offcanvasTree" title="Workspaces">
                             <i class="bi bi-list"></i>
                         </a>
-                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#workspaceModal" role="button" title="New workspace">
+                        <a class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                           data-bs-target="#workspaceModal" role="button" title="New workspace">
                             <i class="bi bi-server"></i>
                         </a>
-                        <a class="btn btn-outline-primary btn-sm disabled" role="button" id="workspace-reload" title="Reload workspace">
+                        <a class="btn btn-outline-primary btn-sm disabled" role="button" id="workspace-reload"
+                           title="Reload workspace">
                             <i class="bi bi-arrow-repeat"></i>
                         </a>
                     </div>
@@ -66,7 +70,8 @@
             </nav>
 
             <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-request" role="tabpanel" aria-labelledby="nav-request-tab">
+                <div class="tab-pane fade show active" id="nav-request" role="tabpanel"
+                     aria-labelledby="nav-request-tab">
 
                     <div class="row" style="margin-right:0;margin-top:10px;">
                         <div class="col" style="max-width:0;">
@@ -75,10 +80,13 @@
                         <div class="col" style="margin-right:0;">
                             <div style="text-align:right;">
                                 <div class="btn-group-sm" role="group" id="request-edit-buttons">
-                                    <button type="button" class="btn btn-light btn-sm bi bi-save" id="save-query" data-toggle="popover" data-html="true" data-bs-container="body"
-                                            data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="popover" title="Save request">
+                                    <button type="button" class="btn btn-light btn-sm bi bi-save" id="save-query"
+                                            data-toggle="popover" data-html="true" data-bs-container="body"
+                                            data-bs-toggle="popover" data-bs-placement="bottom"
+                                            data-bs-content="popover" title="Save request">
                                     </button>
-                                    <a class="btn btn-light btn-sm" role="button" id="edit-server" title="Edit workspace">
+                                    <a class="btn btn-light btn-sm" role="button" id="edit-server"
+                                       title="Edit workspace">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
                                 </div>
@@ -95,13 +103,17 @@
                     <div id="nav-request-metadata">
                         <div class="d-flex flex-row bd-highlight mb-2 metadata-row">
                             <div class="col" style="margin-right: 5px;">
-                                <input type="text" class="form-control metadata-key" placeholder="key" aria-label="key" data-metadata-key-id="1" onclick="addMetadataRow(this)">
+                                <input type="text" class="form-control metadata-key" placeholder="key" aria-label="key"
+                                       data-metadata-key-id="1" onclick="addMetadataRow(this)">
                             </div>
                             <div class="col" style="margin-right: 5px;">
-                                <input type="text" class="form-control metadata-value" placeholder="value" aria-label="value">
+                                <input type="text" class="form-control metadata-value" placeholder="value"
+                                       aria-label="value">
                             </div>
                             <div class="mb-2 form-group">
-                                <button type="button" class="btn btn-outline-primary btn-sm request-metadata-button-delete" onclick="removeMetadataRow(this)"><i class="bi bi-x"></i></button>
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm request-metadata-button-delete"
+                                        onclick="removeMetadataRow(this)"><i class="bi bi-x"></i></button>
                             </div>
                         </div>
                     </div>
@@ -157,7 +169,8 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-start noselect" tabindex="-1" id="offcanvasTree" data-bs-scroll="true" data-bs-backdrop="true"
+<div class="offcanvas offcanvas-start noselect" tabindex="-1" id="offcanvasTree" data-bs-scroll="true"
+     data-bs-backdrop="true"
      aria-labelledby="offcanvasTreeLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasTreeLabel">Workspaces</h5>
@@ -178,7 +191,8 @@
         </div>
         <div class="mb-3">
             <label for="query-popover-query-description" class="form-label">Description (optional)</label>
-            <textarea class="form-control query-popover-query-description" id="query-popover-query-description" rows="2"></textarea>
+            <textarea class="form-control query-popover-query-description" id="query-popover-query-description"
+                      rows="2"></textarea>
         </div>
         <div style="text-align: right;">
             <button type="button" class="btn btn-secondary query-popover-close" style="margin-right:5px;">Close</button>

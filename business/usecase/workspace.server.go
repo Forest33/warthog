@@ -4,6 +4,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// CreateServer creates server on workspace
 func (uc *WorkspaceUseCase) CreateServer(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.ServerRequest{}
 	if err := req.Model(payload); err != nil {
@@ -36,6 +37,7 @@ func (uc *WorkspaceUseCase) CreateServer(payload map[string]interface{}) *entity
 	}
 }
 
+// UpdateServer updates server on workspace
 func (uc *WorkspaceUseCase) UpdateServer(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.ServerRequest{}
 	if err := req.Model(payload); err != nil {
@@ -78,6 +80,7 @@ func (uc *WorkspaceUseCase) UpdateServer(payload map[string]interface{}) *entity
 	}
 }
 
+// UpdateServerRequest updates current request params
 func (uc *WorkspaceUseCase) UpdateServerRequest(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.ServerUpdateRequest{}
 	if err := req.Model(payload); err != nil {

@@ -15,6 +15,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// Client object capable of interacting with Client
 type Client struct {
 	ctx            context.Context
 	cfg            *entity.GrpcConfig
@@ -26,6 +27,7 @@ type Client struct {
 	importPath     []string
 }
 
+// New creates a new Client
 func New(ctx context.Context, cfg *entity.GrpcConfig) *Client {
 	return &Client{
 		ctx: ctx,
@@ -33,6 +35,7 @@ func New(ctx context.Context, cfg *entity.GrpcConfig) *Client {
 	}
 }
 
+// Connect connecting to gRPC server
 func (c *Client) Connect(addr string, opts ...ClientOpt) error {
 	if defaultOptions != nil {
 		c.opts = *defaultOptions
@@ -99,6 +102,7 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 	return credentials.NewTLS(cfg), nil
 }
 
+// Close closes connection to gRPC server
 func (c *Client) Close() {
 	if c.conn != nil {
 		_ = c.conn.Close()

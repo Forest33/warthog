@@ -1,10 +1,9 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"strings"
-
-	"golang.org/x/net/context"
 
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/pkg/database"
@@ -16,11 +15,13 @@ const (
 	guiConfigTableFields = "window_width, window_height, window_x, window_y, created_at, updated_at"
 )
 
+// GUIConfigRepository object capable of interacting with GUIConfigRepository
 type GUIConfigRepository struct {
 	db  *database.Database
 	ctx context.Context
 }
 
+// NewGUIConfigRepository creates a new GUIConfigRepository
 func NewGUIConfigRepository(ctx context.Context, db *database.Database) *GUIConfigRepository {
 	return &GUIConfigRepository{
 		db:  db,
@@ -58,6 +59,7 @@ func (dto *guiConfigDTO) entity() (*entity.GUIConfig, error) {
 	return out, nil
 }
 
+// Get returns GUIConfig
 func (repo *GUIConfigRepository) Get() (*entity.GUIConfig, error) {
 	dto := &guiConfigDTO{}
 
@@ -69,6 +71,7 @@ func (repo *GUIConfigRepository) Get() (*entity.GUIConfig, error) {
 	return dto.entity()
 }
 
+// Update updates GUIConfig
 func (repo *GUIConfigRepository) Update(in *entity.GUIConfig) (*entity.GUIConfig, error) {
 	dto := &guiConfigDTO{}
 	attrs := make([]string, 0, 4)

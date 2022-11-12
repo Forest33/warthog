@@ -1,5 +1,6 @@
 package entity
 
+// UI events
 const (
 	CmdGetWorkspace        GUICommand = "workspace.get"
 	CmdSortingWorkspace    GUICommand = "workspace.sorting"

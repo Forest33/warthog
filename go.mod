@@ -8,7 +8,7 @@ require (
 	github.com/asticode/go-astilectron-bootstrap v0.4.14
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/protobuf v1.5.2
-	github.com/jhump/protoreflect v1.13.0
+	github.com/jhump/protoreflect v1.14.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/mitchellh/mapstructure v1.5.0
