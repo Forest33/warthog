@@ -20,11 +20,13 @@ var (
 	homeDir string
 )
 
+// Init initialize package
 func Init(c *entity.Config, l *logger.Zerolog) {
 	cfg = c
 	log = l
 }
 
+// CreateApplicationDir creates application folder
 func CreateApplicationDir() string {
 	userHome, err := os.UserHomeDir()
 	if err != nil {
@@ -43,10 +45,12 @@ func CreateApplicationDir() string {
 	return homeDir
 }
 
+// GetApplicationIcon returns path to application icon
 func GetApplicationIcon() string {
 	return getPath(cfg.Application.IconsPath, cfg.Application.AppIconLinux, cfg.Application.AppIconDarwin, cfg.Application.AppIconWindows)
 }
 
+// GetTrayIcon returns path to tray icon
 func GetTrayIcon() string {
 	if runtime.GOOS != "windows" {
 		return getPath(cfg.Application.IconsPath, cfg.Application.TrayIconLinux, cfg.Application.TrayIconDarwin, cfg.Application.TrayIconWindows)
@@ -57,6 +61,7 @@ func GetTrayIcon() string {
 	return cfg.Application.TrayIconWindows
 }
 
+// GetHomepage returns path to application homepage
 func GetHomepage() string {
 	if !entity.IsDebug() {
 		if runtime.GOOS != "windows" {
@@ -67,6 +72,7 @@ func GetHomepage() string {
 	return cfg.Application.Homepage
 }
 
+// GetDatabase returns path to SQLite database
 func GetDatabase() string {
 	return filepath.Join(homeDir, cfg.Database.DatasourceName)
 }

@@ -19,6 +19,7 @@ const (
 	addr = "127.0.0.1:33333"
 )
 
+// Server object capable of interacting with Server
 type Server struct {
 	log *logger.Zerolog
 }
@@ -44,18 +45,22 @@ func main() {
 	}
 }
 
+// Unary is a Unary method handler
 func (s *Server) Unary(_ context.Context, m1 *test_proto.M1) (*test_proto.M1, error) {
 	return m1, nil
 }
 
+// TypesTest is a TypesTest method handler
 func (s *Server) TypesTest(_ context.Context, t *test_proto.Types) (*test_proto.Types, error) {
 	return t, nil
 }
 
+// LoopTest is a LoopTest method handler
 func (s *Server) LoopTest(_ context.Context, t *test_proto.Loop) (*test_proto.Loop, error) {
 	return t, nil
 }
 
+// ClientStream is a ClientStream method handler
 func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) error {
 	req, err := stream.Recv()
 	if err != nil {
@@ -79,6 +84,7 @@ func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) er
 	return nil
 }
 
+// ServerStream is a ServerStream method handler
 func (s *Server) ServerStream(req *test_proto.StreamMessage, stream test_proto.TestProto_ServerStreamServer) error {
 	header := req.GetHeader()
 	payload := req.GetPayload()
@@ -98,6 +104,7 @@ func (s *Server) ServerStream(req *test_proto.StreamMessage, stream test_proto.T
 	return nil
 }
 
+// ClientServerStream is a ClientServerStream method handler
 func (s *Server) ClientServerStream(stream test_proto.TestProto_ClientServerStreamServer) error {
 	req, err := stream.Recv()
 	if err != nil {
