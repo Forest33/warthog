@@ -11,6 +11,7 @@ import (
 	"github.com/forest33/warthog/pkg/logger"
 )
 
+// GrpcUseCase object capable of interacting with GrpcUseCase
 type GrpcUseCase struct {
 	ctx           context.Context
 	log           *logger.Zerolog
@@ -19,6 +20,7 @@ type GrpcUseCase struct {
 	workspaceRepo WorkspaceRepo
 }
 
+// GrpcClient is an interface for working with the gRPC client
 type GrpcClient interface {
 	Connect(addr string, opts ...grpc.ClientOpt) error
 	AddProtobuf(path ...string)
@@ -30,6 +32,7 @@ type GrpcClient interface {
 	Close()
 }
 
+// NewGrpcUseCase creates a new GrpcUseCase
 func NewGrpcUseCase(ctx context.Context, log *logger.Zerolog, client GrpcClient, workspaceRepo WorkspaceRepo) *GrpcUseCase {
 	return &GrpcUseCase{
 		ctx:           ctx,
@@ -39,6 +42,7 @@ func NewGrpcUseCase(ctx context.Context, log *logger.Zerolog, client GrpcClient,
 	}
 }
 
+// LoadServer reads the server description from the database and returns it to the GUI
 func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.ServerRequest{}
 	if err := req.Model(payload); err != nil {
@@ -121,6 +125,7 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 	}
 }
 
+// Query executes a gRPC request
 func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.Query{}
 	if err := req.Model(payload); err != nil {
@@ -144,6 +149,7 @@ func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse
 	}
 }
 
+// CancelQuery aborting a running request
 func (uc *GrpcUseCase) CancelQuery() {
 	uc.client.CancelQuery()
 }

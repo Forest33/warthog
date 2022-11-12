@@ -31,7 +31,8 @@ type LoadServerResponse struct {
 }
 
 type Field struct {
-	Fqn        string                `json:"fqn"`
+	FQN        string                `json:"fqn"`
+	ProtoFQN   string                `json:"proto_fqn"`
 	Name       string                `json:"name"`
 	Type       string                `json:"type"`
 	ParentType string                `json:"parent_type"`

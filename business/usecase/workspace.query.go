@@ -4,6 +4,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// UpdateQuery updates query on workspace
 func (uc *WorkspaceUseCase) UpdateQuery(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.QueryRequest{}
 	if err := req.Model(payload); err != nil {

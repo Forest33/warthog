@@ -43,7 +43,6 @@ func bootstrapMessageHandler(_ *astilectron.Window, m bootstrap.MessageIn) (inte
 
 	resp := eventsHandler(req)
 	if resp != nil {
-		//return resp.Payload, resp.Error
 		return &bootstrapResponse{
 			Data:   resp.Payload,
 			Status: resp.Status,

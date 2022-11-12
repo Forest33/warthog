@@ -13,11 +13,13 @@
                     </div>
 
 
-                    <button class="nav-link active" id="nav-workspace-modal-basic-tab" data-bs-toggle="tab" data-bs-target="#nav-workspace-modal-basic" type="button" role="tab"
+                    <button class="nav-link active" id="nav-workspace-modal-basic-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-workspace-modal-basic" type="button" role="tab"
                             aria-controls="nav-basic-workspace-modal"
                             aria-selected="true">Basic
                     </button>
-                    <button class="nav-link" id="nav-workspace-modal-tls-tab" data-bs-toggle="tab" data-bs-target="#nav-workspace-modal-tls" type="button" role="tab"
+                    <button class="nav-link" id="nav-workspace-modal-tls-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-workspace-modal-tls" type="button" role="tab"
                             aria-controls="nav-tls-workspace-modal"
                             aria-selected="false">TLS
                     </button>
@@ -25,9 +27,10 @@
 
                 <div class="tab-content" id="workspace-modal-nav-tab-content">
 
-                    <div class="tab-pane fade show active" id="nav-workspace-modal-basic" role="tabpanel" aria-labelledby="nav-basic-tab">
+                    <div class="tab-pane fade show active" id="nav-workspace-modal-basic" role="tabpanel"
+                         aria-labelledby="nav-basic-tab">
 
-                        <form id="workspace-modal-form">
+                        <form id="workspace-modal-basic-form">
 
                             <div class="mb-2 form-group" style="margin-top: 15px;">
                                 <label for="workspace-modal-grpc-name" class="">
@@ -46,7 +49,8 @@
 
                             <div class="mb-2 form-group">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="workspace-modal-use-reflection" value="true">
+                                    <input class="form-check-input" type="checkbox" id="workspace-modal-use-reflection"
+                                           value="true">
                                     <label class="form-check-label" for="workspace-modal-use-reflection">
                                         Use reflection to determine the RPC schema
                                     </label>
@@ -55,30 +59,45 @@
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-proto-files">Proto source file(s)</label>
-                                <select class="form-select" multiple aria-label="multiple select" id="workspace-modal-proto-files"></select>
+                                <select class="form-select proto-files" multiple aria-label="multiple select"
+                                        id="workspace-modal-proto-files" required></select>
                             </div>
 
                             <div class="mb-2 form-group" style="text-align:right;">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="workspace-modal-delete-proto-files">Delete</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="workspace-modal-add-proto-files">Add</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm proto-files"
+                                        id="workspace-modal-delete-proto-files">Delete
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm proto-files"
+                                        id="workspace-modal-add-proto-files">Add
+                                </button>
                             </div>
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-proto-files">Import path(s)</label>
-                                <select class="form-select" multiple aria-label="multiple select" id="workspace-modal-import-path"></select>
+                                <select class="form-select proto-files" multiple aria-label="multiple select"
+                                        id="workspace-modal-import-path"></select>
                             </div>
 
                             <div class="mb-2 form-group" style="text-align:right;">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="workspace-modal-delete-import-path">Delete</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="workspace-modal-add-import-path">Add</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm proto-files"
+                                        id="workspace-modal-delete-import-path">Delete
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm proto-files"
+                                        id="workspace-modal-add-import-path">Add
+                                </button>
                             </div>
 
                             <label for="workspace-modal-tree-container">Select a folder to save to</label>
                             <div class="form-group modal-content" id="workspace-modal-tree-container">
                                 <div class="mb-2 form-group" style="margin-bottom: 0!important;">
                                     <div class="input-group mb-3" style="margin-bottom: 0!important;">
-                                        <input type="text" id="workspace-modal-folder-title" minlength="1" class="form-control" placeholder="New folder name" aria-label="New folder name" aria-describedby="workspace-modal-new-folder">
-                                        <button class="btn btn-primary" type="button" id="workspace-modal-new-folder" style="border-bottom-right-radius: 0;"><i class="bi bi-plus-circle"></i></button>
+                                        <input type="text" id="workspace-modal-folder-title" minlength="1"
+                                               class="form-control" placeholder="New folder name"
+                                               aria-label="New folder name"
+                                               aria-describedby="workspace-modal-new-folder">
+                                        <button class="btn btn-primary" type="button" id="workspace-modal-new-folder"
+                                                style="border-bottom-right-radius: 0;"><i class="bi bi-plus-circle"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div id="workspace-modal-tree"></div>
@@ -89,12 +108,13 @@
                     </div>
 
 
-                    <div class="tab-pane fade" id="nav-workspace-modal-tls" role="tabpanel" aria-labelledby="nav-tls-tab">
-                        <form>
-
+                    <div class="tab-pane fade" id="nav-workspace-modal-tls" role="tabpanel"
+                         aria-labelledby="nav-tls-tab">
+                        <form id="workspace-modal-tls-form">
                             <div class="mb-2 form-group" style="margin-top: 15px;">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="workspace-modal-use-plain-text" value="true">
+                                    <input class="form-check-input" type="checkbox" id="workspace-modal-use-plain-text"
+                                           value="true">
                                     <label class="form-check-label" for="workspace-modal-use-plain-text">
                                         Use plain text HTTP/2 when connecting to server (no TLS)
                                     </label>
@@ -103,7 +123,9 @@
 
                             <div class="mb-2 form-group">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="workspace-modal-skip-verification" value="true">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="workspace-modal-skip-verification"
+                                           value="true">
                                     <label class="form-check-label" for="workspace-modal-skip-verification">
                                         Skip server certificate and domain verification (insecure)
                                     </label>
@@ -112,19 +134,21 @@
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-root-certificate">Trusted root certificate(s)</label>
-                                <textarea class="form-control" id="workspace-modal-root-certificate" rows="7"></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-root-certificate"
+                                          rows="7" required></textarea>
                             </div>
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-client-certificate">Client certificate (public key)</label>
-                                <textarea class="form-control" id="workspace-modal-client-certificate" rows="7"></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-certificate"
+                                          rows="7" required></textarea>
                             </div>
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-client-key">Client private key</label>
-                                <textarea class="form-control" id="workspace-modal-client-key" rows="7"></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-key" rows="7"
+                                          required></textarea>
                             </div>
-
                         </form>
                     </div>
                 </div>

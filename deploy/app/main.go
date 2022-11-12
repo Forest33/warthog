@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"runtime"
+	"sync"
 
 	"github.com/asticode/go-astilectron"
 	"golang.org/x/net/context"
@@ -52,6 +53,7 @@ var (
 
 	ctx    context.Context
 	cancel context.CancelFunc
+	wg     = sync.WaitGroup{}
 
 	workspaceID *int64
 )
@@ -68,6 +70,7 @@ func init() {
 	}
 
 	ctx, cancel = context.WithCancel(context.Background())
+
 	workspaceID = flag.Int64("workspace-id", 0, "load workspace with id")
 	flag.Parse()
 }
@@ -116,13 +119,15 @@ func initAdapters() {
 }
 
 func initUseCases() {
-	guiConfigUseCase = usecase.NewGUIConfigUseCase(ctx, zlog, guiConfigRepo)
+	guiConfigUseCase = usecase.NewGUIConfigUseCase(ctx, &wg, zlog, guiConfigRepo)
 	workspaceUseCase = usecase.NewWorkspaceUseCase(ctx, zlog, workspaceRepo, workspaceID)
 	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, workspaceRepo)
 	usecase.SetWorkspaceUseCase(workspaceUseCase)
 }
 
 func shutdown() {
+	guiConfigUseCase.Stop()
+	wg.Wait()
 	cancel()
 	dbi.Close()
 }

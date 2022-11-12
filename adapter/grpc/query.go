@@ -19,6 +19,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// Query executes a gRPC request
 func (c *Client) Query(method *entity.Method, data map[string]interface{}, requestMetadata []string) (qResp *entity.QueryResponse, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -37,11 +38,11 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 	ms := dynamic.NewMessage(method.Descriptor.GetInputType())
 
 	for _, f := range method.Input {
-		if _, ok := data[f.Fqn]; !ok {
+		if _, ok := data[getProtoFQN(f)]; !ok {
 			continue
 		}
 
-		arg, err := c.getArgument(f, data[f.Fqn])
+		arg, err := c.getArgument(f, data[getProtoFQN(f)])
 		if err != nil {
 			return nil, err
 		}
@@ -143,6 +144,7 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 	}, nil
 }
 
+// CancelQuery aborting a running gRPC request
 func (c *Client) CancelQuery() {
 	c.cancelQueryMux.Lock()
 	defer c.cancelQueryMux.Unlock()
@@ -212,7 +214,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 						continue
 					}
 					val, err := c.getArgument(&entity.Field{
-						Fqn:  field.Fqn,
+						FQN:  field.FQN,
 						Type: field.Map.ProtoValueType,
 						Message: &entity.Message{
 							Type:       field.Map.ValueTypeFqn,
@@ -250,7 +252,6 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 				resp = obj
 			}
 		} else {
-			//md := field.Descriptor.GetFile().FindMessage(field.Message.Type)
 			md := field.Message.Descriptor
 			if md == nil {
 				return nil, fmt.Errorf("failed to find message type %s", field.Message.Type)
@@ -258,7 +259,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 			if !field.Repeated {
 				ms := dynamic.NewMessage(md)
 				for _, mf := range field.Message.Fields {
-					v, err := c.getArgument(mf, data.(map[string]interface{})[mf.Fqn])
+					v, err := c.getArgument(mf, data.(map[string]interface{})[getProtoFQN(mf)])
 					if err != nil {
 						return nil, err
 					}
@@ -275,7 +276,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 					ms := dynamic.NewMessage(md)
 					var hasFields bool
 					for _, mf := range field.Message.Fields {
-						v, err := c.getArgument(mf, d.(map[string]interface{})[mf.Fqn])
+						v, err := c.getArgument(mf, d.(map[string]interface{})[getProtoFQN(mf)])
 						if err != nil {
 							return nil, err
 						}
@@ -325,4 +326,11 @@ func addMetadata(ctx context.Context, data []string) context.Context {
 		return ctx
 	}
 	return metadata.AppendToOutgoingContext(ctx, data...)
+}
+
+func getProtoFQN(f *entity.Field) string {
+	if f.ProtoFQN != "" {
+		return f.ProtoFQN
+	}
+	return f.FQN
 }

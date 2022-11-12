@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"sync"
 	"time"
 
 	"golang.org/x/net/context"
@@ -13,33 +14,41 @@ const (
 	updateGUIConfigDelay = 3
 )
 
+// GUIConfigUseCase object capable of interacting with GUIConfigUseCase
 type GUIConfigUseCase struct {
 	ctx           context.Context
+	wg            *sync.WaitGroup
 	guiConfigRepo GUIConfigRepo
 	log           *logger.Zerolog
 	guiConfig     *entity.GUIConfig
 	updateCh      chan *entity.GUIConfig
 }
 
+// GUIConfigRepo is the common interface implemented GUIConfigRepository methods
 type GUIConfigRepo interface {
 	Get() (*entity.GUIConfig, error)
 	Update(in *entity.GUIConfig) (*entity.GUIConfig, error)
 }
 
-func NewGUIConfigUseCase(ctx context.Context, log *logger.Zerolog, guiConfigRepo GUIConfigRepo) *GUIConfigUseCase {
+// NewGUIConfigUseCase creates a new GUIConfigUseCase
+func NewGUIConfigUseCase(ctx context.Context, wg *sync.WaitGroup, log *logger.Zerolog, guiConfigRepo GUIConfigRepo) *GUIConfigUseCase {
 	uc := &GUIConfigUseCase{
 		ctx:           ctx,
+		wg:            wg,
 		guiConfigRepo: guiConfigRepo,
 		log:           log,
 		guiConfig:     &entity.GUIConfig{},
 		updateCh:      make(chan *entity.GUIConfig, 10),
 	}
 
+	wg.Add(1)
+
 	uc.updateHandler()
 
 	return uc
 }
 
+// Get reads and returns current GUIConfig from database
 func (uc *GUIConfigUseCase) Get() (*entity.GUIConfig, error) {
 	cfg, err := uc.guiConfigRepo.Get()
 	if err != nil {
@@ -49,8 +58,15 @@ func (uc *GUIConfigUseCase) Get() (*entity.GUIConfig, error) {
 	return cfg, nil
 }
 
+// Set writes GUIConfig to database
 func (uc *GUIConfigUseCase) Set(cfg *entity.GUIConfig) {
 	uc.updateCh <- cfg
+}
+
+// Stop stops GUIConfigUseCase and writes current GUIConfig to database
+func (uc *GUIConfigUseCase) Stop() {
+	uc.updateGUIConfig()
+	uc.wg.Done()
 }
 
 func (uc *GUIConfigUseCase) updateHandler() {
@@ -58,7 +74,6 @@ func (uc *GUIConfigUseCase) updateHandler() {
 		for {
 			select {
 			case <-uc.ctx.Done():
-				uc.updateGUIConfig()
 				return
 			case cfg := <-uc.updateCh:
 				uc.setGUIConfig(cfg)

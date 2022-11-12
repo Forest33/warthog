@@ -4,6 +4,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// CreateFolder creates folder on workspace
 func (uc *WorkspaceUseCase) CreateFolder(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.FolderRequest{}
 	if err := req.Model(payload); err != nil {
@@ -35,6 +36,7 @@ func (uc *WorkspaceUseCase) CreateFolder(payload map[string]interface{}) *entity
 	}
 }
 
+// UpdateFolder updates folder on workspace
 func (uc *WorkspaceUseCase) UpdateFolder(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.FolderRequest{}
 	if err := req.Model(payload); err != nil {
@@ -66,6 +68,7 @@ func (uc *WorkspaceUseCase) UpdateFolder(payload map[string]interface{}) *entity
 	}
 }
 
+// DeleteFolder deletes folder on workspace
 func (uc *WorkspaceUseCase) DeleteFolder(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.FolderRequest{}
 	if err := req.Model(payload); err != nil {

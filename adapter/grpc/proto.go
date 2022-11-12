@@ -14,14 +14,17 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+// AddProtobuf adds protobuf files
 func (c *Client) AddProtobuf(path ...string) {
 	c.protoPath = path
 }
 
+// AddImport adds import paths
 func (c *Client) AddImport(path ...string) {
 	c.importPath = path
 }
 
+// LoadFromProtobuf loads services from protobuf
 func (c *Client) LoadFromProtobuf() ([]*entity.Service, error) {
 	if len(c.protoPath) == 0 {
 		return nil, fmt.Errorf("empty path to protobuf's")
@@ -58,6 +61,7 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, error) {
 	return services, nil
 }
 
+// LoadFromReflection loads services using reflection
 func (c *Client) LoadFromReflection() ([]*entity.Service, error) {
 	ctx, cancel := context.WithTimeout(c.ctx, time.Second*time.Duration(c.cfg.ConnectTimeout))
 	defer cancel()
@@ -98,7 +102,7 @@ func (c *Client) getMethods(sd *desc.ServiceDescriptor) []*entity.Method {
 			Name:       md.GetName(),
 			Type:       getMethodType(md),
 			Descriptor: md,
-			Input:      c.getFields(md.GetInputType().GetFields(), nil),
+			Input:      c.getFields(md.GetInputType().GetFields(), nil, nil),
 		})
 	}
 
@@ -121,13 +125,11 @@ func getMethodType(md *desc.MethodDescriptor) string {
 	return entity.MethodTypeUnary
 }
 
-func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescriptor) []*entity.Field {
+func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescriptor, fqn map[string]int) []*entity.Field {
 	fields := make([]*entity.Field, 0, len(fd))
 
 	for _, f := range fd {
-		var (
-			fieldType = f.GetType().String()
-		)
+		fieldType := f.GetType().String()
 
 		switch fieldType {
 		case entity.ProtoTypeEnum:
@@ -141,7 +143,7 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 			}
 			fields = append(fields, &entity.Field{
 				Descriptor: f,
-				Fqn:        f.GetFullyQualifiedName(),
+				FQN:        f.GetFullyQualifiedName(),
 				Name:       f.GetName(),
 				Type:       getTypeName(fieldType),
 				ParentType: getParentTypeName(parent),
@@ -155,9 +157,11 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 		case entity.ProtoTypeMessage:
 			if f.IsMap() {
 				keyType, valueType, valueTypeName := getMapFieldTypeName(f)
+				loopFQN, protoFQN := getFQN(f, fqn)
 				mapField := &entity.Field{
 					Descriptor: f,
-					Fqn:        f.GetFullyQualifiedName(),
+					FQN:        loopFQN,
+					ProtoFQN:   protoFQN,
 					Name:       f.GetName(),
 					Type:       getTypeName(fieldType),
 					ParentType: getParentTypeName(parent),
@@ -173,16 +177,28 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 					mapField.Map.ValueTypeFqn = f.GetMapValueType().GetMessageType().GetFullyQualifiedName()
 				}
 				if valueType == entity.ProtoTypeMessage {
+					messageFields, fqn := c.getMessageFields(f.GetMapValueType().GetMessageType().GetFields(), fqn)
+					if len(messageFields) == 0 {
+						break
+					}
+
 					mapField.Map.ValueDescriptor = f.GetMapValueType().GetMessageType()
-					mapField.Map.Fields = c.getFields(f.GetMapValueType().GetMessageType().GetFields(), f)
+					mapField.Map.Fields = c.getFields(messageFields, f, fqn)
 				} else if valueType == entity.ProtoTypeEnum {
-					mapField.Map.Fields = c.getFields([]*desc.FieldDescriptor{f.GetMapValueType()}, f)
+					mapField.Map.Fields = c.getFields([]*desc.FieldDescriptor{f.GetMapValueType()}, f, fqn)
 				}
 				fields = append(fields, mapField)
 			} else {
+				messageFields, fqn := c.getMessageFields(f.GetMessageType().GetFields(), fqn)
+				if len(messageFields) == 0 {
+					break
+				}
+
+				loopFQN, protoFQN := getFQN(f, fqn)
 				msgField := &entity.Field{
 					Descriptor: f,
-					Fqn:        f.GetFullyQualifiedName(),
+					FQN:        loopFQN,
+					ProtoFQN:   protoFQN,
 					Name:       f.GetName(),
 					Type:       getTypeName(fieldType),
 					ParentType: getParentTypeName(parent),
@@ -191,7 +207,7 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 					Message: &entity.Message{
 						Name:       f.GetMessageType().GetName(),
 						Type:       f.GetMessageType().GetFullyQualifiedName(),
-						Fields:     c.getFields(f.GetMessageType().GetFields(), f),
+						Fields:     c.getFields(messageFields, f, fqn),
 						Descriptor: f.GetMessageType(),
 					},
 				}
@@ -200,7 +216,7 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 		default:
 			fields = append(fields, &entity.Field{
 				Descriptor: f,
-				Fqn:        f.GetFullyQualifiedName(),
+				FQN:        f.GetFullyQualifiedName(),
 				Name:       f.GetName(),
 				Type:       getTypeName(fieldType),
 				ParentType: getParentTypeName(parent),
@@ -253,4 +269,33 @@ func getOneOf(f *desc.FieldDescriptor) *entity.OneOf {
 		Fqn:  oneOf.GetFullyQualifiedName(),
 		Name: oneOf.GetName(),
 	}
+}
+
+func (c *Client) getMessageFields(fields []*desc.FieldDescriptor, fqn map[string]int) ([]*desc.FieldDescriptor, map[string]int) {
+	messageFields := make([]*desc.FieldDescriptor, 0, len(fields))
+	if fqn == nil {
+		fqn = make(map[string]int, len(fields))
+	}
+
+	for _, mf := range fields {
+		name := mf.GetFullyQualifiedName()
+		if count, ok := fqn[name]; ok && count >= c.cfg.MaxLoopDepth {
+			continue
+		}
+		fqn[name]++
+		messageFields = append(messageFields, mf)
+	}
+
+	return messageFields, fqn
+}
+
+func getFQN(f *desc.FieldDescriptor, fqn map[string]int) (string, string) {
+	name := f.GetFullyQualifiedName()
+	if fqn == nil {
+		return name, name
+	}
+	if _, ok := fqn[name]; !ok {
+		return name, name
+	}
+	return fmt.Sprintf("%s[%d]", name, fqn[name]-1), name
 }

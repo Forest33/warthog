@@ -48,6 +48,14 @@ func (s *Server) Unary(_ context.Context, m1 *test_proto.M1) (*test_proto.M1, er
 	return m1, nil
 }
 
+func (s *Server) TypesTest(_ context.Context, t *test_proto.Types) (*test_proto.Types, error) {
+	return t, nil
+}
+
+func (s *Server) LoopTest(_ context.Context, t *test_proto.Loop) (*test_proto.Loop, error) {
+	return t, nil
+}
+
 func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) error {
 	req, err := stream.Recv()
 	if err != nil {

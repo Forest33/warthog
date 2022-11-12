@@ -1,6 +1,10 @@
 syntax = "proto3";
 package test.proto.v1;
 import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/struct.proto";
 option go_package = "./;test_proto";
 
 message User {
@@ -112,9 +116,34 @@ message StreamMessage {
   }
 }
 
+message Types {
+  google.protobuf.Timestamp timestamp = 1;
+  google.protobuf.Duration duration = 2;
+
+  google.protobuf.DoubleValue double_value = 3;
+  google.protobuf.FloatValue float_value = 4;
+  google.protobuf.Int64Value int64_value = 5;
+  google.protobuf.UInt64Value uint64_value = 6;
+  google.protobuf.Int32Value int32_value = 7;
+  google.protobuf.UInt32Value uint32_value = 8;
+
+  google.protobuf.BoolValue bool_value = 9;
+  google.protobuf.StringValue string_value = 10;
+  google.protobuf.BytesValue bytes_value = 11;
+  google.protobuf.Struct struct_value = 12;
+}
+
+message Loop {
+  int64 id = 1;
+  string name = 2;
+  repeated Loop child = 3;
+}
+
 service test_proto {
   rpc Unary(M1) returns (M1);
   rpc ClientStream(stream StreamMessage) returns(StreamMessage);
   rpc ServerStream(StreamMessage) returns(stream StreamMessage);
   rpc ClientServerStream(stream StreamMessage) returns(stream StreamMessage);
+  rpc TypesTest(Types) returns (Types);
+  rpc LoopTest(Loop) returns (Loop);
 }
