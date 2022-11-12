@@ -12,11 +12,13 @@ const (
 	MethodTypeClientServerStream = "css"
 )
 
+// Service gRPC service
 type Service struct {
 	Name    string    `json:"name"`
 	Methods []*Method `json:"methods,omitempty"`
 }
 
+// Method gRPC method
 type Method struct {
 	Name       string                 `json:"name"`
 	Type       string                 `json:"type"`
@@ -24,12 +26,14 @@ type Method struct {
 	Descriptor *desc.MethodDescriptor `json:"-"`
 }
 
+// LoadServerResponse server data, methods, and saved queries
 type LoadServerResponse struct {
 	Server   *Workspace `json:"server"`
 	Services []*Service `json:"services"`
 	Query    *Workspace `json:"query"`
 }
 
+// Field protobuf field
 type Field struct {
 	FQN        string                `json:"fqn"`
 	ProtoFQN   string                `json:"proto_fqn"`
@@ -44,6 +48,7 @@ type Field struct {
 	Descriptor *desc.FieldDescriptor `json:"-"`
 }
 
+// Map protobuf map
 type Map struct {
 	KeyType         string                  `json:"key_type"`
 	ValueType       string                  `json:"value_type"`
@@ -53,6 +58,7 @@ type Map struct {
 	Fields          []*Field                `json:"fields,omitempty"`
 }
 
+// Message protobuf message
 type Message struct {
 	Name       string                  `json:"name"`
 	Type       string                  `json:"type"`
@@ -60,16 +66,19 @@ type Message struct {
 	Descriptor *desc.MessageDescriptor `json:"-"`
 }
 
+// Enum protobuf enum
 type Enum struct {
 	ValueType string       `json:"value_type"`
 	Values    []*EnumValue `json:"values"`
 }
 
+// EnumValue protobuf enum value
 type EnumValue struct {
 	Name   string `json:"name"`
 	Number int32  `json:"number"`
 }
 
+// OneOf protobuf oneof
 type OneOf struct {
 	Fqn  string `json:"fqn"`
 	Name string `json:"name"`

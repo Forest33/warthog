@@ -15,6 +15,7 @@ const (
 	WorkspaceTypeQuery  WorkspaceType = "r"
 )
 
+// Workspace workspace item
 type Workspace struct {
 	ID         int64         `json:"id"`
 	ParentID   *int64        `json:"parent_id"`
@@ -29,16 +30,20 @@ type Workspace struct {
 	UpdatedAt  time.Time     `json:"updated_at"`
 }
 
+// WorkspaceType workspace type
 type WorkspaceType string
 
+// String returns workspace type string
 func (t WorkspaceType) String() string {
 	return string(t)
 }
 
+// WorkspaceRequest workspace request by type
 type WorkspaceRequest struct {
 	Type []WorkspaceType `json:"type"`
 }
 
+// Model creates WorkspaceRequest from UI request
 func (r *WorkspaceRequest) Model(payload interface{}) error {
 	if payload == nil {
 		return nil
@@ -49,10 +54,12 @@ func (r *WorkspaceRequest) Model(payload interface{}) error {
 	return nil
 }
 
+// WorkspaceSortingRequest workspace sorting request
 type WorkspaceSortingRequest struct {
 	Nodes []*Workspace `json:"nodes"`
 }
 
+// Model creates WorkspaceSortingRequest from UI request
 func (r *WorkspaceSortingRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return errors.New("no nodes")
@@ -81,11 +88,13 @@ func (r *WorkspaceSortingRequest) Model(payload map[string]interface{}) error {
 	return nil
 }
 
+// WorkspaceExpandRequest workspace expand/collapse request
 type WorkspaceExpandRequest struct {
 	ID     int64 `json:"id"`
 	Expand bool  `json:"expand"`
 }
 
+// Model creates WorkspaceExpandRequest from UI request
 func (r *WorkspaceExpandRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return errors.New("no data")
@@ -101,16 +110,19 @@ func (r *WorkspaceExpandRequest) Model(payload map[string]interface{}) error {
 	return nil
 }
 
+// WorkspaceTreeFilter filtering workspace by type
 type WorkspaceTreeFilter struct {
 	Type []WorkspaceType
 }
 
+// WorkspaceTreeNode workspace tree node
 type WorkspaceTreeNode struct {
 	Data  *Workspace           `json:"data"`
 	Text  string               `json:"text"`
 	Nodes []*WorkspaceTreeNode `json:"nodes"`
 }
 
+// GetBreadcrumb returns breadcrumb
 func GetBreadcrumb(w []*Workspace, id int64) []string {
 	nodeMap := structs.SliceToMap(w, func(w *Workspace) int64 { return w.ID })
 	return makeBreadcrumb(nodeMap, id, []string{})
@@ -127,6 +139,7 @@ func makeBreadcrumb(nodeMap map[int64]*Workspace, id int64, breadcrumb []string)
 	return makeBreadcrumb(nodeMap, *nodeMap[id].ParentID, breadcrumb)
 }
 
+// MakeWorkspaceTree creates workspace tree for UI
 func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter) []*WorkspaceTreeNode {
 	nodeMap := make(map[int64]int, len(w))
 	list := make([]*WorkspaceTreeNode, len(w))
@@ -169,6 +182,7 @@ func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter) []*Workspace
 	return tree
 }
 
+// WorkspaceState count of folders/servers/queries
 type WorkspaceState struct {
 	Folders            int    `json:"folders"`
 	Servers            int    `json:"servers"`

@@ -12,6 +12,7 @@ const (
 	GUIResponseStatusError GUIResponseStatus = "error"
 )
 
+// GUIConfig UI settings
 type GUIConfig struct {
 	WindowWidth  int
 	WindowHeight int
@@ -21,25 +22,30 @@ type GUIConfig struct {
 	UpdatedAt    time.Time
 }
 
+// GUIResponseStatus response status
 type GUIResponseStatus string
 
+// GUIRequest UI request
 type GUIRequest struct {
 	Cmd     GUICommand             `json:"name"`
 	Payload map[string]interface{} `json:"payload"`
 }
 
+// GUIResponse UI response
 type GUIResponse struct {
 	Status  GUIResponseStatus `json:"status"`
 	Error   Error             `json:"error,omitempty"`
 	Payload interface{}       `json:"payload,omitempty"`
 }
 
+// Error UI error response
 type Error struct {
 	Code            uint32 `json:"code"`
 	CodeDescription string `json:"code_description"`
 	Message         string `json:"message"`
 }
 
+// Error returns error string
 func (e Error) Error() string {
 	if e.Code > 0 {
 		return fmt.Sprintf("error code: %s message: %s", e.Code, e.Message)
@@ -47,6 +53,7 @@ func (e Error) Error() string {
 	return e.Message
 }
 
+// ErrorGUIResponse returns UI error response
 func ErrorGUIResponse(err error) *GUIResponse {
 	return &GUIResponse{
 		Status: GUIResponseStatusError,

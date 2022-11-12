@@ -6,9 +6,11 @@ import (
 	"github.com/forest33/warthog/pkg/structs"
 )
 
+// WorkspaceItemFolder stored folder data
 type WorkspaceItemFolder struct {
 }
 
+// FolderRequest read/create/update/delete folder request
 type FolderRequest struct {
 	ID         int64           `json:"id"`
 	ParentID   *int64          `json:"parent_id"`
@@ -16,11 +18,13 @@ type FolderRequest struct {
 	TypeFilter []WorkspaceType `json:"type_filter"`
 }
 
+// FolderResponse read/create/update folder response
 type FolderResponse struct {
 	Folder *Workspace           `json:"folder"`
 	Tree   []*WorkspaceTreeNode `json:"tree"`
 }
 
+// Model creates FolderRequest from UI request
 func (r *FolderRequest) Model(folder map[string]interface{}) error {
 	if folder == nil {
 		return fmt.Errorf("empty data")

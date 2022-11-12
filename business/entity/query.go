@@ -27,6 +27,7 @@ const (
 	TypeMessage  = "message"
 )
 
+// Query gRPC request
 type Query struct {
 	Service  string
 	Method   string
@@ -34,6 +35,7 @@ type Query struct {
 	Metadata []string
 }
 
+// QueryResponse gRPC response
 type QueryResponse struct {
 	JsonString string              `json:"json_string"`
 	SpentTime  string              `json:"spent_time"`
@@ -41,6 +43,7 @@ type QueryResponse struct {
 	Trailer    map[string][]string `json:"trailer"`
 }
 
+// Model creates Query from UI request
 func (r *Query) Model(server map[string]interface{}) error {
 	if server == nil {
 		return fmt.Errorf("empty data")
@@ -65,6 +68,7 @@ func (r *Query) Model(server map[string]interface{}) error {
 	return nil
 }
 
+// GetBool transforms to bool
 func GetBool(f *Field, val interface{}) interface{} {
 	if f.Repeated {
 		return structs.Map(val.([]interface{}), func(i interface{}) bool { return i.(bool) })
@@ -72,6 +76,7 @@ func GetBool(f *Field, val interface{}) interface{} {
 	return val.(bool)
 }
 
+// GetString transforms to string
 func GetString(f *Field, val interface{}) interface{} {
 	if f.Repeated {
 		return structs.Map(val.([]interface{}), func(i interface{}) string { return i.(string) })
@@ -79,6 +84,7 @@ func GetString(f *Field, val interface{}) interface{} {
 	return val.(string)
 }
 
+// GetString transforms to bytes
 func GetBytes(f *Field, val interface{}) interface{} {
 	if f.Repeated {
 		return structs.Map(val.([]interface{}), func(i interface{}) []byte { return []byte(i.(string)) })
@@ -86,6 +92,7 @@ func GetBytes(f *Field, val interface{}) interface{} {
 	return []byte(val.(string))
 }
 
+// GetInt32 transforms to int32
 func GetInt32(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (int32, error) {
@@ -103,6 +110,7 @@ func GetInt32(f *Field, val interface{}) (interface{}, error) {
 	return int32(v), nil
 }
 
+// GetInt64 transforms to int64
 func GetInt64(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (int64, error) {
@@ -112,6 +120,7 @@ func GetInt64(f *Field, val interface{}) (interface{}, error) {
 	return strconv.ParseInt(val.(string), 10, 32)
 }
 
+// GetUInt32 transforms to uint32
 func GetUInt32(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (uint32, error) {
@@ -129,6 +138,7 @@ func GetUInt32(f *Field, val interface{}) (interface{}, error) {
 	return uint32(v), nil
 }
 
+// GetUInt64 transforms to uint64
 func GetUInt64(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (uint64, error) {
@@ -138,6 +148,7 @@ func GetUInt64(f *Field, val interface{}) (interface{}, error) {
 	return strconv.ParseUint(val.(string), 10, 32)
 }
 
+// GetFloat32 transforms to float32
 func GetFloat32(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (float32, error) {
@@ -155,6 +166,7 @@ func GetFloat32(f *Field, val interface{}) (interface{}, error) {
 	return float32(v), nil
 }
 
+// GetFloat64 transforms to float64
 func GetFloat64(f *Field, val interface{}) (interface{}, error) {
 	if f.Repeated {
 		return structs.MapWithError(val.([]interface{}), func(i interface{}) (float64, error) {
