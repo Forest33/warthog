@@ -53,17 +53,17 @@ func SQLToRefInt64(i sql.NullInt64) *int64 {
 	return &i.Int64
 }
 
-// SQLToRefInt16 converts int16 to sql.NullInt16
+// Int16ToSQL converts int16 to sql.NullInt16
 func Int16ToSQL(i int16) sql.NullInt16 {
 	return RefInt16ToSQL(&i)
 }
 
-// SQLToRefInt16 converts int32 to sql.NullInt32
+// Int32ToSQL converts int32 to sql.NullInt32
 func Int32ToSQL(i int32) sql.NullInt32 {
 	return RefInt32ToSQL(&i)
 }
 
-// SQLToRefInt64 converts int16 to sql.NullInt64
+// Int64ToSQL converts int16 to sql.NullInt64
 func Int64ToSQL(i int64) sql.NullInt64 {
 	return RefInt64ToSQL(&i)
 }

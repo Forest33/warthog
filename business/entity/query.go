@@ -8,6 +8,7 @@ import (
 	"github.com/forest33/warthog/pkg/structs"
 )
 
+// protobuf data types
 const (
 	TypeString   = "string"
 	TypeBytes    = "bytes"

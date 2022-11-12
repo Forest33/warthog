@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// UI response statuses
 const (
 	GUIResponseStatusOK    GUIResponseStatus = "ok"
 	GUIResponseStatusError GUIResponseStatus = "error"
