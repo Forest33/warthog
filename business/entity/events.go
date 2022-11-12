@@ -1,3 +1,4 @@
+// Package entity provides entities for business logic.
 package entity
 
 // UI events
@@ -21,8 +22,10 @@ const (
 	CmdMenuAbout           GUICommand = "menu.about"
 )
 
+// GUICommand UI command
 type GUICommand string
 
+// String returns UI command string
 func (c GUICommand) String() string {
 	return string(c)
 }

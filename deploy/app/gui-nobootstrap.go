@@ -55,11 +55,7 @@ func createTray() error {
 
 	var m = tray.NewMenu(getTrayMenuOptions())
 
-	if err := m.Create(); err != nil {
-		return err
-	}
-
-	return nil
+	return m.Create()
 }
 
 type noBootstrapResponse struct {

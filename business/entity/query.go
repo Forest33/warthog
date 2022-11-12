@@ -1,3 +1,4 @@
+// Package entity provides entities for business logic.
 package entity
 
 import (
@@ -84,7 +85,7 @@ func GetString(f *Field, val interface{}) interface{} {
 	return val.(string)
 }
 
-// GetString transforms to bytes
+// GetBytes transforms to bytes
 func GetBytes(f *Field, val interface{}) interface{} {
 	if f.Repeated {
 		return structs.Map(val.([]interface{}), func(i interface{}) []byte { return []byte(i.(string)) })
