@@ -9,6 +9,7 @@ import (
 	"github.com/forest33/warthog/pkg/resources"
 )
 
+// Database object capable of interacting with Database
 type Database struct {
 	Connector     *sqlx.DB
 	cfg           *entity.DatabaseConfig
@@ -16,6 +17,7 @@ type Database struct {
 	log           *logger.Zerolog
 }
 
+// NewConnector creates a new Database
 func NewConnector(cfg *entity.DatabaseConfig, binDataConfig *BinDataConfig, log *logger.Zerolog) (*Database, error) {
 	connector, err := sqlx.Connect(cfg.DriverName, resources.GetDatabase())
 	if err != nil {
@@ -41,6 +43,7 @@ func NewConnector(cfg *entity.DatabaseConfig, binDataConfig *BinDataConfig, log 
 	return db, nil
 }
 
+// Close closes database connection
 func (db *Database) Close() {
 	if err := db.Connector.Close(); err != nil {
 		db.log.Error().Msgf("failed to close database: %v", err)

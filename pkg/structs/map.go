@@ -1,5 +1,6 @@
 package structs
 
+// Keys returns a slice with map keys
 func Keys[K comparable, V any](in map[K]V) []K {
 	if in == nil {
 		return nil
@@ -13,6 +14,7 @@ func Keys[K comparable, V any](in map[K]V) []K {
 	return result
 }
 
+// FilterMap filters the map
 func FilterMap[K comparable, V any](collection map[K]V, filter func(V) bool) map[K]V {
 	if collection == nil {
 		return nil

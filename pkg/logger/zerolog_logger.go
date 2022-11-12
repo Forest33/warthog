@@ -1,3 +1,4 @@
+// Package logger provides low level operations with database.
 package logger
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/rs/zerolog/pkgerrors"
 )
 
+// ZeroConfig logger settings
 type ZeroConfig struct {
 	Level             string `envconfig:"LEVEL"`
 	TimeFieldFormat   string `envconfig:"TIME_FIELD_FORMAT"`
@@ -20,6 +22,7 @@ type ZeroConfig struct {
 	ShowCaller        bool   `envconfig:"SHOW_CALLER"`
 }
 
+// Zerolog object capable of interacting with Zerolog
 type Zerolog struct {
 	zero              zerolog.Logger
 	zeroErr           zerolog.Logger
@@ -30,12 +33,7 @@ type Zerolog struct {
 	showCaller        bool
 }
 
-var Default *Zerolog
-
-func init() {
-	Default = NewDefaultZerolog()
-}
-
+// NewDefaultZerolog creates Zerolog with default settings
 func NewDefaultZerolog() *Zerolog {
 	zerolog.SetGlobalLevel(getZerologLevel(defaultZeroCfg.Level))
 	zerolog.DisableSampling(true)
@@ -61,6 +59,7 @@ var defaultZeroCfg = ZeroConfig{
 	ShowCaller:      false,
 }
 
+// NewZerolog creates a new Zerolog
 func NewZerolog(config ZeroConfig) *Zerolog {
 	zerolog.SetGlobalLevel(getZerologLevel(config.Level))
 	zerolog.DisableSampling(config.DisableSampling)
@@ -79,46 +78,52 @@ func NewZerolog(config ZeroConfig) *Zerolog {
 	return &logger
 }
 
+// Debug starts a new message with debug level
 func (l *Zerolog) Debug() *zerolog.Event {
 	return l.zero.Debug()
 }
 
+// Info starts a new message with info level
 func (l *Zerolog) Info() *zerolog.Event {
 	return l.zero.Info()
 }
 
+// Error starts a new message with error level
 func (l *Zerolog) Error() *zerolog.Event {
 	return l.zeroErr.Error()
 }
 
+// Warn starts a new message with warn level
 func (l *Zerolog) Warn() *zerolog.Event {
 	return l.zeroErr.Warn()
 }
 
-//func (l *Zerolog) Fatal() *zerolog.Event {
-//	return l.zeroErr.Fatal()
-//}
-
+// Panic starts a new message with panic level
 func (l *Zerolog) Panic() *zerolog.Event {
 	return l.zeroErr.Panic()
 }
 
+// With creates a child logger with the field added to its context
 func (l *Zerolog) With() zerolog.Context {
 	return l.zero.With()
 }
 
+// Fatal sends the event with fatal level
 func (l *Zerolog) Fatal(v ...interface{}) {
 	l.zeroErr.Fatal().Msgf("%v", v)
 }
 
+// Fatalf sends the event with formatted msg with fatal level
 func (l *Zerolog) Fatalf(format string, v ...interface{}) {
 	l.zeroErr.Fatal().Msgf(format, v)
 }
 
+// Print sends the event with debug level
 func (l *Zerolog) Print(v ...interface{}) {
 	l.zero.Debug().Msgf("%v", v)
 }
 
+// Printf sends the event with formatted msg with debug level
 func (l *Zerolog) Printf(format string, v ...interface{}) {
 	l.zero.Debug().Msgf(format, v)
 }
@@ -167,6 +172,7 @@ func (l *Zerolog) setLogOutputToZerolog() {
 	log.SetOutput(l.zero)
 }
 
+// SubLogger duplicates the current logger
 func (l Zerolog) SubLogger(zero zerolog.Logger) *Zerolog {
 	l.zero = zero.Output(os.Stdout)
 	l.zeroErr = zero.Output(os.Stderr)
