@@ -6,6 +6,7 @@ import (
 	"github.com/forest33/warthog/pkg/structs"
 )
 
+// ServerRequest read/create/delete server request
 type ServerRequest struct {
 	ID       int64  `json:"id"`
 	FolderID int64  `json:"folder_id"`
@@ -13,12 +14,14 @@ type ServerRequest struct {
 	WorkspaceItemServer
 }
 
+// ServerResponse read/create/update server response
 type ServerResponse struct {
 	Server *Workspace           `json:"server"`
 	Query  *Workspace           `json:"query"`
 	Tree   []*WorkspaceTreeNode `json:"tree"`
 }
 
+// ServerUpdateRequest update server request
 type ServerUpdateRequest struct {
 	ID      int64                  `json:"id"`
 	Service string                 `json:"service"`
@@ -26,6 +29,7 @@ type ServerUpdateRequest struct {
 	Request map[string]interface{} `json:"request"`
 }
 
+// WorkspaceItemServer stored server data
 type WorkspaceItemServer struct {
 	Addr              string                            `json:"addr,omitempty"`
 	UseReflection     bool                              `json:"use_reflection,omitempty"`
@@ -39,6 +43,7 @@ type WorkspaceItemServer struct {
 	Request           map[string]map[string]interface{} `json:"request"`
 }
 
+// Model creates ServerRequest from UI request
 func (r *ServerRequest) Model(req map[string]interface{}) error {
 	if req == nil {
 		return fmt.Errorf("no data")
@@ -59,6 +64,7 @@ func (r *ServerRequest) Model(req map[string]interface{}) error {
 	return r.WorkspaceItemServer.Model(req)
 }
 
+// Model creates ServerUpdateRequest from UI request
 func (r *ServerUpdateRequest) Model(req map[string]interface{}) error {
 	if req == nil {
 		return fmt.Errorf("no data")
@@ -80,6 +86,7 @@ func (r *ServerUpdateRequest) Model(req map[string]interface{}) error {
 	return nil
 }
 
+// Model creates WorkspaceItemServer from UI request
 func (s *WorkspaceItemServer) Model(server map[string]interface{}) error {
 	if server == nil {
 		return fmt.Errorf("no data")

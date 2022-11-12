@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// WorkspaceItemQuery stored query data
 type WorkspaceItemQuery struct {
 	Service     string      `json:"service"`
 	Method      string      `json:"method"`
@@ -11,6 +12,7 @@ type WorkspaceItemQuery struct {
 	Description string      `json:"description"`
 }
 
+// QueryRequest read/create/update/delete query
 type QueryRequest struct {
 	ID       int64  `json:"id"`
 	ServerID int64  `json:"server_id"`
@@ -18,6 +20,7 @@ type QueryRequest struct {
 	WorkspaceItemQuery
 }
 
+// Model creates QueryRequest from UI request
 func (r *QueryRequest) Model(req map[string]interface{}) error {
 	if req == nil {
 		return fmt.Errorf("empty data")
@@ -38,6 +41,7 @@ func (r *QueryRequest) Model(req map[string]interface{}) error {
 	return r.WorkspaceItemQuery.Model(req)
 }
 
+// Model creates WorkspaceItemQuery from UI request
 func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	if req == nil {
 		return fmt.Errorf("empty data")
