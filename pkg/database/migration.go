@@ -13,6 +13,7 @@ import (
 	"go.uber.org/multierr"
 )
 
+// constants for database package
 const (
 	DefaultMigrationsDir = "migrations"
 	MigrationsTable      = "schema_migrations"

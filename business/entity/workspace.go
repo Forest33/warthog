@@ -10,6 +10,7 @@ import (
 	"github.com/forest33/warthog/pkg/structs"
 )
 
+// workspace types
 const (
 	WorkspaceTypeFolder WorkspaceType = "f"
 	WorkspaceTypeServer WorkspaceType = "s"
@@ -49,10 +50,7 @@ func (r *WorkspaceRequest) Model(payload interface{}) error {
 	if payload == nil {
 		return nil
 	}
-	if err := mapstructure.Decode(payload, &r); err != nil {
-		return err
-	}
-	return nil
+	return mapstructure.Decode(payload, &r)
 }
 
 // WorkspaceSortingRequest workspace sorting request
