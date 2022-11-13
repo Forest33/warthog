@@ -22,19 +22,7 @@ func (uc *WorkspaceUseCase) CreateFolder(payload map[string]interface{}) *entity
 		return entity.ErrorGUIResponse(err)
 	}
 
-	w, err := uc.workspaceRepo.Get()
-	if err != nil {
-		uc.log.Error().Msgf("failed to get workspace: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
-
-	return &entity.GUIResponse{
-		Status: entity.GUIResponseStatusOK,
-		Payload: &entity.FolderResponse{
-			Folder: folder,
-			Tree:   entity.MakeWorkspaceTree(w, &entity.WorkspaceTreeFilter{Type: req.TypeFilter}),
-		},
-	}
+	return uc.successFolderResponse(folder, req.TypeFilter)
 }
 
 // UpdateFolder updates folder on workspace
@@ -54,19 +42,7 @@ func (uc *WorkspaceUseCase) UpdateFolder(payload map[string]interface{}) *entity
 		return entity.ErrorGUIResponse(err)
 	}
 
-	w, err := uc.workspaceRepo.Get()
-	if err != nil {
-		uc.log.Error().Msgf("failed to get workspace: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
-
-	return &entity.GUIResponse{
-		Status: entity.GUIResponseStatusOK,
-		Payload: &entity.FolderResponse{
-			Folder: folder,
-			Tree:   entity.MakeWorkspaceTree(w, &entity.WorkspaceTreeFilter{Type: req.TypeFilter}),
-		},
-	}
+	return uc.successFolderResponse(folder, req.TypeFilter)
 }
 
 // DeleteFolder deletes folder on workspace
@@ -83,5 +59,21 @@ func (uc *WorkspaceUseCase) DeleteFolder(payload map[string]interface{}) *entity
 
 	return &entity.GUIResponse{
 		Status: entity.GUIResponseStatusOK,
+	}
+}
+
+func (uc *WorkspaceUseCase) successFolderResponse(folder *entity.Workspace, typeFilter []entity.WorkspaceType) *entity.GUIResponse {
+	w, err := uc.workspaceRepo.Get()
+	if err != nil {
+		uc.log.Error().Msgf("failed to get workspace: %v", err)
+		return entity.ErrorGUIResponse(err)
+	}
+
+	return &entity.GUIResponse{
+		Status: entity.GUIResponseStatusOK,
+		Payload: &entity.FolderResponse{
+			Folder: folder,
+			Tree:   entity.MakeWorkspaceTree(w, &entity.WorkspaceTreeFilter{Type: typeFilter}),
+		},
 	}
 }
