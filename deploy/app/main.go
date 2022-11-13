@@ -25,13 +25,20 @@ var (
 )
 
 var (
-	AppName            string
-	AppVersion         string
-	AppURL             = "https://github.com/forest33/warthog"
-	BuiltAt            string
+	// AppName application name
+	AppName string
+	// application version
+	AppVersion string
+	// AppURL application homepage
+	AppURL = "https://github.com/forest33/warthog"
+	// BuiltAt build date
+	BuiltAt string
+	// VersionAstilectron Astilectron version
 	VersionAstilectron string
-	VersionElectron    string
-	UseBootstrap       = "false"
+	// VersionElectron Electron version
+	VersionElectron string
+	// UseBootstrap true if using bootstrap
+	UseBootstrap = "false"
 )
 
 var (
