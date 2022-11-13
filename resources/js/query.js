@@ -1,8 +1,21 @@
+export {saveQuery};
+import {
+  currentMethod,
+  currentQuery,
+  currentServer,
+  currentService,
+  setCurrentQuery,
+  setCurrentServer,
+  setRequestTitle,
+} from "./server.js";
+import {getRequestData} from "./request.js";
+import {isNull} from "./index.js";
+
 function saveQuery() {
   if (
-    isNull(currentServer) ||
-    isNull(currentService) ||
-    isNull(currentMethod)
+      isNull(currentServer) ||
+      isNull(currentService) ||
+      isNull(currentMethod)
   ) {
     return;
   }
@@ -32,8 +45,8 @@ function saveQuery() {
     if (message.payload.status !== "ok") {
       return;
     }
-    currentQuery = message.payload.data.query;
-    currentServer = message.payload.data.server;
+    setCurrentServer(message.payload.data.server);
+    setCurrentQuery(message.payload.data.query);
     setRequestTitle(currentQuery.data.service + "." + currentQuery.data.method);
   });
 }

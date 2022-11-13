@@ -507,7 +507,7 @@
         .attr("style", _this.buildStyleOverride(node));
 
       // Add indent/spacer to mimic tree structure
-      for (var i = 0; i < level - 1; i++) {
+      for (let i = 0; i < level - 1; i++) {
         treeItem.append(_this.template.indent);
       }
 

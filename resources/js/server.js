@@ -1,3 +1,24 @@
+export {
+  currentServer,
+  currentService,
+  currentServices,
+  currentMethod,
+  currentQuery,
+  protoTypeEnum,
+  protoTypeBool,
+  protoTypeMessage,
+  loadServer,
+  saveRequest,
+  createRequestForm,
+  setRequestTitle,
+  setCurrentServer,
+  setCurrentQuery,
+};
+import { isNull } from "./index.js";
+import { getRequestData, hideQueryError } from "./request.js";
+import { WorkspaceTypeQuery } from "./tree.js";
+import { template } from "./template.js";
+
 let currentServer = undefined;
 let currentQuery = undefined;
 let currentService = undefined;
@@ -287,7 +308,7 @@ function getFieldTemplate(field, attr, showOneOf) {
       $(tmpl.find(".label-type")[0]).html(fieldType);
       btn.attr("data-button-fqn", field.fqn);
       btn.click(function () {
-        let inputCount = parseInt($(this).attr("data-input-count"));
+        let inputCount = parseInt($(this).attr("data-input-count"), 10);
         $(this).attr("data-input-count", inputCount + 1);
         container.attr("data-container-input-count", inputCount + 1);
         let buttonAdd = $(this);
@@ -304,7 +325,8 @@ function getFieldTemplate(field, attr, showOneOf) {
         $(inputDelete.find(".request-message-button-delete")[0]).click(
           function () {
             let id = $(this).parent().attr("data-input-id");
-            let inputCount = parseInt(buttonAdd.attr("data-input-count")) - 1;
+            let inputCount =
+              parseInt(buttonAdd.attr("data-input-count"), 10) - 1;
             $(this)
               .closest(".request-message-container")
               .attr("data-container-input-count", inputCount);
@@ -428,7 +450,7 @@ function getRepeatedInput(field, inputTmpl, inputType, inputName, dataID) {
   $(tmpl.find(".label-type")[0]).html(field.type);
   btn.attr("data-button-fqn", field.fqn);
   btn.click(function () {
-    let inputCount = parseInt($(this).attr("data-input-count"));
+    let inputCount = parseInt($(this).attr("data-input-count"), 10);
     $(this).attr("data-input-count", inputCount + 1);
     container.attr("data-container-input-count", inputCount + 1);
     let buttonAdd = $(this);
@@ -445,14 +467,14 @@ function getRepeatedInput(field, inputTmpl, inputType, inputName, dataID) {
 
     $(inputDelete.find(".request-message-button-delete")[0]).click(function () {
       let id = $(this).parent().attr("data-input-id");
-      let inputCount = parseInt(buttonAdd.attr("data-input-count")) - 1;
+      let inputCount = parseInt(buttonAdd.attr("data-input-count"), 10) - 1;
       $(this)
         .closest(".request-message-container")
         .attr("data-container-input-count", inputCount);
       $('.request-input[data-input-id="' + id + '"]').remove();
       buttonAdd.attr(
         "data-input-count",
-        parseInt(buttonAdd.attr("data-input-count")) - 1
+        parseInt(buttonAdd.attr("data-input-count"), 10) - 1
       );
     });
 
@@ -725,4 +747,12 @@ function setRequestData(field, tmpl, data) {
         });
       }
   }
+}
+
+function setCurrentServer(s) {
+  currentServer = s;
+}
+
+function setCurrentQuery(q) {
+  currentQuery = q;
 }

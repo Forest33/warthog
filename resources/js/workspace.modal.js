@@ -1,3 +1,8 @@
+export { initWorkspaceModal, editServer };
+import { onTreeNodeRender, WorkspaceTypeFolder } from "./tree.js";
+import { modalTreeExpandedNodes } from "./index.js";
+import { loadServer } from "./server.js";
+
 function initWorkspaceModal() {
   let workspaceModal = document.getElementById("workspaceModal");
   workspaceModal.addEventListener("show.bs.modal", function (event) {
@@ -29,7 +34,10 @@ function initWorkspaceModal() {
           if (modalTreeExpandedNodes.has(node.data.id)) {
             node.state.expanded = true;
           }
-          if (folderID !== undefined && parseInt(folderID) === node.data.id) {
+          if (
+            folderID !== undefined &&
+            parseInt(folderID, 10) === node.data.id
+          ) {
             selectedNode = node;
           }
           return onTreeNodeRender(node);
@@ -180,7 +188,7 @@ function createFolder() {
   });
 }
 
-function createWorkspace(parent) {
+function createWorkspace() {
   let title = $("#workspace-modal-grpc-name").val();
   let addr = $("#workspace-modal-grpc-addr").val();
 
@@ -228,7 +236,7 @@ function createWorkspace(parent) {
   let serverID = $("#workspace-modal-server-id").val();
   if (serverID !== undefined && serverID !== "") {
     req.name = "server.update";
-    req.payload.id = parseInt(serverID);
+    req.payload.id = parseInt(serverID, 10);
   }
 
   astilectron.sendMessage(req, function (message) {

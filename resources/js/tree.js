@@ -1,3 +1,23 @@
+export { showTree };
+export {
+  WorkspaceTypeFolder,
+  WorkspaceTypeServer,
+  WorkspaceTypeQuery,
+  onTreeNodeRender,
+};
+import {
+  currentQuery,
+  currentServer,
+  loadServer,
+  saveRequest,
+} from "./server.js";
+import { dataIdToNode, isNull, treeRootNodes } from "./index.js";
+import { editServer } from "./workspace.modal.js";
+
+const WorkspaceTypeFolder = "f";
+const WorkspaceTypeServer = "s";
+const WorkspaceTypeQuery = "r";
+
 function initTreeDrag() {
   let sourceNode = undefined;
   let source = undefined;
@@ -36,7 +56,7 @@ function initTreeDrag() {
     e.stopPropagation();
     $(".dropdown-menu").removeClass("show");
 
-    let node = dataIdToNode.get(parseInt($(e.target).attr("data-id")));
+    let node = dataIdToNode.get(parseInt($(e.target).attr("data-id"), 10));
     switch ($(e.target).attr("data-action")) {
       case "create-folder":
         treeMenuCreateFolder(node);
@@ -62,7 +82,7 @@ function initTreeDrag() {
     this.style.opacity = "0.4";
   }
 
-  function handleDragEnd(e) {
+  function handleDragEnd() {
     this.style.opacity = "1";
     items.forEach(function (item) {
       item.classList.remove("over");
@@ -481,4 +501,34 @@ function showTree(data) {
       initTreeDrag();
     },
   });
+}
+
+function onTreeNodeRender(node) {
+  if (node.state === undefined) {
+    node.state = { draggable: true };
+  }
+  node.state.expanded = node.data.expanded;
+  node.text = node.text + getTreeDropdown(node);
+  switch (node.data.type) {
+    case WorkspaceTypeFolder:
+      node.icon = "bi bi-folder";
+      break;
+    case WorkspaceTypeServer:
+      node.icon = "bi bi-server";
+      if (
+        isNull(currentQuery) &&
+        !isNull(currentServer) &&
+        node.data.id === currentServer.id
+      ) {
+        node.state.selected = true;
+      }
+      break;
+    case WorkspaceTypeQuery:
+      node.icon = "bi bi-card-list";
+      if (!isNull(currentQuery) && node.data.id === currentQuery.id) {
+        node.state.selected = true;
+      }
+      break;
+  }
+  return node;
 }

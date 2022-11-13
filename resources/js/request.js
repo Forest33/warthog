@@ -1,3 +1,14 @@
+export { hideQueryError, query, getRequestData };
+import {
+  currentMethod,
+  currentService,
+  protoTypeBool,
+  protoTypeEnum,
+  protoTypeMessage,
+} from "./server.js";
+import { isNull } from "./index.js";
+import { template } from "./template.js";
+
 function query() {
   if (currentService === undefined || currentMethod === undefined) {
     return;
@@ -184,7 +195,7 @@ function getProtoFQN(field, disableProtoFQN) {
 function getRequestMetadata() {
   let metadata = {};
   let keys = [];
-  $("#nav-request-metadata .metadata-key").each(function (i) {
+  $("#nav-request-metadata .metadata-key").each(function () {
     keys.push($(this).val());
   });
   $("#nav-request-metadata .metadata-value").each(function (i) {
