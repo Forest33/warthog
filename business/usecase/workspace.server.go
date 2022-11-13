@@ -23,19 +23,7 @@ func (uc *WorkspaceUseCase) CreateServer(payload map[string]interface{}) *entity
 		return entity.ErrorGUIResponse(err)
 	}
 
-	w, err := uc.workspaceRepo.Get()
-	if err != nil {
-		uc.log.Error().Msgf("failed to get workspace: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
-
-	return &entity.GUIResponse{
-		Status: entity.GUIResponseStatusOK,
-		Payload: &entity.ServerResponse{
-			Server: server,
-			Tree:   entity.MakeWorkspaceTree(w, nil),
-		},
-	}
+	return uc.successServerResponse(server)
 }
 
 // UpdateServer updates server on workspace
@@ -66,19 +54,7 @@ func (uc *WorkspaceUseCase) UpdateServer(payload map[string]interface{}) *entity
 		return entity.ErrorGUIResponse(err)
 	}
 
-	w, err := uc.workspaceRepo.Get()
-	if err != nil {
-		uc.log.Error().Msgf("failed to get workspace: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
-
-	return &entity.GUIResponse{
-		Status: entity.GUIResponseStatusOK,
-		Payload: &entity.ServerResponse{
-			Server: server,
-			Tree:   entity.MakeWorkspaceTree(w, nil),
-		},
-	}
+	return uc.successServerResponse(server)
 }
 
 // UpdateServerRequest updates current request params
@@ -114,6 +90,10 @@ func (uc *WorkspaceUseCase) UpdateServerRequest(payload map[string]interface{}) 
 		return entity.ErrorGUIResponse(err)
 	}
 
+	return uc.successServerResponse(server)
+}
+
+func (uc *WorkspaceUseCase) successServerResponse(server *entity.Workspace) *entity.GUIResponse {
 	w, err := uc.workspaceRepo.Get()
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
