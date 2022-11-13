@@ -104,8 +104,7 @@ function initTreeDrag() {
     this.classList.add("over");
   }
 
-  function handleDragLeave(e) {
-    let targetNode = getNode(e);
+  function handleDragLeave() {
     this.classList.remove("over");
   }
 
@@ -218,13 +217,10 @@ function initTreeDrag() {
     ) {
       return false;
     }
-    if (
+    return !(
       sourceNode.data.type === WorkspaceTypeServer &&
       targetNode.data.type === WorkspaceTypeQuery
-    ) {
-      return false;
-    }
-    return true;
+    );
   }
 
   function insertAfter(nodes, sourceNode, targetNode) {

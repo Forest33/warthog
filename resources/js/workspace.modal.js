@@ -5,7 +5,7 @@ import { loadServer } from "./server.js";
 
 function initWorkspaceModal() {
   let workspaceModal = document.getElementById("workspaceModal");
-  workspaceModal.addEventListener("show.bs.modal", function (event) {
+  workspaceModal.addEventListener("show.bs.modal", function () {
     let req = {
       name: "workspace.get",
       payload: {
@@ -343,7 +343,7 @@ function editServer(srv) {
           })
         );
       }
-      $("#workspace-modal-proto-files").removeAttr("required");
+      sel.removeAttr("required");
     }
     if (srv.data.import_path !== undefined) {
       let sel = $("#workspace-modal-import-path");

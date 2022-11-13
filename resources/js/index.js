@@ -97,12 +97,13 @@ $(document).ready(function () {
     editServer(currentServer);
   });
 
-  $("#nav-request form").submit(function () {
+  let navRequest = $("#nav-request form");
+  navRequest.submit(function () {
     query();
     return false;
   });
 
-  $("#nav-request form").keypress(function (e) {
+  navRequest.keypress(function (e) {
     if (e.which === 13) {
       $("#nav-request form").submit();
       return false;
@@ -154,7 +155,7 @@ $(document).ready(function () {
   });
 
   const { app } = require("electron").remote;
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
+  app.on("second-instance", (event, commandLine) => {
     if (commandLine.length <= 4) {
       return;
     }
@@ -218,7 +219,7 @@ function initQueryPopover() {
 
 function initOffcanvas() {
   let offcanvasTree = document.getElementById("offcanvasTree");
-  offcanvasTree.addEventListener("show.bs.offcanvas", function (event) {
+  offcanvasTree.addEventListener("show.bs.offcanvas", function () {
     astilectron.sendMessage({ name: "workspace.get" }, function (message) {
       showTree(message.payload.data);
     });
@@ -229,7 +230,7 @@ function initSidebars() {
   const resizerLeft = document.querySelector("#resizerLeft");
   const sidebarLeft = document.querySelector("#sidebarLeft");
 
-  resizerLeft.addEventListener("mousedown", (event) => {
+  resizerLeft.addEventListener("mousedown", () => {
     $("#right-nav-tab").addClass("noselect");
     document.addEventListener("mousemove", resizeLeft, false);
     document.addEventListener(
