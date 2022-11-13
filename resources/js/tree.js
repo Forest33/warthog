@@ -33,12 +33,12 @@ function initTreeDrag() {
   });
 
   $("#tree .list-group-item")
-    .hover(function () {
-      $(this).find(".tree-node-dots").css("visibility", "visible");
-    })
-    .mouseleave(function () {
-      $(this).find(".tree-node-dots").css("visibility", "hidden");
-    });
+  .hover(function () {
+    $(this).find(".tree-node-dots").css("visibility", "visible");
+  })
+  .mouseleave(function () {
+    $(this).find(".tree-node-dots").css("visibility", "hidden");
+  });
 
   let dropdownMenuId = undefined;
   $("#tree .tree-node-dots").click(function (e) {
@@ -257,8 +257,8 @@ function initTreeDrag() {
 function getTreeDropdown(node) {
   let menu = $(
     '<ul class="dropdown-menu" aria-labelledby="tree-dropdown-' +
-      node.data.id +
-      '"></ul>'
+    node.data.id +
+    '"></ul>'
   );
 
   let ext = "";
@@ -271,31 +271,31 @@ function getTreeDropdown(node) {
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
-            node.data.id +
-            '" data-action="create-folder"><i class="bi bi-file-plus"></i> Add folder</a></li>'
+          node.data.id +
+          '" data-action="create-folder"><i class="bi bi-file-plus"></i> Add folder</a></li>'
         )
       );
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
-            node.data.id +
-            '" data-action="create-server"><i class="bi bi-server"></i> Add server</a></li>'
+          node.data.id +
+          '" data-action="create-server"><i class="bi bi-server"></i> Add server</a></li>'
         )
       );
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
-            node.data.id +
-            '" data-action="rename-folder"><i class="bi bi-pen"></i> Rename</a></li>'
+          node.data.id +
+          '" data-action="rename-folder"><i class="bi bi-pen"></i> Rename</a></li>'
         )
       );
       menu.append(
         $(
           '<li><a class="dropdown-item' +
-            ext +
-            '" data-id="' +
-            node.data.id +
-            '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
+          ext +
+          '" data-id="' +
+          node.data.id +
+          '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
         )
       );
       break;
@@ -303,17 +303,17 @@ function getTreeDropdown(node) {
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
-            node.data.id +
-            '" data-action="edit-server"><i class="bi bi-pen"></i> Edit</a></li>'
+          node.data.id +
+          '" data-action="edit-server"><i class="bi bi-pen"></i> Edit</a></li>'
         )
       );
       menu.append(
         $(
           '<li><a class="dropdown-item' +
-            ext +
-            '" data-id="' +
-            node.data.id +
-            '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
+          ext +
+          '" data-id="' +
+          node.data.id +
+          '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
         )
       );
       break;
@@ -321,8 +321,8 @@ function getTreeDropdown(node) {
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
-            node.data.id +
-            '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
+          node.data.id +
+          '" data-action="delete"><i class="bi bi-trash"></i> Delete</a></li>'
         )
       );
       break;
@@ -384,48 +384,48 @@ function treeMenuRenameFolder(node) {
 
 function treeFolderHandler(node, isCreate) {
   $("#tree-folder-form")
-    .submit(function (event) {
-      if (!this.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
+  .submit(function (event) {
+    if (!this.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      let req;
+      if (isCreate) {
+        req = {
+          name: "folder.create",
+          payload: {
+            parent_id: node.data.id,
+            title: $("#tree-folder-name").val(),
+          },
+        };
       } else {
-        let req;
-        if (isCreate) {
-          req = {
-            name: "folder.create",
-            payload: {
-              parent_id: node.data.id,
-              title: $("#tree-folder-name").val(),
-            },
-          };
-        } else {
-          req = {
-            name: "folder.update",
-            payload: {
-              id: node.data.id,
-              title: $("#tree-folder-name").val(),
-            },
-          };
+        req = {
+          name: "folder.update",
+          payload: {
+            id: node.data.id,
+            title: $("#tree-folder-name").val(),
+          },
+        };
+      }
+      astilectron.sendMessage(req, function (message) {
+        if (message.payload.status !== "ok") {
+          return;
         }
-        astilectron.sendMessage(req, function (message) {
-          if (message.payload.status !== "ok") {
-            return;
-          }
-          showTree(message.payload.data.tree);
-        });
-        $("#tree-folder").remove();
-      }
+        showTree(message.payload.data.tree);
+      });
+      $("#tree-folder").remove();
+    }
 
-      $(this).addClass("was-validated");
+    $(this).addClass("was-validated");
 
+    return false;
+  })
+  .keypress(function (e) {
+    if (e.which === 13) {
+      $("#tree-folder-form").submit();
       return false;
-    })
-    .keypress(function (e) {
-      if (e.which === 13) {
-        $("#tree-folder-form").submit();
-        return false;
-      }
-    });
+    }
+  });
   $("#tree-folder-submit").click(function () {
     $("#tree-folder-form").submit();
   });

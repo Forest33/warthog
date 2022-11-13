@@ -143,7 +143,7 @@ function loadServer(srv, show) {
         currentServices[show.service.name] !== undefined &&
         !isNull(currentServices[show.service.name].methods) &&
         currentServices[show.service.name].methods[show.method.name] !==
-          undefined
+        undefined
       ) {
         createRequestForm(
           currentServices[show.service.name],
@@ -328,8 +328,8 @@ function getFieldTemplate(field, attr, showOneOf) {
             let inputCount =
               parseInt(buttonAdd.attr("data-input-count"), 10) - 1;
             $(this)
-              .closest(".request-message-container")
-              .attr("data-container-input-count", inputCount);
+            .closest(".request-message-container")
+            .attr("data-container-input-count", inputCount);
             $('.request-input[data-input-id="' + id + '"]').remove();
             buttonAdd.attr("data-input-count", inputCount);
           }
@@ -339,10 +339,10 @@ function getFieldTemplate(field, attr, showOneOf) {
           container.append(inputDelete);
           let repeated = $(
             '<div class="request-repeated-message request-input" data-input-id="' +
-              currentInputCount +
-              '" data-repeated-fqn="' +
-              field.fqn +
-              '">'
+            currentInputCount +
+            '" data-repeated-fqn="' +
+            field.fqn +
+            '">'
           );
           if (field.map.fields === undefined) {
             let map = [
@@ -384,10 +384,10 @@ function getFieldTemplate(field, attr, showOneOf) {
           container.append(inputDelete);
           let repeated = $(
             '<div class="request-repeated-message request-input" data-input-id="' +
-              currentInputCount +
-              '" data-repeated-fqn="' +
-              field.fqn +
-              '">'
+            currentInputCount +
+            '" data-repeated-fqn="' +
+            field.fqn +
+            '">'
           );
           for (const f of field.message.fields) {
             repeated.append(getFieldTemplate(f, attr));
@@ -469,8 +469,8 @@ function getRepeatedInput(field, inputTmpl, inputType, inputName, dataID) {
       let id = $(this).parent().attr("data-input-id");
       let inputCount = parseInt(buttonAdd.attr("data-input-count"), 10) - 1;
       $(this)
-        .closest(".request-message-container")
-        .attr("data-container-input-count", inputCount);
+      .closest(".request-message-container")
+      .attr("data-container-input-count", inputCount);
       $('.request-input[data-input-id="' + id + '"]').remove();
       buttonAdd.attr(
         "data-input-count",
@@ -480,8 +480,8 @@ function getRepeatedInput(field, inputTmpl, inputType, inputName, dataID) {
 
     let input = $(template[inputTmpl]);
     $(input.find(".label-name")[0])
-      .attr("for", field.fqn + "." + currentInputCount)
-      .html(inputName);
+    .attr("for", field.fqn + "." + currentInputCount)
+    .html(inputName);
     $(input.find(".label-type")[0]).html(inputType);
     $(input.find(".field-value")[0]).attr("data-field-fqn", field.fqn);
     $(input.find(".field-value")[0]).attr("data-parent-id", dataID);
@@ -605,9 +605,9 @@ function saveRequest() {
 function setRequestData(field, tmpl, data) {
   if (field.oneof !== undefined) {
     tmpl
-      .find('.field-value[data-oneof-fqn="' + field.oneof.fqn + '"]')
-      .val(field.fqn)
-      .change();
+    .find('.field-value[data-oneof-fqn="' + field.oneof.fqn + '"]')
+    .val(field.fqn)
+    .change();
   }
 
   switch (field.type) {
@@ -616,10 +616,10 @@ function setRequestData(field, tmpl, data) {
         $(
           tmpl.find(
             '.field-value[data-field-fqn="' +
-              field.fqn +
-              '"] option[value="' +
-              data +
-              '"]'
+            field.fqn +
+            '"] option[value="' +
+            data +
+            '"]'
           )[0]
         ).attr("selected", "selected");
       } else {
@@ -631,10 +631,10 @@ function setRequestData(field, tmpl, data) {
           $(
             tmpl.find(
               '.field-value[data-field-fqn="' +
-                field.fqn +
-                '"] option[value="' +
-                d +
-                '"]'
+              field.fqn +
+              '"] option[value="' +
+              d +
+              '"]'
             )[idx]
           ).attr("selected", "selected");
         });
@@ -669,13 +669,13 @@ function setRequestData(field, tmpl, data) {
             let container = $(
               tmpl.find(
                 '.request-repeated-message[data-repeated-fqn="' +
-                  field.fqn +
-                  '"]'
+                field.fqn +
+                '"]'
               )[idx++]
             );
             container
-              .find('.field-value[data-map-key="' + field.fqn + '"]')
-              .val(key);
+            .find('.field-value[data-map-key="' + field.fqn + '"]')
+            .val(key);
             let f = {
               fqn: field.fqn + "-map-value",
               type: field.map.value_type,
@@ -689,13 +689,13 @@ function setRequestData(field, tmpl, data) {
             let container = $(
               tmpl.find(
                 '.request-repeated-message[data-repeated-fqn="' +
-                  field.fqn +
-                  '"]'
+                field.fqn +
+                '"]'
               )[idx++]
             );
             container
-              .find('.field-value[data-map-key="' + field.fqn + '"]')
-              .val(key);
+            .find('.field-value[data-map-key="' + field.fqn + '"]')
+            .val(key);
             for (const f of field.map.fields) {
               if (data[key][f.fqn] !== undefined) {
                 setRequestData(f, container, data[key][f.fqn]);
@@ -717,8 +717,8 @@ function setRequestData(field, tmpl, data) {
             let container = $(
               tmpl.find(
                 '.request-repeated-message[data-repeated-fqn="' +
-                  field.fqn +
-                  '"]'
+                field.fqn +
+                '"]'
               )[idx]
             );
             for (const f of field.message.fields) {
