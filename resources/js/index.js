@@ -186,23 +186,23 @@ function initQueryPopover() {
   });
 
   document
-  .getElementById("save-query")
-  .addEventListener("shown.bs.popover", function () {
-    if (!isNull(currentQuery)) {
-      $(".popover-body .query-popover-query-name").val(currentQuery.text);
-      $(".popover-body .query-popover-query-description").val(
-        currentQuery.data.description
-      );
-    }
-    $(".popover-body form").submit(function () {
-      $("#save-query").popover("hide");
-      saveQuery();
-      return false;
+    .getElementById("save-query")
+    .addEventListener("shown.bs.popover", function () {
+      if (!isNull(currentQuery)) {
+        $(".popover-body .query-popover-query-name").val(currentQuery.text);
+        $(".popover-body .query-popover-query-description").val(
+          currentQuery.data.description
+        );
+      }
+      $(".popover-body form").submit(function () {
+        $("#save-query").popover("hide");
+        saveQuery();
+        return false;
+      });
+      $(".popover-body .query-popover-close").click(function () {
+        $("#save-query").popover("hide");
+      });
     });
-    $(".popover-body .query-popover-close").click(function () {
-      $("#save-query").popover("hide");
-    });
-  });
 
   $("#save-query").popover({
     html: true,
