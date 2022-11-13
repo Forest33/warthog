@@ -248,15 +248,17 @@ function showQueryError(err) {
 
 function hideQueryError() {
   $("#query-result").show();
-  if ($("#badge-result").hasClass("bg-danger")) {
+  let badge = $("#badge-result");
+  if (badge.hasClass("bg-danger")) {
     $("#query-error").html("").hide();
-    $("#badge-result").removeClass("bg-danger").css("visibility", "hidden");
+    badge.removeClass("bg-danger").css("visibility", "hidden");
   }
 }
 
 function showHeadersTrailers(header, trailer) {
-  $("#nav-result-headers .header").css("visibility", "hidden");
-  $("#nav-result-headers .trailer").css("visibility", "hidden");
+  let headers = $("#nav-result-headers")
+  headers.find(".header").css("visibility", "hidden");
+  headers.find(".trailer").css("visibility", "hidden");
   if (header !== null && Object.keys(header).length !== 0) {
     $("#query-result-headers").html(
       syntaxHighlight(JSON.stringify(header, null, 1))
