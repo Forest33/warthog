@@ -50,7 +50,7 @@ type Error struct {
 // Error returns error string
 func (e Error) Error() string {
 	if e.Code > 0 {
-		return fmt.Sprintf("error code: %s message: %s", e.Code, e.Message)
+		return fmt.Sprintf("error code: %d message: %s", e.Code, e.Message)
 	}
 	return e.Message
 }

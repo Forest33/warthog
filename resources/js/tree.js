@@ -459,7 +459,7 @@ function treeNodeExpand(node, expand) {
       expand: expand,
     },
   };
-  astilectron.sendMessage(req, function (message) {});
+  astilectron.sendMessage(req, function () {});
 }
 
 function showTree(data) {

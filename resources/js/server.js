@@ -599,7 +599,7 @@ function saveRequest() {
 
   console.log(req);
 
-  astilectron.sendMessage(req, function (message) {});
+  astilectron.sendMessage(req, function () {});
 }
 
 function setRequestData(field, tmpl, data) {

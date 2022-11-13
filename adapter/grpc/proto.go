@@ -10,7 +10,6 @@ import (
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/desc/protoparse"
 	"github.com/jhump/protoreflect/grpcreflect"
-	rpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 
 	"github.com/forest33/warthog/business/entity"
 )
@@ -67,8 +66,7 @@ func (c *Client) LoadFromReflection() ([]*entity.Service, error) {
 	ctx, cancel := context.WithTimeout(c.ctx, time.Second*time.Duration(c.cfg.ConnectTimeout))
 	defer cancel()
 
-	stub := rpb.NewServerReflectionClient(c.conn)
-	client := grpcreflect.NewClient(ctx, stub)
+	client := grpcreflect.NewClientAuto(ctx, c.conn)
 	list, err := client.ListServices()
 	if err != nil {
 		return nil, err
