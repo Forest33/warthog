@@ -1,3 +1,5 @@
+export { template };
+
 let template = {
   "request-text-input": `<div class="mb-2 form-group request-input">
                                 <label class="label-name"></label>
