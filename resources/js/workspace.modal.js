@@ -18,8 +18,8 @@ function initWorkspaceModal() {
     if (serverID) {
       $("#workspaceModalLabel").html("Edit workspace");
       $("#workspace-modal-badge-server-id")
-        .html("ID: " + serverID)
-        .css("visibility", "visible");
+      .html("ID: " + serverID)
+      .css("visibility", "visible");
     }
 
     astilectron.sendMessage(req, function (message) {
@@ -180,11 +180,11 @@ function createFolder() {
       },
     });
     document
-      .querySelectorAll('[data-nodeid="' + folderNode.nodeId + '"]')[0]
-      .scrollIntoView();
+    .querySelectorAll('[data-nodeid="' + folderNode.nodeId + '"]')[0]
+    .scrollIntoView();
     $("#workspace-modal-submit")
-      .text("Save to " + folderNode.data.text)
-      .prop("disabled", false);
+    .text("Save to " + folderNode.data.text)
+    .prop("disabled", false);
   });
 }
 

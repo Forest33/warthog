@@ -1,4 +1,4 @@
-export {saveQuery};
+export { saveQuery };
 import {
   currentMethod,
   currentQuery,
@@ -8,14 +8,14 @@ import {
   setCurrentServer,
   setRequestTitle,
 } from "./server.js";
-import {getRequestData} from "./request.js";
-import {isNull} from "./index.js";
+import { getRequestData } from "./request.js";
+import { isNull } from "./index.js";
 
 function saveQuery() {
   if (
-      isNull(currentServer) ||
-      isNull(currentService) ||
-      isNull(currentMethod)
+    isNull(currentServer) ||
+    isNull(currentService) ||
+    isNull(currentMethod)
   ) {
     return;
   }
