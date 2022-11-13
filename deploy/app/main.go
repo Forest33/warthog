@@ -27,7 +27,7 @@ var (
 var (
 	// AppName application name
 	AppName string
-	// application version
+	// AppVersion application version
 	AppVersion string
 	// AppURL application homepage
 	AppURL = "https://github.com/forest33/warthog"

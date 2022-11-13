@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/struct.proto";
-option go_package = "./;test_proto";
+option go_package = "./;testProto";
 
 message User {
   enum Source {

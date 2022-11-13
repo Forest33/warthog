@@ -20,12 +20,14 @@ const (
 	SQLiteDriver         = "sqlite3"
 )
 
+// BinDataConfig configuration for golang-migrate bindata migrating
 type BinDataConfig struct {
 	AssetDirFunc AssetDirFunc
 	Dir          string
 	AssetFunc    bin.AssetFunc
 }
 
+// AssetDirFunc returns names files in migrations directory
 type AssetDirFunc func(name string) ([]string, error)
 
 func (db *Database) migrate() (uint, error) {
@@ -96,9 +98,8 @@ func (db *Database) migrate() (uint, error) {
 		}
 		if prevVersion == 0 {
 			return 0, errors.New("can't rollback to previous database version")
-		} else {
-			err = m.Force(int(prevVersion))
 		}
+		err = m.Force(int(prevVersion))
 		if err != nil {
 			break
 		}
