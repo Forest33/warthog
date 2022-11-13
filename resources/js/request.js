@@ -52,9 +52,9 @@ function query() {
       return;
     }
     $("#badge-result")
-    .html("0: OK")
-    .css("visibility", "visible")
-    .addClass("bg-success");
+      .html("0: OK")
+      .css("visibility", "visible")
+      .addClass("bg-success");
     $("#time-spent").html(message.payload.data.spent_time);
     $("#query-result").html(syntaxHighlight(message.payload.data.json_string));
     showHeadersTrailers(
@@ -103,41 +103,41 @@ function getRequestData(field, root, disableProtoFQN) {
         if (field.map.fields === undefined) {
           let items = {};
           root
-          .find(
-            '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
-          )
-          .each(function () {
-            let key = $(this)
-            .find('[data-map-key="' + field.fqn + '"]')
-            .val();
-            items[key] = $(this)
-            .find('[data-map-value="' + field.fqn + '"]')
-            .val();
-          });
+            .find(
+              '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
+            )
+            .each(function () {
+              let key = $(this)
+                .find('[data-map-key="' + field.fqn + '"]')
+                .val();
+              items[key] = $(this)
+                .find('[data-map-value="' + field.fqn + '"]')
+                .val();
+            });
           if (Object.keys(items).length > 0) {
             data[getProtoFQN(field, disableProtoFQN)] = items;
           }
         } else {
           let objects = {};
           root
-          .find(
-            '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
-          )
-          .each(function () {
-            let key = $(this)
-            .find('[data-map-key="' + field.fqn + '"]')
-            .val();
-            let items = {};
-            for (const f of field.map.fields) {
-              let v = getRequestData(f, $(this), disableProtoFQN);
-              if (Object.keys(v).length > 0) {
-                $.extend(items, v);
+            .find(
+              '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
+            )
+            .each(function () {
+              let key = $(this)
+                .find('[data-map-key="' + field.fqn + '"]')
+                .val();
+              let items = {};
+              for (const f of field.map.fields) {
+                let v = getRequestData(f, $(this), disableProtoFQN);
+                if (Object.keys(v).length > 0) {
+                  $.extend(items, v);
+                }
               }
-            }
-            if (Object.keys(items).length > 0) {
-              objects[key] = items;
-            }
-          });
+              if (Object.keys(items).length > 0) {
+                objects[key] = items;
+              }
+            });
           if (Object.keys(objects).length > 0) {
             data[getProtoFQN(field, disableProtoFQN)] = objects;
           }
@@ -145,19 +145,19 @@ function getRequestData(field, root, disableProtoFQN) {
       } else if (field.message !== undefined) {
         let messageValues = [];
         root
-        .find(
-          '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
-        )
-        .each(function () {
-          let messageObjects = {};
-          for (const f of field.message.fields) {
-            let v = getRequestData(f, $(this), disableProtoFQN);
-            if (Object.keys(v).length !== 0) {
-              $.extend(messageObjects, v);
+          .find(
+            '.request-repeated-message[data-repeated-fqn="' + field.fqn + '"]'
+          )
+          .each(function () {
+            let messageObjects = {};
+            for (const f of field.message.fields) {
+              let v = getRequestData(f, $(this), disableProtoFQN);
+              if (Object.keys(v).length !== 0) {
+                $.extend(messageObjects, v);
+              }
             }
-          }
-          messageValues.push(messageObjects);
-        });
+            messageValues.push(messageObjects);
+          });
         if (messageValues.length > 0) {
           let fqn = getProtoFQN(field, disableProtoFQN);
           if (!field.repeated) {
@@ -208,9 +208,9 @@ function getRequestMetadata() {
 
 function syntaxHighlight(json) {
   json = json
-  .replace(/&/g, "&amp;")
-  .replace(/</g, "&lt;")
-  .replace(/>/g, "&gt;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
   return json.replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
     function (match) {
@@ -239,10 +239,10 @@ function showQueryError(err) {
   $("#query-result").html("").hide();
   $("#time-spent").html("");
   $("#badge-result")
-  .html(err.code + ": " + err.code_description)
-  .css("visibility", "visible")
-  .removeClass("bg-success")
-  .addClass("bg-danger");
+    .html(err.code + ": " + err.code_description)
+    .css("visibility", "visible")
+    .removeClass("bg-success")
+    .addClass("bg-danger");
   showHeadersTrailers(null, null);
 }
 
@@ -277,12 +277,12 @@ function isQueryRun() {
 
 function setQueryRunButton() {
   $("#request-run")
-  .removeClass("btn-danger bi-stop-fill")
-  .addClass("btn-success bi-play-fill");
+    .removeClass("btn-danger bi-stop-fill")
+    .addClass("btn-success bi-play-fill");
 }
 
 function setQueryCancelButton() {
   $("#request-run")
-  .removeClass("btn-success bi-play-fill")
-  .addClass("btn-danger bi-stop-fill");
+    .removeClass("btn-success bi-play-fill")
+    .addClass("btn-danger bi-stop-fill");
 }
