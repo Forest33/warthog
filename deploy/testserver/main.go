@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/forest33/warthog/pkg/logger"
-	test_proto "github.com/forest33/warthog/testprotos"
+	testProto "github.com/forest33/warthog/testprotos"
 )
 
 const (
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	srv := grpc.NewServer(grpc.UnaryInterceptor(s.unaryInterceptor), grpc.StreamInterceptor(s.streamInterceptor))
-	test_proto.RegisterTestProtoServer(srv, s)
+	testProto.RegisterTestProtoServer(srv, s)
 	reflection.Register(srv)
 
 	s.log.Debug().Msgf("server started on %s", addr)
@@ -47,22 +47,22 @@ func main() {
 }
 
 // Unary is a Unary method handler
-func (s *Server) Unary(_ context.Context, m1 *test_proto.M1) (*test_proto.M1, error) {
+func (s *Server) Unary(_ context.Context, m1 *testProto.M1) (*testProto.M1, error) {
 	return m1, nil
 }
 
 // TypesTest is a TypesTest method handler
-func (s *Server) TypesTest(_ context.Context, t *test_proto.Types) (*test_proto.Types, error) {
+func (s *Server) TypesTest(_ context.Context, t *testProto.Types) (*testProto.Types, error) {
 	return t, nil
 }
 
 // LoopTest is a LoopTest method handler
-func (s *Server) LoopTest(_ context.Context, t *test_proto.Loop) (*test_proto.Loop, error) {
+func (s *Server) LoopTest(_ context.Context, t *testProto.Loop) (*testProto.Loop, error) {
 	return t, nil
 }
 
 // ClientStream is a ClientStream method handler
-func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) error {
+func (s *Server) ClientStream(stream testProto.TestProto_ClientStreamServer) error {
 	req, err := stream.Recv()
 	if err != nil {
 		return err
@@ -73,10 +73,10 @@ func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) er
 
 	if header != nil {
 		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendAndClose(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Header{Header: header}})
+		err = stream.SendAndClose(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
 	} else {
 		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendAndClose(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Payload{Payload: payload}})
+		err = stream.SendAndClose(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
 	}
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
@@ -86,17 +86,17 @@ func (s *Server) ClientStream(stream test_proto.TestProto_ClientStreamServer) er
 }
 
 // ServerStream is a ServerStream method handler
-func (s *Server) ServerStream(req *test_proto.StreamMessage, stream test_proto.TestProto_ServerStreamServer) error {
+func (s *Server) ServerStream(req *testProto.StreamMessage, stream testProto.TestProto_ServerStreamServer) error {
 	header := req.GetHeader()
 	payload := req.GetPayload()
 
 	var err error
 	if header != nil {
 		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendMsg(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Header{Header: header}})
+		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
 	} else {
 		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendMsg(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Payload{Payload: payload}})
+		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
 	}
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
@@ -106,7 +106,7 @@ func (s *Server) ServerStream(req *test_proto.StreamMessage, stream test_proto.T
 }
 
 // ClientServerStream is a ClientServerStream method handler
-func (s *Server) ClientServerStream(stream test_proto.TestProto_ClientServerStreamServer) error {
+func (s *Server) ClientServerStream(stream testProto.TestProto_ClientServerStreamServer) error {
 	req, err := stream.Recv()
 	if err != nil {
 		return err
@@ -117,10 +117,10 @@ func (s *Server) ClientServerStream(stream test_proto.TestProto_ClientServerStre
 
 	if header != nil {
 		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendMsg(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Header{Header: header}})
+		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
 	} else {
 		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendMsg(&test_proto.StreamMessage{TestStream: &test_proto.StreamMessage_Payload{Payload: payload}})
+		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
 	}
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())

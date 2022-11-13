@@ -3,7 +3,6 @@ package database
 
 import (
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/pkg/logger"

@@ -4,8 +4,8 @@ CREATE TABLE gui_config
     window_height INT NOT NULL       DEFAULT 768,
     window_x      INT NOT NULL       DEFAULT 50,
     window_y      INT NOT NULL       DEFAULT 50,
-    created_at    TIMESTAMP DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL,
-    updated_at    TIMESTAMP DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL
+    created_at    DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL,
+    updated_at    DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL
 );
 
 INSERT INTO gui_config (window_width, window_height, window_x, window_y)
