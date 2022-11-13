@@ -5,5 +5,6 @@
 *.exe
 *.dmg
 *.tar.gz
+*.pb.go
 tmp
 bin/distr
