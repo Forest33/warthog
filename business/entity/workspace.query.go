@@ -72,6 +72,7 @@ func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	return nil
 }
 
+// Model creates SavedQuery from UI request
 func (s *SavedQuery) Model(req map[string]interface{}) {
 	if req == nil {
 		return
