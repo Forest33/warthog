@@ -72,12 +72,12 @@ func (uc *WorkspaceUseCase) UpdateServerRequest(payload map[string]interface{}) 
 	data := server.Data.(*entity.WorkspaceItemServer)
 	if data.Request != nil {
 		if _, ok := data.Request[req.Service]; !ok {
-			data.Request[req.Service] = make(map[string]interface{}, 1)
+			data.Request[req.Service] = make(map[string]*entity.SavedQuery, 1)
 		}
 		data.Request[req.Service][req.Method] = req.Request
 	} else {
-		data.Request = make(map[string]map[string]interface{}, 1)
-		data.Request[req.Service] = make(map[string]interface{}, 1)
+		data.Request = make(map[string]map[string]*entity.SavedQuery, 1)
+		data.Request[req.Service] = make(map[string]*entity.SavedQuery, 1)
 		data.Request[req.Service][req.Method] = req.Request
 	}
 

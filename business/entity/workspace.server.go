@@ -24,10 +24,10 @@ type ServerResponse struct {
 
 // ServerUpdateRequest update server request
 type ServerUpdateRequest struct {
-	ID      int64                  `json:"id"`
-	Service string                 `json:"service"`
-	Method  string                 `json:"method"`
-	Request map[string]interface{} `json:"request"`
+	ID      int64       `json:"id"`
+	Service string      `json:"service"`
+	Method  string      `json:"method"`
+	Request *SavedQuery `json:"request"`
 }
 
 // WorkspaceItemServer stored server data
@@ -41,7 +41,7 @@ type WorkspaceItemServer struct {
 	RootCertificate   string                            `json:"root_certificate,omitempty"`
 	ClientCertificate string                            `json:"client_certificate,omitempty"`
 	ClientKey         string                            `json:"client_key,omitempty"`
-	Request           map[string]map[string]interface{} `json:"request"`
+	Request           map[string]map[string]*SavedQuery `json:"request"`
 }
 
 // Model creates ServerRequest from UI request
@@ -81,7 +81,9 @@ func (r *ServerUpdateRequest) Model(req map[string]interface{}) error {
 		r.Method = v.(string)
 	}
 	if v, ok := req["request"]; ok && v != nil {
-		r.Request = v.(map[string]interface{})
+		sq := &SavedQuery{}
+		sq.Model(req["request"].(map[string]interface{}))
+		r.Request = sq
 	}
 
 	return nil
