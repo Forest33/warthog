@@ -112,7 +112,7 @@ function initTreeDrag() {
     let targetNode = getNode(e);
     e.stopPropagation();
     if (!canDrop(targetNode)) {
-      return;
+      return false;
     }
 
     e.target.parentNode.insertBefore(source, e.target.nextSibling);
