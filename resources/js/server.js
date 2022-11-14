@@ -263,7 +263,7 @@ function getFieldTemplate(field, attr, showOneOf) {
   }
 
   switch (field.type) {
-    case protoTypeEnum:
+    case protoTypeEnum: {
       if (!field.repeated) {
         tmpl = $(template["request-select-input"]);
         $(tmpl.find(".label-name")[0]).html(field.name);
@@ -288,7 +288,8 @@ function getFieldTemplate(field, attr, showOneOf) {
         );
       }
       break;
-    case protoTypeBool:
+    }
+    case protoTypeBool: {
       if (!field.repeated) {
         tmpl = $(template["request-bool-input"]);
         $(tmpl.find(".label-name")[0]).attr("for", field.fqn).html(field.name);
@@ -303,7 +304,8 @@ function getFieldTemplate(field, attr, showOneOf) {
         );
       }
       break;
-    case protoTypeMessage:
+    }
+    case protoTypeMessage: {
       let fieldType = field.type;
       if (field.map !== undefined) {
         fieldType =
@@ -410,7 +412,8 @@ function getFieldTemplate(field, attr, showOneOf) {
         currentInputCount++;
       });
       break;
-    default:
+    }
+    default: {
       if (!field.repeated) {
         tmpl = $(template["request-text-input"]);
         $(tmpl.find(".label-name")[0]).html(field.name);
@@ -424,6 +427,7 @@ function getFieldTemplate(field, attr, showOneOf) {
           currentInputCount
         );
       }
+    }
   }
 
   let fv = $(tmpl.find(".field-value")[0]);

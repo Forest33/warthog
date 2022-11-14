@@ -77,7 +77,7 @@ function getRequestData(field, root, disableProtoFQN) {
   }
 
   switch (field.type) {
-    case protoTypeEnum:
+    case protoTypeEnum: {
       let enumValues = [];
       root.find('[data-field-fqn="' + field.fqn + '"]').each(function () {
         enumValues.push($(this).find(":selected").val());
@@ -90,7 +90,8 @@ function getRequestData(field, root, disableProtoFQN) {
         }
       }
       break;
-    case protoTypeBool:
+    }
+    case protoTypeBool: {
       let boolValues = [];
       root.find('[data-field-fqn="' + field.fqn + '"]').each(function () {
         boolValues.push($(this).is(":checked"));
@@ -103,7 +104,8 @@ function getRequestData(field, root, disableProtoFQN) {
         }
       }
       break;
-    case protoTypeMessage:
+    }
+    case protoTypeMessage: {
       if (field.map !== undefined) {
         // todo validate dup keys
         if (field.map.fields === undefined) {
@@ -174,7 +176,8 @@ function getRequestData(field, root, disableProtoFQN) {
         }
       }
       break;
-    default:
+    }
+    default: {
       let textValues = [];
       root.find('[data-field-fqn="' + field.fqn + '"]').each(function () {
         textValues.push($(this).val());
@@ -186,6 +189,7 @@ function getRequestData(field, root, disableProtoFQN) {
           data[field.fqn] = textValues;
         }
       }
+    }
   }
 
   return data;
