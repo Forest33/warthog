@@ -26,7 +26,7 @@ type GrpcClient interface {
 	Connect(addr string, opts ...grpc.ClientOpt) error
 	AddProtobuf(path ...string)
 	AddImport(path ...string)
-	LoadFromProtobuf() ([]*entity.Service, error)
+	LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError, *entity.ProtobufError)
 	LoadFromReflection() ([]*entity.Service, error)
 	Query(method *entity.Method, data map[string]interface{}, metadata []string) (*entity.QueryResponse, error)
 	CancelQuery()
@@ -53,6 +53,7 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 	var (
 		query  *entity.Workspace
 		server *entity.Workspace
+		warn   []*entity.ProtobufError
 		err    error
 	)
 
@@ -99,15 +100,27 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 
 	if serverData.UseReflection {
 		uc.services, err = uc.client.LoadFromReflection()
+		if err != nil {
+			uc.log.Error().Msgf("failed to get services: %v", err)
+			return entity.ErrorGUIResponse(err)
+		}
 	} else {
+		var protoErr *entity.ProtobufError
 		uc.client.AddProtobuf(serverData.ProtoFiles...)
 		uc.client.AddImport(serverData.ImportPath...)
-		uc.services, err = uc.client.LoadFromProtobuf()
-	}
-
-	if err != nil {
-		uc.log.Error().Msgf("failed to get services: %v", err)
-		return entity.ErrorGUIResponse(err)
+		uc.services, warn, protoErr = uc.client.LoadFromProtobuf()
+		if protoErr != nil {
+			uc.log.Error().Msgf("failed to get services: %v", protoErr.Err)
+			return &entity.GUIResponse{
+				Status: entity.GUIResponseStatusError,
+				Error: entity.Error{
+					Code:            protoErr.Code,
+					CodeDescription: protoErr.CodeDescription,
+					Pos:             protoErr.Pos,
+					Message:         protoErr.Error(),
+				},
+			}
+		}
 	}
 
 	server.Breadcrumb, err = workspaceUseCase.GetBreadcrumb(req.ID)
@@ -122,6 +135,7 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 			Server:   server,
 			Services: uc.services,
 			Query:    query,
+			Warning:  warn,
 		},
 	}
 }

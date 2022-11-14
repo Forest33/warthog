@@ -36,7 +36,17 @@ let template = {
                                 </div>
                              </div>`,
   "query-error": `<div class="alert alert-danger" role="alert">
-                        <div>code: <span class="code"></span></div>
-                        <div>message: <span class="message"></span></div>
+                        <table>
+                        <tr><td class="error-label">code: </td><td class="code"></td></tr>
+                        <tr><td class="error-label">message: </td><td class="message"></td></tr>
+                        </table>
+                    </div>`,
+  "protobuf-error": `<div class="alert proto-error" role="alert">
+                        <table>
+                        <tr><td class="error-label">file: </td><td class="file"></td></tr>
+                        <tr><td class="error-label">line: </td><td class="line"></td></tr>
+                        <tr><td class="error-label">column: </td><td class="column"></td></tr>
+                        <tr><td class="error-label">message: </td><td class="message"></td></tr>
+                        </table>    
                     </div>`,
 };

@@ -15,7 +15,7 @@ export {
   setCurrentQuery,
 };
 import { isNull } from "./index.js";
-import { getRequestData, showQueryError, hideQueryError } from "./request.js";
+import { getRequestData, hideQueryError, showQueryError } from "./request.js";
 import { WorkspaceTypeQuery } from "./tree.js";
 import { template } from "./template.js";
 
@@ -70,6 +70,10 @@ function loadServer(srv, show) {
       showQueryError(message.payload.error);
       currentServer = undefined;
       return;
+    }
+
+    if (!isNull(message.payload.data.warning)) {
+      showServerWarning(message.payload.data.warning);
     }
 
     currentServer = message.payload.data.server;
@@ -747,6 +751,20 @@ function setRequestData(field, tmpl, data) {
         });
       }
   }
+}
+
+function showServerWarning(warn) {
+  let error = $("#query-error");
+  for (const w of warn) {
+    let tmpl = $(template["protobuf-error"]);
+    tmpl.addClass("alert-warning");
+    $(tmpl.find(".file")[0]).html(w.pos.Filename);
+    $(tmpl.find(".line")[0]).html(w.pos.Line);
+    $(tmpl.find(".column")[0]).html(w.pos.Col);
+    $(tmpl.find(".message")[0]).html(w.warning);
+    error.append(tmpl);
+  }
+  error.show();
 }
 
 function setCurrentServer(s) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jhump/protoreflect/desc/protoparse/ast"
 	"google.golang.org/grpc/status"
 )
 
@@ -42,9 +43,10 @@ type GUIResponse struct {
 
 // Error UI error response
 type Error struct {
-	Code            uint32 `json:"code"`
-	CodeDescription string `json:"code_description"`
-	Message         string `json:"message"`
+	Pos             ast.SourcePos `json:"pos"`
+	Code            uint32        `json:"code"`
+	CodeDescription string        `json:"code_description"`
+	Message         string        `json:"message"`
 }
 
 // Error returns error string

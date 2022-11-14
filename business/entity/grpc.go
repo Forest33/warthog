@@ -30,9 +30,10 @@ type Method struct {
 
 // LoadServerResponse server data, methods, and saved queries
 type LoadServerResponse struct {
-	Server   *Workspace `json:"server"`
-	Services []*Service `json:"services"`
-	Query    *Workspace `json:"query"`
+	Server   *Workspace       `json:"server"`
+	Services []*Service       `json:"services"`
+	Query    *Workspace       `json:"query"`
+	Warning  []*ProtobufError `json:"warning"`
 }
 
 // Field protobuf field
