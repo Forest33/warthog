@@ -10,6 +10,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/desc/protoparse"
 	"github.com/jhump/protoreflect/grpcreflect"
+	"google.golang.org/grpc/status"
 
 	"github.com/forest33/warthog/business/entity"
 )
@@ -25,15 +26,40 @@ func (c *Client) AddImport(path ...string) {
 }
 
 // LoadFromProtobuf loads services from protobuf
-func (c *Client) LoadFromProtobuf() ([]*entity.Service, error) {
+func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError, *entity.ProtobufError) {
 	if len(c.protoPath) == 0 {
-		return nil, fmt.Errorf("empty path to protobuf's")
+		return nil, nil, &entity.ProtobufError{Err: fmt.Errorf("empty path to protobuf's")}
+	}
+
+	var (
+		protoWarn []*entity.ProtobufError
+		protoErr  *entity.ProtobufError
+	)
+
+	warningReporter := func(err protoparse.ErrorWithPos) {
+		if protoWarn == nil {
+			protoWarn = make([]*entity.ProtobufError, 0, 1)
+		}
+		protoWarn = append(protoWarn, &entity.ProtobufError{
+			Pos:     err.GetPosition(),
+			Warning: err.Unwrap().Error(),
+		})
+	}
+
+	errorReporter := func(err protoparse.ErrorWithPos) error {
+		protoErr = &entity.ProtobufError{
+			Code:            uint32(status.Code(err)),
+			CodeDescription: status.Code(err).String(),
+			Pos:             err.GetPosition(),
+			Err:             err.Unwrap(),
+		}
+		return err
 	}
 
 	parser := protoparse.Parser{
 		ImportPaths:     c.importPath,
-		ErrorReporter:   nil, // TODO implement
-		WarningReporter: nil, // TODO implement
+		WarningReporter: warningReporter,
+		ErrorReporter:   errorReporter,
 	}
 
 	services := make([]*entity.Service, 0, len(c.protoPath))
@@ -41,10 +67,10 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, error) {
 	for _, p := range c.protoPath {
 		fd, err := parser.ParseFiles(p)
 		if err != nil {
-			return nil, err
+			return nil, nil, protoErr
 		}
 		if len(fd) != 1 {
-			return nil, fmt.Errorf("wrong parse result")
+			return nil, nil, &entity.ProtobufError{Err: fmt.Errorf("wrong parse result")}
 		}
 
 		for _, sd := range fd[0].GetServices() {
@@ -58,7 +84,7 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, error) {
 
 	c.sortServicesByName(services)
 
-	return services, nil
+	return services, protoWarn, nil
 }
 
 // LoadFromReflection loads services using reflection

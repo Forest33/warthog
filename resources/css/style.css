@@ -382,3 +382,21 @@ label {
   font-size: 0.8rem;
   color: #8e8c84;
 }
+
+.error-label {
+  font-weight: bold;
+  display: inline-block;
+  padding-right: 15px;
+}
+
+.alert-warning {
+  color: #664d03;
+  background-color: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}

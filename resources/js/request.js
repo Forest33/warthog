@@ -232,8 +232,18 @@ function syntaxHighlight(json) {
 }
 
 function showQueryError(err) {
-  let tmpl = $(template["query-error"]);
-  $(tmpl.find(".code")[0]).html(err.code);
+  let tmpl;
+  if (!isNull(err.pos) && err.pos.Filename !== "") {
+    tmpl = $(template["protobuf-error"]);
+    $(tmpl.find(".alert")[0]).addClass("alert-danger");
+    $(tmpl.find(".file")[0]).html(err.pos.Filename);
+    $(tmpl.find(".line")[0]).html(err.pos.Line);
+    $(tmpl.find(".column")[0]).html(err.pos.Col);
+  } else {
+    tmpl = $(template["query-error"]);
+    $(tmpl.find(".code")[0]).html(err.code);
+  }
+
   $(tmpl.find(".message")[0]).html(err.message);
   $("#query-error").html(tmpl).show();
   $("#query-result").html("").hide();
@@ -249,8 +259,9 @@ function showQueryError(err) {
 function hideQueryError() {
   $("#query-result").show();
   let badge = $("#badge-result");
-  if (badge.hasClass("bg-danger")) {
-    $("#query-error").html("").hide();
+  let error = $("#query-error");
+  if (badge.hasClass("bg-danger") || error.find(".alert-warning")) {
+    error.html("").hide();
     badge.removeClass("bg-danger").css("visibility", "hidden");
   }
 }
