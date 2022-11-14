@@ -15,7 +15,7 @@ export {
   setCurrentQuery,
 };
 import { isNull } from "./index.js";
-import { getRequestData, hideQueryError } from "./request.js";
+import { getRequestData, showQueryError, hideQueryError } from "./request.js";
 import { WorkspaceTypeQuery } from "./tree.js";
 import { template } from "./template.js";
 

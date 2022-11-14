@@ -1,4 +1,4 @@
-export { hideQueryError, query, getRequestData };
+export { hideQueryError, query, getRequestData, showQueryError };
 import {
   currentMethod,
   currentService,
@@ -256,7 +256,7 @@ function hideQueryError() {
 }
 
 function showHeadersTrailers(header, trailer) {
-  let headers = $("#nav-result-headers")
+  let headers = $("#nav-result-headers");
   headers.find(".header").css("visibility", "hidden");
   headers.find(".trailer").css("visibility", "hidden");
   if (header !== null && Object.keys(header).length !== 0) {

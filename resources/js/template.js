@@ -19,14 +19,14 @@ let template = {
                                 <select class="form-select field-value"></select>
                             </div>`,
   "request-message-input": `<div class="mb-2 form-group request-input request-container-input">
-                                <button type="button" class="btn btn-primary btn-sm request-message-button-add" data-input-count="0"><i class="bi bi-plus"></i></button>
+                                <button type="button" class="btn btn-primary btn-sm request-message-button-add" data-input-count="0"><i class="bi bi-plus-lg"></i></button>
                                 <label class="form-check-label label-name">name</label>
                                 <label class="form-check-label label-type">type</label>
                                 <div class="mb-2 form-group request-message-container">                                    
                                 </div>
                               </div>`,
   "request-message-input-delete": `<div class="mb-2 form-group request-input request-message-input-delete">
-                                        <button type="button" class="btn btn-secondary btn-sm request-message-button-delete"><i class="bi bi-x"></i></button>
+                                        <button type="button" class="btn btn-secondary btn-sm request-message-button-delete"><i class="bi bi-x-lg"></i></button>
                                      </div>`,
   "request-oneof-select": `<div class="mb-2 form-group request-input">
                                 <label class="label-name"></label>
