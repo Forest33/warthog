@@ -1,4 +1,10 @@
-export { hideQueryError, query, getRequestData, showQueryError };
+export {
+  hideQueryError,
+  query,
+  getRequestData,
+  getRequestMetadata,
+  showQueryError,
+};
 import {
   currentMethod,
   currentService,

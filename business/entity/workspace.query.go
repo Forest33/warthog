@@ -5,12 +5,18 @@ import (
 	"fmt"
 )
 
+// SavedQuery saved query
+type SavedQuery struct {
+	Input    interface{} `json:"input"`
+	Metadata interface{} `json:"metadata"`
+}
+
 // WorkspaceItemQuery stored query data
 type WorkspaceItemQuery struct {
 	Service     string      `json:"service"`
 	Method      string      `json:"method"`
-	Request     interface{} `json:"request"`
 	Description string      `json:"description"`
+	Request     *SavedQuery `json:"request"`
 }
 
 // QueryRequest read/create/update/delete query
@@ -55,11 +61,26 @@ func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 		s.Method = v.(string)
 	}
 	if v, ok := req["request"]; ok && v != nil {
-		s.Request = v
+		sq := &SavedQuery{}
+		sq.Model(req["request"].(map[string]interface{}))
+		s.Request = sq
 	}
 	if v, ok := req["description"]; ok && v != nil {
 		s.Description = v.(string)
 	}
 
 	return nil
+}
+
+func (s *SavedQuery) Model(req map[string]interface{}) {
+	if req == nil {
+		return
+	}
+
+	if v, ok := req["input"]; ok && v != nil {
+		s.Input = v
+	}
+	if v, ok := req["metadata"]; ok && v != nil {
+		s.Metadata = v
+	}
 }

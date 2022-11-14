@@ -15,7 +15,12 @@ export {
   setCurrentQuery,
 };
 import { isNull } from "./index.js";
-import { getRequestData, hideQueryError, showQueryError } from "./request.js";
+import {
+  getRequestData,
+  getRequestMetadata,
+  hideQueryError,
+  showQueryError,
+} from "./request.js";
 import { WorkspaceTypeQuery } from "./tree.js";
 import { template } from "./template.js";
 
@@ -201,14 +206,17 @@ function createRequestForm(service, method) {
       fields.push({ field: field, tmpl: tmpl });
     }
   }
-  for (const f of fields) {
-    if (
-      currentRequest !== undefined &&
-      currentRequest[f.field.fqn] !== undefined
-    ) {
-      setRequestData(f.field, f.tmpl, currentRequest[f.field.fqn]);
+
+  if (!isNull(currentRequest) && !isNull(currentRequest.input)) {
+    for (const f of fields) {
+      if (currentRequest.input[f.field.fqn] !== undefined) {
+        setRequestData(f.field, f.tmpl, currentRequest.input[f.field.fqn]);
+      }
     }
   }
+
+  setRequestMetadata(currentRequest);
+
   request.show();
 }
 
@@ -589,7 +597,16 @@ function saveRequest() {
   ) {
     currentServer.data.request[currentService.name] = {};
   }
-  currentServer.data.request[currentService.name][currentMethod.name] = request;
+
+  let metadata = [];
+  for (let [key, value] of Object.entries(getRequestMetadata())) {
+    metadata.push({ key: key, value: value });
+  }
+
+  currentServer.data.request[currentService.name][currentMethod.name] = {
+    input: request,
+    metadata: metadata,
+  };
 
   let req = {
     name: "server.update.request",
@@ -597,7 +614,8 @@ function saveRequest() {
       id: currentServer.id,
       service: currentService.name,
       method: currentMethod.name,
-      request: request,
+      request:
+        currentServer.data.request[currentService.name][currentMethod.name],
     },
   };
 
@@ -751,6 +769,32 @@ function setRequestData(field, tmpl, data) {
         });
       }
   }
+}
+
+function setRequestMetadata(request) {
+  let metadata = $("#nav-request-metadata");
+
+  metadata.find(".metadata-row").each(function (i, row) {
+    if (i > 0) {
+      $(row).remove();
+    } else {
+      $(row).find(".metadata-key").val("");
+      $(row).find(".metadata-value").val("");
+    }
+  });
+
+  if (isNull(request) || isNull(request.metadata)) {
+    return;
+  }
+
+  request.metadata.forEach(function (d, i) {
+    let lastKey = metadata.find(".metadata-key:last");
+    lastKey.val(d.key);
+    metadata.find(".metadata-value:last").val(d.value);
+    if (i + 1 < request.metadata.length) {
+      lastKey.trigger("click");
+    }
+  });
 }
 
 function showServerWarning(warn) {
