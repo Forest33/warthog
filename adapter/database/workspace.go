@@ -19,7 +19,7 @@ import (
 
 const (
 	workspaceTable       = "workspace"
-	workspaceTableFields = "id, parent_id, has_child, type, title, data, sort, expanded, created_at, updated_at"
+	workspaceTableFields = "id, parent_id, has_child, type, title, data, sort, expanded"
 )
 
 // WorkspaceRepository object capable of interacting with WorkspaceRepository
@@ -37,16 +37,14 @@ func NewWorkspaceRepository(ctx context.Context, db *database.Database) *Workspa
 }
 
 type workspaceDTO struct {
-	ID        int64          `db:"id"`
-	ParentID  sql.NullInt64  `db:"parent_id"`
-	HasChild  bool           `db:"has_child"`
-	Type      string         `db:"type"`
-	Title     string         `db:"title"`
-	Data      sql.NullString `db:"data"`
-	Sort      int64          `db:"sort"`
-	Expanded  bool           `db:"expanded"`
-	CreatedAt string         `db:"created_at"`
-	UpdatedAt string         `db:"updated_at"`
+	ID       int64          `db:"id"`
+	ParentID sql.NullInt64  `db:"parent_id"`
+	HasChild bool           `db:"has_child"`
+	Type     string         `db:"type"`
+	Title    string         `db:"title"`
+	Data     sql.NullString `db:"data"`
+	Sort     int64          `db:"sort"`
+	Expanded bool           `db:"expanded"`
 }
 
 func newWorkspaceDTO(in *entity.Workspace) (dto *workspaceDTO, err error) {
@@ -77,7 +75,6 @@ func (dto *workspaceDTO) entity() (*entity.Workspace, error) {
 		Expanded: &dto.Expanded,
 	}
 
-	var err error
 	if dto.Data.Valid {
 		switch out.Type {
 		case entity.WorkspaceTypeFolder:
@@ -92,14 +89,6 @@ func (dto *workspaceDTO) entity() (*entity.Workspace, error) {
 		if err := json.Unmarshal([]byte(dto.Data.String), &out.Data); err != nil {
 			return nil, err
 		}
-	}
-	out.CreatedAt, err = types.StrToDateTime(dto.CreatedAt)
-	if err != nil {
-		return nil, err
-	}
-	out.UpdatedAt, err = types.StrToDateTime(dto.UpdatedAt)
-	if err != nil {
-		return nil, err
 	}
 
 	return out, nil
@@ -124,9 +113,10 @@ func (repo *WorkspaceRepository) GetByID(id int64) (*entity.Workspace, error) {
 		if err != nil {
 			return nil, err
 		}
+		return dto.entity()
 	}
 
-	return dto.entity()
+	return nil, entity.ErrWorkspaceNotExists
 }
 
 // GetByParentID returns workspace item by parent id

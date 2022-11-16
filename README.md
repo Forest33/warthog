@@ -8,7 +8,6 @@
 <img src="https://img.shields.io/github/go-mod/go-version/forest33/warthog?style=flat-square"/>
 </p>
 
-
 ## Features
 
 - Automatic parsing of proto definitions to render services and input messages
@@ -16,7 +15,7 @@
 - Selection of multiple services and methods
 - Configuration of TLS, including disabling TLS (plain text)
 - Input generation for all scalar types
-- Input generation for nested messages
+- Input generation for nested and looped messages 
 - Input generation for enums, including nested
 - Input generation for repeated fields
 - Input generation for oneof and map fields
@@ -47,7 +46,8 @@ Visit the [Releases](https://github.com/Forest33/warthog/releases) page for the 
 
 ### MacOS
 
-[Download](https://github.com/Forest33/warthog/releases) and open `Warthog*-darwin-x86-64.dmg`, drag `Warthog` to the `Applications` folder and run from `Applications`.
+[Download](https://github.com/Forest33/warthog/releases) and open `Warthog*-darwin-x86-64.dmg`, drag `Warthog` to
+the `Applications` folder and run from `Applications`.
 
 ### Windows
 

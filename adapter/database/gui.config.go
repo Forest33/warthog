@@ -8,12 +8,11 @@ import (
 
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/pkg/database"
-	"github.com/forest33/warthog/pkg/database/types"
 )
 
 const (
 	guiConfigTable       = "gui_config"
-	guiConfigTableFields = "window_width, window_height, window_x, window_y, created_at, updated_at"
+	guiConfigTableFields = "window_width, window_height, window_x, window_y"
 )
 
 // GUIConfigRepository object capable of interacting with GUIConfigRepository
@@ -31,33 +30,19 @@ func NewGUIConfigRepository(ctx context.Context, db *database.Database) *GUIConf
 }
 
 type guiConfigDTO struct {
-	WindowWidth  int    `db:"window_width"`
-	WindowHeight int    `db:"window_height"`
-	WindowX      int    `db:"window_x"`
-	WindowY      int    `db:"window_y"`
-	CreatedAt    string `db:"created_at"`
-	UpdatedAt    string `db:"updated_at"`
+	WindowWidth  int `db:"window_width"`
+	WindowHeight int `db:"window_height"`
+	WindowX      int `db:"window_x"`
+	WindowY      int `db:"window_y"`
 }
 
-func (dto *guiConfigDTO) entity() (*entity.GUIConfig, error) {
-	out := &entity.GUIConfig{
+func (dto *guiConfigDTO) entity() *entity.GUIConfig {
+	return &entity.GUIConfig{
 		WindowWidth:  dto.WindowWidth,
 		WindowHeight: dto.WindowHeight,
 		WindowX:      &dto.WindowX,
 		WindowY:      &dto.WindowY,
 	}
-
-	var err error
-	out.CreatedAt, err = types.StrToDateTime(dto.CreatedAt)
-	if err != nil {
-		return nil, err
-	}
-	out.UpdatedAt, err = types.StrToDateTime(dto.UpdatedAt)
-	if err != nil {
-		return nil, err
-	}
-
-	return out, nil
 }
 
 // Get returns GUIConfig
@@ -69,7 +54,7 @@ func (repo *GUIConfigRepository) Get() (*entity.GUIConfig, error) {
 		return nil, err
 	}
 
-	return dto.entity()
+	return dto.entity(), nil
 }
 
 // Update updates GUIConfig
@@ -108,5 +93,5 @@ func (repo *GUIConfigRepository) Update(in *entity.GUIConfig) (*entity.GUIConfig
 		return nil, err
 	}
 
-	return dto.entity()
+	return dto.entity(), nil
 }
