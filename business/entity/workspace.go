@@ -17,6 +17,11 @@ const (
 	WorkspaceTypeQuery  WorkspaceType = "r"
 )
 
+var (
+	// ErrWorkspaceNotExists error workspace not exists
+	ErrWorkspaceNotExists = errors.New("workspace not exists")
+)
+
 // Workspace workspace item
 type Workspace struct {
 	ID         int64         `json:"id"`
