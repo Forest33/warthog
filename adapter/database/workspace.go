@@ -186,13 +186,7 @@ func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace
 	)
 
 	tx := repo.db.Connector.MustBegin()
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-			return
-		}
-		_ = tx.Commit()
-	}()
+	defer commit(tx, err)
 
 	query, args, err = tx.BindNamed(fmt.Sprintf(`
 			INSERT INTO %s (parent_id, has_child, type, title, data)
@@ -206,10 +200,7 @@ func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace
 	}
 
 	if in.ParentID != nil {
-		_, err = tx.NamedExecContext(repo.ctx, fmt.Sprintf(`
-			UPDATE %s SET has_child = TRUE, updated_at = datetime('now','localtime')
-			WHERE id = :id`, workspaceTable), &workspaceDTO{ID: *in.ParentID})
-		if err != nil {
+		if err := repo.setHasChild(tx, *in.ParentID); err != nil {
 			return nil, err
 		}
 	}
@@ -265,13 +256,7 @@ func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace
 	)
 
 	tx := repo.db.Connector.MustBegin()
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-			return
-		}
-		_ = tx.Commit()
-	}()
+	defer commit(tx, err)
 
 	query, args, err = tx.BindNamed(fmt.Sprintf(`
 			UPDATE %s SET %s, updated_at = datetime('now','localtime')
@@ -285,10 +270,7 @@ func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace
 	}
 
 	if in.ParentID != nil {
-		_, err = tx.NamedExecContext(repo.ctx, fmt.Sprintf(`
-			UPDATE %s SET has_child = TRUE, updated_at = datetime('now','localtime')
-			WHERE id = :id`, workspaceTable), &workspaceDTO{ID: *in.ParentID})
-		if err != nil {
+		if err := repo.setHasChild(tx, *in.ParentID); err != nil {
 			return nil, err
 		}
 	}
@@ -308,13 +290,7 @@ func (repo *WorkspaceRepository) Delete(id int64) error {
 	}
 
 	tx := repo.db.Connector.MustBegin()
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-			return
-		}
-		_ = tx.Commit()
-	}()
+	defer commit(tx, err)
 
 	_, err = tx.NamedExecContext(repo.ctx, fmt.Sprintf(`
 			DELETE FROM %s 
@@ -340,4 +316,19 @@ func (repo *WorkspaceRepository) Delete(id int64) error {
 	}
 
 	return nil
+}
+
+func (repo *WorkspaceRepository) setHasChild(tx *sqlx.Tx, id int64) error {
+	_, err := tx.NamedExecContext(repo.ctx, fmt.Sprintf(`
+			UPDATE %s SET has_child = TRUE, updated_at = datetime('now','localtime')
+			WHERE id = :id`, workspaceTable), &workspaceDTO{ID: id})
+	return err
+}
+
+func commit(tx *sqlx.Tx, err error) {
+	if err != nil {
+		_ = tx.Rollback()
+		return
+	}
+	_ = tx.Commit()
 }

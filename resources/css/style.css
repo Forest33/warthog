@@ -285,13 +285,6 @@ label {
   overflow-y: scroll;
 }
 
-#workspace-modal-folder-title {
-  border-bottom-left-radius: 0;
-  border-top-width: 0;
-  border-left-width: 0;
-  border-right-width: 0;
-}
-
 #workspace-modal-badge-server-id {
   font-size: inherit;
   visibility: hidden;
@@ -417,4 +410,8 @@ label {
 
 #workspace-modal-folder-title {
   border-color: #dfd7ca;
+  border-bottom-left-radius: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-right-width: 0;
 }
