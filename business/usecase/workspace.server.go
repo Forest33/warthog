@@ -104,7 +104,7 @@ func (uc *WorkspaceUseCase) successServerResponse(server *entity.Workspace) *ent
 		Status: entity.GUIResponseStatusOK,
 		Payload: &entity.ServerResponse{
 			Server: server,
-			Tree:   entity.MakeWorkspaceTree(w, nil),
+			Tree:   entity.MakeWorkspaceTree(w, nil, server.ID),
 		},
 	}
 }

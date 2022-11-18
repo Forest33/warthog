@@ -44,7 +44,7 @@ func getAstilectronOptions() astilectron.Options {
 		AppIconDarwinPath:  iconPath,
 		AppIconDefaultPath: iconPath,
 		BaseDirectoryPath:  homeDir,
-		SingleInstance:     true,
+		SingleInstance:     cfg.Application.SingleInstance,
 		VersionAstilectron: VersionAstilectron,
 		VersionElectron:    VersionElectron,
 		ElectronSwitches:   os.Args[1:],
@@ -159,6 +159,10 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 }
 
 func getTrayOptions() *astilectron.TrayOptions {
+	if !cfg.Application.SingleInstance {
+		return nil
+	}
+
 	iconPath := resources.GetTrayIcon()
 
 	zlog.Debug().Str("path", iconPath).Msgf("tray icon")
@@ -170,6 +174,10 @@ func getTrayOptions() *astilectron.TrayOptions {
 }
 
 func getTrayMenuOptions() []*astilectron.MenuItemOptions {
+	if !cfg.Application.SingleInstance {
+		return nil
+	}
+
 	return []*astilectron.MenuItemOptions{
 		{
 			Label: astikit.StrPtr("Show"),

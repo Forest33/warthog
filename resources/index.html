@@ -173,8 +173,14 @@
      data-bs-backdrop="true"
      aria-labelledby="offcanvasTreeLabel">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasTreeLabel">Workspaces</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="input-group mb-3" style="margin-bottom: 0!important;">
+            <input type="search" minlength="1"
+                   class="form-control" style="border-right:0;"
+                   placeholder="Search" aria-label="Search"
+                   aria-describedby="search-addon"
+                   id="offcanvas-tree-search">
+            <span class="input-group-text" id="search-addon" style="border-left:0;background-color:#ffffff;"><i class="bi bi-search"></i></span>
+        </div>
     </div>
     <div class="offcanvas-body">
         <div>

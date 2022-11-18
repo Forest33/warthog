@@ -7,11 +7,13 @@ import {
   createRequestForm,
   currentMethod,
   currentQuery,
+  currentSelectedID,
   currentServer,
   currentService,
   currentServices,
   loadServer,
   saveRequest,
+  setCurrentQuery,
   setRequestTitle,
 } from "./server.js";
 
@@ -115,6 +117,7 @@ $(document).ready(function () {
     let selMethods = $("#sidebar-methods-list");
     let service = currentServices[this.value];
     selMethods.children().remove();
+    setCurrentQuery(undefined);
     setRequestTitle("");
 
     if (isNull(service)) {
@@ -140,6 +143,10 @@ $(document).ready(function () {
   $("#sidebar-methods-list").on("change", function () {
     saveRequest();
     let service = $("#sidebar-services-list option:selected").val();
+    if (!isNull(currentQuery)) {
+      currentServer.breadcrumb.pop();
+    }
+    setCurrentQuery(undefined);
     createRequestForm(
       currentServices[service],
       currentServices[service].methods[$(this).val()]
@@ -152,6 +159,15 @@ $(document).ready(function () {
 
   $(".request-metadata-button-delete").click(function () {
     removeMetadataRow(this);
+  });
+
+  $("#offcanvas-tree-search").on("input", function () {
+    let v = $(this).val();
+    if (v.length > 0) {
+      $("#tree").treeview("search", v, { revealResults: false });
+    } else {
+      $("#tree").treeview("clearSearch");
+    }
   });
 
   const { app } = require("electron").remote;
@@ -220,9 +236,13 @@ function initQueryPopover() {
 function initOffcanvas() {
   let offcanvasTree = document.getElementById("offcanvasTree");
   offcanvasTree.addEventListener("show.bs.offcanvas", function () {
-    astilectron.sendMessage({ name: "workspace.get" }, function (message) {
-      showTree(message.payload.data);
-    });
+    astilectron.sendMessage(
+      { name: "workspace.get", payload: { selected_id: currentSelectedID } },
+      function (message) {
+        $("#offcanvas-tree-search").val("");
+        showTree(message.payload.data);
+      }
+    );
   });
 }
 

@@ -83,7 +83,10 @@ function initWorkspaceModal() {
     if (!basicForm.checkValidity()) {
       event.preventDefault();
       event.stopPropagation();
+      $("#nav-workspace-modal-basic-tab").tab("show");
     } else if (!tlsForm.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
       $("#nav-workspace-modal-tls-tab").tab("show");
     } else {
       createWorkspace();

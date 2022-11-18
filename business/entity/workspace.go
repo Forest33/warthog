@@ -5,8 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/forest33/warthog/pkg/structs"
 )
 
@@ -47,15 +45,24 @@ func (t WorkspaceType) String() string {
 
 // WorkspaceRequest workspace request by type
 type WorkspaceRequest struct {
-	Type []WorkspaceType `json:"type"`
+	Type       []WorkspaceType `json:"type"`
+	SelectedID int64           `json:"selected_id"`
 }
 
 // Model creates WorkspaceRequest from UI request
-func (r *WorkspaceRequest) Model(payload interface{}) error {
+func (r *WorkspaceRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return nil
 	}
-	return mapstructure.Decode(payload, &r)
+
+	if v, ok := payload["type"]; ok && v != nil {
+		r.Type = structs.Map(v.([]interface{}), func(t interface{}) WorkspaceType { return WorkspaceType(t.(string)) })
+	}
+	if v, ok := payload["selected_id"]; ok && v != nil {
+		r.SelectedID = int64(v.(float64))
+	}
+
+	return nil
 }
 
 // WorkspaceSortingRequest workspace sorting request
@@ -143,9 +150,25 @@ func makeBreadcrumb(nodeMap map[int64]*Workspace, id int64, breadcrumb []string)
 	return makeBreadcrumb(nodeMap, *nodeMap[id].ParentID, breadcrumb)
 }
 
+func getExpandedNodes(w []*Workspace, nodeMap map[int64]int, id int64) map[int64]struct{} {
+	if _, ok := nodeMap[id]; !ok {
+		return map[int64]struct{}{}
+	}
+
+	parentNodes := make(map[int64]struct{}, 1)
+	parent := w[nodeMap[id]].ParentID
+	for parent != nil {
+		parentNodes[*parent] = struct{}{}
+		parent = w[nodeMap[*parent]].ParentID
+	}
+
+	return parentNodes
+}
+
 // MakeWorkspaceTree creates workspace tree for UI
-func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter) []*WorkspaceTreeNode {
+func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter, selectedID int64) []*WorkspaceTreeNode {
 	nodeMap := make(map[int64]int, len(w))
+	expandedNodes := make(map[int64]struct{}, len(w))
 	list := make([]*WorkspaceTreeNode, len(w))
 	tree := make([]*WorkspaceTreeNode, 0, len(w))
 	onlyTypes := map[WorkspaceType]struct{}{}
@@ -168,9 +191,16 @@ func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter) []*Workspace
 		}
 	}
 
+	if selectedID != 0 {
+		expandedNodes = getExpandedNodes(w, nodeMap, selectedID)
+	}
+
 	for _, item := range list {
 		if item == nil {
 			continue
+		}
+		if _, ok := expandedNodes[item.Data.ID]; ok {
+			item.Data.Expanded = structs.Ref(true)
 		}
 		if item.Data.ParentID != nil && *item.Data.ParentID != 0 {
 			item.Data.Breadcrumb = append([]string{list[nodeMap[*item.Data.ParentID]].Text}, item.Data.Breadcrumb...)

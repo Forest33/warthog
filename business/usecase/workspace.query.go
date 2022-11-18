@@ -61,7 +61,7 @@ func (uc *WorkspaceUseCase) UpdateQuery(payload map[string]interface{}) *entity.
 		Payload: &entity.ServerResponse{
 			Server: server,
 			Query:  query,
-			Tree:   entity.MakeWorkspaceTree(w, nil),
+			Tree:   entity.MakeWorkspaceTree(w, nil, query.ID),
 		},
 	}
 }
