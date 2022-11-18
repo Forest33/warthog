@@ -319,7 +319,8 @@ label {
   --bs-dropdown-min-width: 7rem;
 }
 
-.offcanvas-header {
+.offcanvas-header,
+.modal-header {
   background-color: #f8f5f0;
 }
 
@@ -399,4 +400,21 @@ label {
   color: #842029;
   background-color: #f8d7da;
   border-color: #f5c2c7;
+}
+
+#offcanvas-tree-search,
+#tree-folder-name,
+#workspace-modal-folder-title {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+#offcanvas-tree-search,
+#tree-folder-name {
+  border: 1px solid #ced4da;
+}
+
+#workspace-modal-folder-title {
+  border-color: #dfd7ca;
 }

@@ -73,7 +73,7 @@ func (uc *WorkspaceUseCase) successFolderResponse(folder *entity.Workspace, type
 		Status: entity.GUIResponseStatusOK,
 		Payload: &entity.FolderResponse{
 			Folder: folder,
-			Tree:   entity.MakeWorkspaceTree(w, &entity.WorkspaceTreeFilter{Type: typeFilter}),
+			Tree:   entity.MakeWorkspaceTree(w, &entity.WorkspaceTreeFilter{Type: typeFilter}, folder.ID),
 		},
 	}
 }

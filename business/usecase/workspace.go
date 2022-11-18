@@ -30,7 +30,7 @@ func NewWorkspaceUseCase(ctx context.Context, log *logger.Zerolog, workspaceRepo
 }
 
 // Get returns workspace tree
-func (uc *WorkspaceUseCase) Get(payload interface{}) *entity.GUIResponse {
+func (uc *WorkspaceUseCase) Get(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.WorkspaceRequest{}
 	if err := req.Model(payload); err != nil {
 		return entity.ErrorGUIResponse(err)
@@ -47,7 +47,7 @@ func (uc *WorkspaceUseCase) Get(payload interface{}) *entity.GUIResponse {
 		return entity.ErrorGUIResponse(err)
 	}
 
-	tree := entity.MakeWorkspaceTree(w, filter)
+	tree := entity.MakeWorkspaceTree(w, filter, req.SelectedID)
 
 	return &entity.GUIResponse{
 		Status:  entity.GUIResponseStatusOK,

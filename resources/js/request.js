@@ -7,10 +7,12 @@ export {
 };
 import {
   currentMethod,
+  currentQuery,
   currentService,
   protoTypeBool,
   protoTypeEnum,
   protoTypeMessage,
+  saveRequest,
 } from "./server.js";
 import { isNull } from "./index.js";
 import { template } from "./template.js";
@@ -49,6 +51,10 @@ function query() {
   };
 
   setQueryCancelButton();
+
+  if (isNull(currentQuery)) {
+    saveRequest();
+  }
 
   astilectron.sendMessage(req, function (message) {
     //console.log("query result: " + JSON.stringify(message, null, 1));

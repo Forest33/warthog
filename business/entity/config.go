@@ -29,6 +29,7 @@ type ApplicationConfig struct {
 	TrayIconLinux   string `json:"tray_icon_linux" default:"tray.png"`
 	TrayIconDarwin  string `json:"tray_icon_darwin" default:"tray24.png"`
 	TrayIconWindows string `json:"tray_icon_windows" default:"tray.ico"`
+	SingleInstance  bool   `json:"single_instance" default:"true"`
 }
 
 // DatabaseConfig database settings

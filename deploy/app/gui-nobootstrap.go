@@ -15,7 +15,6 @@ func createWindow() error {
 
 	zlog.Debug().Str("path", iconPath).Msg("application icon")
 
-	//l := log.New(log.Writer(), log.Prefix(), log.Flags())
 	ast, err = astilectron.New(zlog, getAstilectronOptions())
 	if err != nil {
 		return fmt.Errorf("creating astilectron failed: %v", err)
@@ -47,6 +46,10 @@ func createMenu() error {
 }
 
 func createTray() error {
+	if !cfg.Application.SingleInstance {
+		return nil
+	}
+
 	tray = ast.NewTray(getTrayOptions())
 
 	if err := tray.Create(); err != nil {

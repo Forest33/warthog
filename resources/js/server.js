@@ -2,6 +2,7 @@ export {
   currentServer,
   currentService,
   currentServices,
+  currentSelectedID,
   currentMethod,
   currentQuery,
   protoTypeEnum,
@@ -26,6 +27,7 @@ import { template } from "./template.js";
 
 let currentServer = undefined;
 let currentQuery = undefined;
+let currentSelectedID = undefined;
 let currentService = undefined;
 let currentMethod = undefined;
 let currentServices = {};
@@ -82,8 +84,10 @@ function loadServer(srv, show) {
     }
 
     currentServer = message.payload.data.server;
+    currentSelectedID = currentServer.id;
     if (srv.type === WorkspaceTypeQuery) {
       currentQuery = message.payload.data.query;
+      currentSelectedID = currentQuery.id;
       currentRequest = currentQuery.data.request;
       show = {
         service: { name: currentQuery.data.service },

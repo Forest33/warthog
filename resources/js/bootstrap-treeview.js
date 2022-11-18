@@ -161,6 +161,9 @@
     this.subscribeEvents();
     this.setInitialStates({ nodes: this.tree }, 0);
     this.render();
+
+    this.allNodes = this.nodes;
+    this.fullTree = this.tree;
   };
 
   Tree.prototype.remove = function () {
@@ -1177,46 +1180,69 @@
       }
 
       results = this.findNodes(pattern, modifier);
-
-      // Add searchResult property to all matching nodes
-      // This will be used to apply custom styles
-      // and when identifying result to be cleared
-      $.each(results, function (index, node) {
-        node.searchResult = true;
-      });
     }
 
-    // If revealResults, then render is triggered from revealNode
-    // otherwise we just call render.
-    if (options.revealResults) {
-      this.revealNode(results);
-    } else {
-      this.render();
+    let all = this.getSearchResults(results);
+    let nodeMap = new Map();
+    let list = [];
+    let tree = [];
+    let idx = 0;
+
+    all.forEach(function (item) {
+      nodeMap.set(item.data.id, idx);
+      if (item.data.has_child) {
+        item.data.expanded = true;
+      }
+      list[idx++] = {
+        data: item.data,
+        text: item.data.text,
+      };
+    });
+
+    for (let item of list) {
+      if (item.data.parent_id !== null) {
+        if (list[nodeMap.get(item.data.parent_id)].nodes === undefined) {
+          list[nodeMap.get(item.data.parent_id)].nodes = [];
+        }
+        list[nodeMap.get(item.data.parent_id)].nodes.push(item);
+      } else {
+        tree.push(item);
+      }
     }
+
+    this.nodes = [];
+    this.setInitialStates({ nodes: tree }, 0);
+    this.tree = tree;
+    this.render();
 
     this.$element.trigger("searchComplete", $.extend(true, {}, results));
 
     return results;
   };
 
+  Tree.prototype.getSearchResults = function (results) {
+    let nodes = new Set();
+    for (let item of results) {
+      nodes.add(item);
+      while (true) {
+        let parent = this.getParent(item);
+        if (parent === undefined) {
+          break;
+        }
+        nodes.add(parent);
+        item = parent;
+      }
+    }
+    return nodes;
+  };
+
   /**
      Clears previous search results
      */
   Tree.prototype.clearSearch = function (options) {
-    options = $.extend({}, { render: true }, options);
-
-    var results = $.each(
-      this.findNodes("true", "g", "searchResult"),
-      function (index, node) {
-        node.searchResult = false;
-      }
-    );
-
-    if (options.render) {
-      this.render();
-    }
-
-    this.$element.trigger("searchCleared", $.extend(true, {}, results));
+    this.tree = this.fullTree;
+    this.nodes = this.allNodes;
+    this.render();
   };
 
   /**
@@ -1230,10 +1256,11 @@
     modifier = modifier || "g";
     attribute = attribute || "text";
 
-    var _this = this;
+    let _this = this;
     return $.grep(this.nodes, function (node) {
-      var val = _this.getNodeValue(node, attribute);
+      let val = _this.getNodeValue(node, attribute);
       if (typeof val === "string") {
+        val = val.replaceAll(/<.*>.*?/gi, "");
         return val.match(new RegExp(pattern, modifier));
       }
     });
