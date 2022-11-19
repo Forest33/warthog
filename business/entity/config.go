@@ -13,9 +13,9 @@ const (
 type Config struct {
 	Application *ApplicationConfig `json:"application"`
 	Database    *DatabaseConfig    `json:"database"`
-	Grpc        *GrpcConfig        `json:"grpc"`
-	Logger      *LoggerConfig      `json:"logger"`
-	Runtime     *RuntimeConfig     `json:"runtime"`
+	//Grpc        *GrpcConfig        `json:"grpc"`
+	Logger  *LoggerConfig  `json:"logger"`
+	Runtime *RuntimeConfig `json:"runtime"`
 }
 
 // ApplicationConfig base application params
@@ -29,22 +29,12 @@ type ApplicationConfig struct {
 	TrayIconLinux   string `json:"tray_icon_linux" default:"tray.png"`
 	TrayIconDarwin  string `json:"tray_icon_darwin" default:"tray24.png"`
 	TrayIconWindows string `json:"tray_icon_windows" default:"tray.ico"`
-	SingleInstance  bool   `json:"single_instance" default:"true"`
 }
 
 // DatabaseConfig database settings
 type DatabaseConfig struct {
 	DatasourceName string `json:"datasource_name" default:"warthog.db"`
 	DriverName     string `json:"driver_name" default:"sqlite3"`
-}
-
-// GrpcConfig gRPC settings
-type GrpcConfig struct {
-	ConnectTimeout    int  `json:"connect_timeout" default:"10"`
-	QueryTimeout      int  `json:"query_timeout" default:"30"`
-	NonBlocking       bool `json:"non_blocking" default:"true"`
-	SortMethodsByName bool `json:"sort_methods_by_name" default:"true"`
-	MaxLoopDepth      int  `json:"max_loop_depth" default:"100"`
 }
 
 // LoggerConfig logger settings

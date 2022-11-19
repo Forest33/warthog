@@ -23,6 +23,7 @@ type GrpcUseCase struct {
 
 // GrpcClient is an interface for working with the gRPC client
 type GrpcClient interface {
+	SetSettings(cfg *entity.Settings)
 	Connect(addr string, opts ...grpc.ClientOpt) error
 	AddProtobuf(path ...string)
 	AddImport(path ...string)

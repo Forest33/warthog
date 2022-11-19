@@ -89,7 +89,7 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 
 // LoadFromReflection loads services using reflection
 func (c *Client) LoadFromReflection() ([]*entity.Service, error) {
-	ctx, cancel := context.WithTimeout(c.ctx, time.Second*time.Duration(c.cfg.ConnectTimeout))
+	ctx, cancel := context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.ConnectTimeout))
 	defer cancel()
 
 	client := grpcreflect.NewClientAuto(ctx, c.conn)
@@ -131,7 +131,7 @@ func (c *Client) getMethods(sd *desc.ServiceDescriptor) []*entity.Method {
 		})
 	}
 
-	if c.cfg.SortMethodsByName {
+	if *c.cfg.SortMethodsByName {
 		c.sortMethodsByName(methods)
 	}
 
@@ -304,7 +304,7 @@ func (c *Client) getMessageFields(fields []*desc.FieldDescriptor, fqn map[string
 
 	for _, mf := range fields {
 		name := mf.GetFullyQualifiedName()
-		if count, ok := fqn[name]; ok && count >= c.cfg.MaxLoopDepth {
+		if count, ok := fqn[name]; ok && count >= *c.cfg.MaxLoopDepth {
 			continue
 		}
 		fqn[name]++

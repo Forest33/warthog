@@ -46,7 +46,7 @@ func createMenu() error {
 }
 
 func createTray() error {
-	if !cfg.Application.SingleInstance {
+	if !*settings.SingleInstance {
 		return nil
 	}
 

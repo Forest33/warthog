@@ -14,13 +14,8 @@ import (
 )
 
 const (
-	defaultWindowWidth     = 1024
-	defaultWindowHeight    = 768
-	defaultWindowX         = 50
-	defaultWindowY         = 50
-	defaultMinWindowWidth  = 800
-	defaultMinWindowHeight = 600
-
+	defaultMinWindowWidth     = 800
+	defaultMinWindowHeight    = 600
 	defaultVersionAstilectron = "0.56.0"
 	defaultVersionElectron    = "13.6.9"
 )
@@ -44,7 +39,7 @@ func getAstilectronOptions() astilectron.Options {
 		AppIconDarwinPath:  iconPath,
 		AppIconDefaultPath: iconPath,
 		BaseDirectoryPath:  homeDir,
-		SingleInstance:     cfg.Application.SingleInstance,
+		SingleInstance:     *settings.SingleInstance,
 		VersionAstilectron: VersionAstilectron,
 		VersionElectron:    VersionElectron,
 		ElectronSwitches:   os.Args[1:],
@@ -56,12 +51,12 @@ func getWindowOptions() *astilectron.WindowOptions {
 		Center:    astikit.BoolPtr(true),
 		Frame:     astikit.BoolPtr(true),
 		Show:      astikit.BoolPtr(true),
-		Width:     astikit.IntPtr(guiCfg.WindowWidth),
-		Height:    astikit.IntPtr(guiCfg.WindowHeight),
+		Width:     astikit.IntPtr(settings.WindowWidth),
+		Height:    astikit.IntPtr(settings.WindowHeight),
 		MinWidth:  astikit.IntPtr(defaultMinWindowWidth),
 		MinHeight: astikit.IntPtr(defaultMinWindowHeight),
-		X:         guiCfg.WindowX,
-		Y:         guiCfg.WindowY,
+		X:         settings.WindowX,
+		Y:         settings.WindowY,
 		Title:     astikit.StrPtr(applicationName),
 		Custom: &astilectron.WindowCustomOptions{
 			HideOnClose: astikit.BoolPtr(!entity.IsDebug()),
@@ -87,6 +82,11 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 					Label:   astikit.StrPtr("Refresh"),
 					Role:    astilectron.MenuItemRoleForceReload,
 					Visible: astikit.BoolPtr(entity.IsDebug()),
+				},
+				{
+					Label:       astikit.StrPtr("Settings"),
+					Accelerator: astilectron.NewAccelerator("CommandOrControl+,"),
+					OnClick:     menuSettings,
 				},
 				{
 					Label: astikit.StrPtr("Exit"),
@@ -159,7 +159,7 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 }
 
 func getTrayOptions() *astilectron.TrayOptions {
-	if !cfg.Application.SingleInstance {
+	if !*settings.SingleInstance {
 		return nil
 	}
 
@@ -174,7 +174,7 @@ func getTrayOptions() *astilectron.TrayOptions {
 }
 
 func getTrayMenuOptions() []*astilectron.MenuItemOptions {
-	if !cfg.Application.SingleInstance {
+	if !*settings.SingleInstance {
 		return nil
 	}
 
@@ -203,7 +203,7 @@ func initGUIEvents() {
 			Int("y", y).
 			Msg("window.event.move")
 
-		guiConfigUseCase.Set(&entity.GUIConfig{
+		settingsUseCase.Set(&entity.Settings{
 			WindowX: &x,
 			WindowY: &y,
 		})
@@ -217,27 +217,13 @@ func initGUIEvents() {
 			Int("height", *e.Bounds.Height).
 			Msg("window.event.resize")
 
-		guiConfigUseCase.Set(&entity.GUIConfig{
+		settingsUseCase.Set(&entity.Settings{
 			WindowWidth:  *e.Bounds.Width,
 			WindowHeight: *e.Bounds.Height,
 		})
 
 		return false
 	})
-}
-
-func initGUIConfig() {
-	guiCfg = &entity.GUIConfig{
-		WindowWidth:  defaultWindowWidth,
-		WindowHeight: defaultWindowHeight,
-		WindowX:      astikit.IntPtr(defaultWindowX),
-		WindowY:      astikit.IntPtr(defaultWindowY),
-	}
-
-	cfg, err := guiConfigUseCase.Get()
-	if err == nil {
-		guiCfg = cfg
-	}
 }
 
 func loadWorkspace() {
@@ -279,5 +265,33 @@ func menuAbout() {
 	err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
 	if err != nil {
 		zlog.Error().Msgf("failed to send message: %v", err)
+	}
+}
+
+func menuSettings(e astilectron.Event) (deleteListener bool) {
+	err := window.SendMessage(&entity.GUIRequest{Cmd: entity.CmdMenuSettings}, func(_ *astilectron.EventMessage) {})
+	if err != nil {
+		zlog.Error().Msgf("failed to send message: %v", err)
+	}
+	return false
+}
+
+type applicationState struct {
+	State    *entity.WorkspaceState `json:"state"`
+	Settings *entity.Settings       `json:"settings"`
+}
+
+func getApplicationState() *entity.GUIResponse {
+	state, err := workspaceUseCase.GetState()
+	if err != nil {
+		return entity.ErrorGUIResponse(err)
+	}
+
+	return &entity.GUIResponse{
+		Status: entity.GUIResponseStatusOK,
+		Payload: &applicationState{
+			State:    state,
+			Settings: settings,
+		},
 	}
 }

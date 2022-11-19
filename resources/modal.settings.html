@@ -1,0 +1,68 @@
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered noselect">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="settings-modal-form">
+
+                    <div class="row mb-3">
+                        <label for="settings-modal-form-connect-timeout" class="col-sm-9 col-form-label">Connect timeout, seconds</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="settings-modal-form-connect-timeout" min="1">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="settings-modal-form-request-timeout" class="col-sm-9 col-form-label">Request timeout, seconds</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="settings-modal-form-request-timeout" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="settings-modal-form-max-loop-depth" class="col-sm-9 col-form-label">Maximum depth of looped messages, max 100</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="settings-modal-form-max-loop-depth" min="0" max="100">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="settings-modal-form-non-blocking-connection" class="col-sm-9 col-form-label">
+                            Use non-blocking connections
+                        </label>
+                        <div class="col-sm-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="settings-modal-form-non-blocking-connection">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="settings-modal-form-sort-methods-by-name" class="col-sm-9 col-form-label">
+                            Sort gRPC methods by name
+                        </label>
+                        <div class="col-sm-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="settings-modal-form-sort-methods-by-name">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" style="margin-bottom: 0!important;">
+                        <label for="settings-modal-form-single-instance" class="col-sm-9 col-form-label" style="padding-bottom: 0">
+                            Run application on single instance mode
+                            <label class="restart-label" id="settings-modal-form-single-instance-restart">Need to restart the application</label>
+                        </label>
+                        <div class="col-sm-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="settings-modal-form-single-instance">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="settings-modal-submit">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

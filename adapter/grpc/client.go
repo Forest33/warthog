@@ -19,7 +19,7 @@ import (
 // Client object capable of interacting with Client
 type Client struct {
 	ctx            context.Context
-	cfg            *entity.GrpcConfig
+	cfg            *entity.Settings
 	conn           *grpc.ClientConn
 	cancelQuery    context.CancelFunc
 	cancelQueryMux sync.Mutex
@@ -29,11 +29,15 @@ type Client struct {
 }
 
 // New creates a new Client
-func New(ctx context.Context, cfg *entity.GrpcConfig) *Client {
+func New(ctx context.Context) *Client {
 	return &Client{
 		ctx: ctx,
-		cfg: cfg,
 	}
+}
+
+// SetSettings sets application settings
+func (c *Client) SetSettings(cfg *entity.Settings) {
+	c.cfg = cfg
 }
 
 // Connect connecting to gRPC server
@@ -55,11 +59,13 @@ func (c *Client) Connect(addr string, opts ...ClientOpt) error {
 	}
 
 	ctx := c.ctx
-	if !c.cfg.NonBlocking {
+	if !*c.cfg.NonBlockingConnection {
 		var cancel context.CancelFunc
 		dialOptions = append(dialOptions, grpc.WithBlock())
-		ctx, cancel = context.WithTimeout(c.ctx, time.Second*time.Duration(c.cfg.ConnectTimeout))
-		defer cancel()
+		if *c.cfg.ConnectTimeout > 0 {
+			ctx, cancel = context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.ConnectTimeout))
+			defer cancel()
+		}
 	}
 
 	c.conn, err = grpc.DialContext(ctx, addr, dialOptions...)

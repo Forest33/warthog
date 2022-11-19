@@ -3,11 +3,12 @@ package entity
 
 // UI events
 const (
+	CmdApplicationState    GUICommand = "application.state"
+	CmdSettingsUpdate      GUICommand = "settings.update"
 	CmdGetWorkspace        GUICommand = "workspace.get"
 	CmdSortingWorkspace    GUICommand = "workspace.sorting"
 	CmdDeleteWorkspace     GUICommand = "workspace.delete"
 	CmdExpandWorkspace     GUICommand = "workspace.expand"
-	CmdStateWorkspace      GUICommand = "workspace.state"
 	CmdCreateServer        GUICommand = "server.create"
 	CmdUpdateServer        GUICommand = "server.update"
 	CmdUpdateServerRequest GUICommand = "server.update.request"
@@ -19,6 +20,7 @@ const (
 	CmdRunQuery            GUICommand = "query.run"
 	CmdCancelQuery         GUICommand = "query.cancel"
 	CmdDevTools            GUICommand = "dev.tools.show"
+	CmdMenuSettings        GUICommand = "menu.settings"
 	CmdMenuAbout           GUICommand = "menu.about"
 )
 

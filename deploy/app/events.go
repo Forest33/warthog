@@ -15,6 +15,10 @@ func eventsHandler(r *entity.GUIRequest) *entity.GUIResponse {
 		Msg("event")
 
 	switch r.Cmd {
+	case entity.CmdApplicationState:
+		resp = getApplicationState()
+	case entity.CmdSettingsUpdate:
+		resp = settingsUseCase.Update(r.Payload)
 	case entity.CmdGetWorkspace:
 		resp = workspaceUseCase.Get(r.Payload)
 	case entity.CmdSortingWorkspace:
@@ -23,8 +27,6 @@ func eventsHandler(r *entity.GUIRequest) *entity.GUIResponse {
 		resp = workspaceUseCase.Delete(r.Payload)
 	case entity.CmdExpandWorkspace:
 		resp = workspaceUseCase.Expand(r.Payload)
-	case entity.CmdStateWorkspace:
-		resp = workspaceUseCase.GetState()
 	case entity.CmdCreateFolder:
 		resp = workspaceUseCase.CreateFolder(r.Payload)
 	case entity.CmdUpdateFolder:

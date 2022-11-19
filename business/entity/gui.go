@@ -3,7 +3,6 @@ package entity
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/jhump/protoreflect/desc/protoparse/ast"
 	"google.golang.org/grpc/status"
@@ -14,16 +13,6 @@ const (
 	GUIResponseStatusOK    GUIResponseStatus = "ok"
 	GUIResponseStatusError GUIResponseStatus = "error"
 )
-
-// GUIConfig UI settings
-type GUIConfig struct {
-	WindowWidth  int
-	WindowHeight int
-	WindowX      *int
-	WindowY      *int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-}
 
 // GUIResponseStatus response status
 type GUIResponseStatus string
