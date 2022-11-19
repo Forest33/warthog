@@ -96,11 +96,11 @@ func (uc *WorkspaceUseCase) Expand(payload map[string]interface{}) *entity.GUIRe
 }
 
 // GetState returns count of folders/servers/queries
-func (uc *WorkspaceUseCase) GetState() *entity.GUIResponse {
+func (uc *WorkspaceUseCase) GetState() (*entity.WorkspaceState, error) {
 	workspaces, err := uc.workspaceRepo.Get()
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
-		return entity.ErrorGUIResponse(err)
+		return nil, err
 	}
 
 	state := &entity.WorkspaceState{StartupWorkspaceID: uc.startupWorkspaceID}
@@ -115,10 +115,7 @@ func (uc *WorkspaceUseCase) GetState() *entity.GUIResponse {
 		}
 	}
 
-	return &entity.GUIResponse{
-		Status:  entity.GUIResponseStatusOK,
-		Payload: state,
-	}
+	return state, nil
 }
 
 // Delete deletes workspace item

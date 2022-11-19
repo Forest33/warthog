@@ -1,8 +1,17 @@
-export { modalTreeExpandedNodes, treeRootNodes, dataIdToNode, isNull };
+export {
+  currentSettings,
+  modalTreeExpandedNodes,
+  treeRootNodes,
+  dataIdToNode,
+  isNull,
+  setCurrentSettings,
+};
+
 import { saveQuery } from "./query.js";
 import { showTree } from "./tree.js";
 import { editServer, initWorkspaceModal } from "./workspace.modal.js";
 import { query } from "./request.js";
+import { initSettingsModal, showSettingsModal } from "./settings.modal.js";
 import {
   createRequestForm,
   currentMethod,
@@ -17,6 +26,7 @@ import {
   setRequestTitle,
 } from "./server.js";
 
+let currentSettings = undefined;
 let treeRootNodes = new Set();
 let modalTreeExpandedNodes = new Set();
 let dataIdToNode = new Map();
@@ -32,22 +42,26 @@ $(document).ready(function () {
         case "server.load":
           loadServer({ id: message.payload.id });
           break;
+        case "menu.settings":
+          showSettingsModal();
+          break;
         case "menu.about":
           showAbout(message.payload);
       }
     });
 
-    astilectron.sendMessage({ name: "workspace.state" }, function (message) {
+    astilectron.sendMessage({ name: "application.state" }, function (message) {
       if (message.payload.status !== "ok") {
         return;
       }
-      if (message.payload.data.servers === 0) {
+      currentSettings = message.payload.data.settings;
+      if (message.payload.data.state.servers === 0) {
         $("#workspaceModal").modal("show");
         return;
       }
       if (
-        isNull(message.payload.data.startup_workspace_id) ||
-        message.payload.data.startup_workspace_id === 0
+        isNull(message.payload.data.state.startup_workspace_id) ||
+        message.payload.data.state.startup_workspace_id === 0
       ) {
         $("#offcanvasTree").offcanvas("show");
       }
@@ -60,6 +74,9 @@ $(document).ready(function () {
       switch ($(this).attr("data-include")) {
         case "modal.workspace.html":
           initWorkspaceModal();
+          break;
+        case "modal.settings.html":
+          initSettingsModal();
           break;
       }
     });
@@ -313,4 +330,8 @@ function showAbout(data) {
 
 function isNull(v) {
   return v === undefined || v === null;
+}
+
+function setCurrentSettings(settinigs) {
+  currentSettings = settinigs;
 }

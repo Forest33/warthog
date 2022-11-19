@@ -45,19 +45,19 @@ var (
 	cfg = &entity.Config{}
 	dbi *database.Database
 
-	guiConfigRepo *db.GUIConfigRepository
+	settingsRepo  *db.SettingsRepository
 	workspaceRepo *db.WorkspaceRepository
 	grpcClient    *grpc.Client
 
-	guiConfigUseCase *usecase.GUIConfigUseCase
+	settingsUseCase  *usecase.SettingsUseCase
 	workspaceUseCase *usecase.WorkspaceUseCase
 	grpcUseCase      *usecase.GrpcUseCase
 
-	guiCfg *entity.GUIConfig
-	ast    *astilectron.Astilectron
-	window *astilectron.Window
-	tray   *astilectron.Tray
-	menu   *astilectron.Menu
+	settings *entity.Settings
+	ast      *astilectron.Astilectron
+	window   *astilectron.Window
+	tray     *astilectron.Tray
+	menu     *astilectron.Menu
 
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -110,8 +110,8 @@ func main() {
 
 	initDatabase()
 	initAdapters()
+	initClients()
 	initUseCases()
-	initGUIConfig()
 
 	if UseBootstrap == "true" {
 		withBootstrap()
@@ -121,20 +121,33 @@ func main() {
 }
 
 func initAdapters() {
-	guiConfigRepo = db.NewGUIConfigRepository(ctx, dbi)
-	workspaceRepo = db.NewWorkspaceRepository(ctx, dbi)
-	grpcClient = grpc.New(ctx, cfg.Grpc)
+	settingsRepo = db.NewSettingsRepository(ctx, dbi)
+	workspaceRepo = db.NewWorkspaceRepository(ctx, dbi, zlog)
+}
+
+func initClients() {
+	grpcClient = grpc.New(ctx)
 }
 
 func initUseCases() {
-	guiConfigUseCase = usecase.NewGUIConfigUseCase(ctx, &wg, zlog, guiConfigRepo)
+	settingsUseCase = usecase.NewSettingsUseCase(ctx, &wg, zlog, settingsRepo, grpcClient)
+	grpcClient.SetSettings(initSettings())
+
 	workspaceUseCase = usecase.NewWorkspaceUseCase(ctx, zlog, workspaceRepo, workspaceID)
 	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, workspaceRepo)
 	usecase.SetWorkspaceUseCase(workspaceUseCase)
 }
 
+func initSettings() *entity.Settings {
+	settings = entity.DefaultSettings
+	if s, err := settingsUseCase.Get(); err == nil {
+		settings = s
+	}
+	return settings
+}
+
 func shutdown() {
-	guiConfigUseCase.Stop()
+	settingsUseCase.Stop()
 	wg.Wait()
 	cancel()
 	dbi.Close()

@@ -58,7 +58,11 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 	}
 
 	var ctx context.Context
-	ctx, c.cancelQuery = context.WithTimeout(c.ctx, time.Second*time.Duration(c.cfg.QueryTimeout))
+	if *c.cfg.RequestTimeout > 0 {
+		ctx, c.cancelQuery = context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.RequestTimeout))
+	} else {
+		ctx, c.cancelQuery = context.WithCancel(c.ctx)
+	}
 	defer func() {
 		c.cancelQueryMux.Lock()
 		defer c.cancelQueryMux.Unlock()

@@ -2,7 +2,7 @@
 package entity
 
 import (
-	"fmt"
+	"errors"
 )
 
 // SavedQuery saved query
@@ -30,7 +30,7 @@ type QueryRequest struct {
 // Model creates QueryRequest from UI request
 func (r *QueryRequest) Model(req map[string]interface{}) error {
 	if req == nil {
-		return fmt.Errorf("empty data")
+		return errors.New("no data")
 	}
 
 	if v, ok := req["id"]; ok && v != nil {
@@ -51,7 +51,7 @@ func (r *QueryRequest) Model(req map[string]interface{}) error {
 // Model creates WorkspaceItemQuery from UI request
 func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	if req == nil {
-		return fmt.Errorf("empty data")
+		return errors.New("no data")
 	}
 
 	if v, ok := req["service"]; ok && v != nil {

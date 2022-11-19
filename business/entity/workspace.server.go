@@ -2,7 +2,7 @@
 package entity
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/forest33/warthog/pkg/structs"
 )
@@ -47,7 +47,7 @@ type WorkspaceItemServer struct {
 // Model creates ServerRequest from UI request
 func (r *ServerRequest) Model(req map[string]interface{}) error {
 	if req == nil {
-		return fmt.Errorf("no data")
+		return errors.New("no data")
 	}
 
 	if v, ok := req["id"]; ok && v != nil {
@@ -68,7 +68,7 @@ func (r *ServerRequest) Model(req map[string]interface{}) error {
 // Model creates ServerUpdateRequest from UI request
 func (r *ServerUpdateRequest) Model(req map[string]interface{}) error {
 	if req == nil {
-		return fmt.Errorf("no data")
+		return errors.New("no data")
 	}
 
 	if v, ok := req["id"]; ok && v != nil {
@@ -92,7 +92,7 @@ func (r *ServerUpdateRequest) Model(req map[string]interface{}) error {
 // Model creates WorkspaceItemServer from UI request
 func (s *WorkspaceItemServer) Model(server map[string]interface{}) error {
 	if server == nil {
-		return fmt.Errorf("no data")
+		return errors.New("no data")
 	}
 
 	if v, ok := server["addr"]; ok && v != nil {

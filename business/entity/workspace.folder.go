@@ -2,7 +2,7 @@
 package entity
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/forest33/warthog/pkg/structs"
 )
@@ -28,7 +28,7 @@ type FolderResponse struct {
 // Model creates FolderRequest from UI request
 func (r *FolderRequest) Model(folder map[string]interface{}) error {
 	if folder == nil {
-		return fmt.Errorf("empty data")
+		return errors.New("no data")
 	}
 
 	if v, ok := folder["id"]; ok && v != nil {

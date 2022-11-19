@@ -415,3 +415,23 @@ label {
   border-left-width: 0;
   border-right-width: 0;
 }
+
+#settingsModal .form-switch {
+  padding-top: calc(.375rem + 1px);
+}
+
+#settingsModal .form-switch .form-check-input {
+  margin-left: -1.8em;
+}
+
+#settingsModal .modal-body {
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+#settingsModal .restart-label {
+  font-size: 0.7rem;
+  line-height: 0;
+  color: forestgreen;
+  visibility: hidden;
+}

@@ -14,6 +14,7 @@ import (
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/pkg/database"
 	"github.com/forest33/warthog/pkg/database/types"
+	"github.com/forest33/warthog/pkg/logger"
 	"github.com/forest33/warthog/pkg/structs"
 )
 
@@ -26,13 +27,15 @@ const (
 type WorkspaceRepository struct {
 	db  *database.Database
 	ctx context.Context
+	log *logger.Zerolog
 }
 
 // NewWorkspaceRepository creates a new WorkspaceRepository
-func NewWorkspaceRepository(ctx context.Context, db *database.Database) *WorkspaceRepository {
+func NewWorkspaceRepository(ctx context.Context, db *database.Database, log *logger.Zerolog) *WorkspaceRepository {
 	return &WorkspaceRepository{
 		db:  db,
 		ctx: ctx,
+		log: log,
 	}
 }
 
@@ -170,7 +173,12 @@ func (repo *WorkspaceRepository) Get() ([]*entity.Workspace, error) {
 		return nil, err
 	}
 
-	return structs.MapWithError(dto, func(w *workspaceDTO) (*entity.Workspace, error) { return w.entity() })
+	resp, err := structs.MapWithError(dto, func(w *workspaceDTO) (*entity.Workspace, error) { return w.entity() })
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 // Create creates new workspace item
@@ -186,7 +194,7 @@ func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace
 	)
 
 	tx := repo.db.Connector.MustBegin()
-	defer commit(tx, err)
+	defer repo.commit(tx, err)
 
 	query, args, err = tx.BindNamed(fmt.Sprintf(`
 			INSERT INTO %s (parent_id, has_child, type, title, data)
@@ -256,7 +264,7 @@ func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace
 	)
 
 	tx := repo.db.Connector.MustBegin()
-	defer commit(tx, err)
+	defer repo.commit(tx, err)
 
 	query, args, err = tx.BindNamed(fmt.Sprintf(`
 			UPDATE %s SET %s, updated_at = datetime('now','localtime')
@@ -290,7 +298,7 @@ func (repo *WorkspaceRepository) Delete(id int64) error {
 	}
 
 	tx := repo.db.Connector.MustBegin()
-	defer commit(tx, err)
+	defer repo.commit(tx, err)
 
 	_, err = tx.NamedExecContext(repo.ctx, fmt.Sprintf(`
 			DELETE FROM %s 
@@ -325,10 +333,14 @@ func (repo *WorkspaceRepository) setHasChild(tx *sqlx.Tx, id int64) error {
 	return err
 }
 
-func commit(tx *sqlx.Tx, err error) {
+func (repo *WorkspaceRepository) commit(tx *sqlx.Tx, err error) {
 	if err != nil {
-		_ = tx.Rollback()
+		if err := tx.Rollback(); err != nil {
+			repo.log.Error().Msgf("failed to rollback transaction")
+		}
 		return
 	}
-	_ = tx.Commit()
+	if err := tx.Commit(); err != nil {
+		repo.log.Error().Msgf("failed to commit transaction")
+	}
 }

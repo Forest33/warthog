@@ -2,6 +2,8 @@
 // sources:
 // migrations/1633685677_init.down.sql (32B)
 // migrations/1633685677_init.up.sql (1.2kB)
+// migrations/1668845636_settings.down.sql (379B)
+// migrations/1668845636_settings.up.sql (530B)
 
 package migrations
 
@@ -11,7 +13,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -110,6 +111,46 @@ func migrations1633685677_initUpSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations1668845636_settingsDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x94\xcf\x4d\xce\x82\x40\x0c\xc6\xf1\x3d\xa7\xe8\x3d\x58\xf1\xbe\xce\x8e\x0f\x43\x70\xdd\xc0\x50\x87\x46\xa6\x45\xa6\x24\x7a\x7b\x63\xe2\xd2\xc5\x78\x80\x5f\x9e\xe7\x5f\xd5\x83\xeb\x61\xa8\xfe\x6a\x07\x89\xcc\x58\x42\x2a\x00\x00\x4e\x7d\x77\x86\xff\xae\xbe\x34\x2d\x24\x96\xb0\x12\xb2\x24\x1b\xc5\x53\x59\x64\x29\xaf\x22\xe4\x0d\x8d\x23\xe9\x61\x99\x6a\xa7\xfb\x41\xe9\x57\x25\x2a\x38\xad\xea\x6f\x2c\x01\x3f\xc3\xac\x92\xa9\x93\xee\x86\x91\x6c\xd1\x39\xe1\xf4\x44\x19\x63\x6e\x64\x1c\x1f\xb8\xaa\x6e\x38\xd3\x66\x4b\x59\x7c\x55\xd0\xbb\xb6\x6a\x1c\x0c\x1d\x84\x83\xdf\xff\xae\x1c\xca\x57\x00\x00\x00\xff\xff\x8c\x3b\x19\xa0\x7b\x01\x00\x00")
+
+func migrations1668845636_settingsDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations1668845636_settingsDownSql,
+		"migrations/1668845636_settings.down.sql",
+	)
+}
+
+func migrations1668845636_settingsDownSql() (*asset, error) {
+	bytes, err := migrations1668845636_settingsDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/1668845636_settings.down.sql", size: 379, mode: os.FileMode(0664), modTime: time.Unix(1668867328, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x78, 0xa4, 0x33, 0xf7, 0x12, 0x45, 0xf2, 0xea, 0x41, 0xfc, 0xe1, 0x1c, 0x5d, 0x54, 0xf2, 0x98, 0x36, 0x99, 0x26, 0x30, 0x7d, 0x3e, 0x80, 0xbe, 0xd, 0x39, 0xdf, 0xae, 0x24, 0xb3, 0xd1, 0xbb}}
+	return a, nil
+}
+
+var _migrations1668845636_settingsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\xd0\xc1\x4a\x03\x31\x10\x06\xe0\xfb\x3e\xc5\x3c\x82\xe2\xb1\xa7\xd4\x8d\x20\xa4\x09\x2c\xd9\xf3\xb0\x4d\xc7\x34\xb8\x99\xa9\xcd\x2c\xe8\xdb\x0b\xa2\x20\x88\x74\x61\xaf\xc3\xcf\xc7\xfc\xbf\x71\xd1\x0e\x10\xcd\xde\x59\xc8\x4b\xc1\x24\xfc\x52\x72\x07\x00\x30\x58\x6f\x0e\x16\x62\x80\x46\xaa\x85\x73\xdb\x75\xdd\xef\xfc\xcf\xf9\x2b\x6d\xfa\x1e\x1e\x83\x1b\x0f\x1e\x5a\xe1\x3c\x13\x16\x6e\x3a\x71\x22\xd8\x87\xe0\xc0\x87\x08\x7e\x74\x0e\x7a\xfb\x64\x46\x17\x21\x0e\xa3\xdd\xad\xf2\x92\x30\x53\x52\xd4\x52\x49\x16\x85\x67\x1f\xff\x72\xf7\x77\xeb\xb0\x2b\xbd\x2d\xd4\x6e\x60\x0f\x2b\x31\x16\xc6\xe3\x2c\xe9\xb5\x70\xc6\xef\x37\x8b\xf0\xe6\xc6\x4d\xae\x8a\x95\xf4\x2c\xa7\x86\xc7\x0f\xe4\xa9\x6e\x9f\xb1\x4e\xef\x38\x8b\x5c\xf0\x44\x17\x3d\xff\xbb\xe2\x67\x00\x00\x00\xff\xff\x8b\x20\x22\x7f\x12\x02\x00\x00")
+
+func migrations1668845636_settingsUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations1668845636_settingsUpSql,
+		"migrations/1668845636_settings.up.sql",
+	)
+}
+
+func migrations1668845636_settingsUpSql() (*asset, error) {
+	bytes, err := migrations1668845636_settingsUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/1668845636_settings.up.sql", size: 530, mode: os.FileMode(0664), modTime: time.Unix(1668846464, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x5b, 0x57, 0xe4, 0xf2, 0x27, 0x7f, 0x1d, 0x60, 0x68, 0xf0, 0x9a, 0x8e, 0x90, 0xa9, 0xa, 0x39, 0xbd, 0x14, 0x15, 0x4c, 0xa, 0x2a, 0x7b, 0x1e, 0xd9, 0xc7, 0xaa, 0x8d, 0x24, 0x81, 0x4, 0xb8}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -201,8 +242,10 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"migrations/1633685677_init.down.sql": migrations1633685677_initDownSql,
-	"migrations/1633685677_init.up.sql":   migrations1633685677_initUpSql,
+	"migrations/1633685677_init.down.sql":     migrations1633685677_initDownSql,
+	"migrations/1633685677_init.up.sql":       migrations1633685677_initUpSql,
+	"migrations/1668845636_settings.down.sql": migrations1668845636_settingsDownSql,
+	"migrations/1668845636_settings.up.sql":   migrations1668845636_settingsUpSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -252,8 +295,10 @@ type bintree struct {
 
 var _bintree = &bintree{nil, map[string]*bintree{
 	"migrations": {nil, map[string]*bintree{
-		"1633685677_init.down.sql": {migrations1633685677_initDownSql, map[string]*bintree{}},
-		"1633685677_init.up.sql":   {migrations1633685677_initUpSql, map[string]*bintree{}},
+		"1633685677_init.down.sql":     {migrations1633685677_initDownSql, map[string]*bintree{}},
+		"1633685677_init.up.sql":       {migrations1633685677_initUpSql, map[string]*bintree{}},
+		"1668845636_settings.down.sql": {migrations1668845636_settingsDownSql, map[string]*bintree{}},
+		"1668845636_settings.up.sql":   {migrations1668845636_settingsUpSql, map[string]*bintree{}},
 	}},
 }}
 
@@ -271,7 +316,7 @@ func RestoreAsset(dir, name string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	err = os.WriteFile(_filePath(dir, name), data, info.Mode())
 	if err != nil {
 		return err
 	}
