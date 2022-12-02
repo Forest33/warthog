@@ -2,13 +2,17 @@
 package grpc
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"sync"
 	"time"
 
-	"golang.org/x/net/context"
+	"github.com/jhump/protoreflect/dynamic"
+
+	"github.com/forest33/warthog/pkg/logger"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,22 +20,38 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
+const (
+	requestChanCapacity  = 10
+	responseChanCapacity = 10
+)
+
 // Client object capable of interacting with Client
 type Client struct {
-	ctx            context.Context
-	cfg            *entity.Settings
-	conn           *grpc.ClientConn
-	cancelQuery    context.CancelFunc
-	cancelQueryMux sync.Mutex
-	opts           ClientOptions
-	protoPath      []string
-	importPath     []string
+	ctx              context.Context
+	cfg              *entity.Settings
+	log              *logger.Zerolog
+	conn             *grpc.ClientConn
+	queryCtx         context.Context
+	queryCancel      context.CancelFunc
+	queryStartTime   time.Time
+	cancelQueryMux   sync.Mutex
+	requestCh        chan *dynamic.Message
+	responseCh       chan *entity.QueryResponse
+	closeStreamCh    chan struct{}
+	sentMessages     uint
+	receivedMessaged uint
+	opts             ClientOptions
+	protoPath        []string
+	importPath       []string
 }
 
 // New creates a new Client
-func New(ctx context.Context) *Client {
+func New(ctx context.Context, log *logger.Zerolog) *Client {
 	return &Client{
-		ctx: ctx,
+		ctx:           ctx,
+		log:           log,
+		responseCh:    make(chan *entity.QueryResponse, responseChanCapacity),
+		closeStreamCh: make(chan struct{}, 1),
 	}
 }
 
@@ -112,6 +132,8 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 // Close closes connection to gRPC server
 func (c *Client) Close() {
 	if c.conn != nil {
-		_ = c.conn.Close()
+		if err := c.conn.Close(); err != nil {
+			c.log.Error().Msgf("failed to close connection: %v", err)
+		}
 	}
 }

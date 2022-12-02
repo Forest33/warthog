@@ -19,8 +19,8 @@ type GUIResponseStatus string
 
 // GUIRequest UI request
 type GUIRequest struct {
-	Cmd     GUICommand             `json:"name"`
-	Payload map[string]interface{} `json:"payload"`
+	Cmd     GUICommand  `json:"name"`
+	Payload interface{} `json:"payload"`
 }
 
 // GUIResponse UI response

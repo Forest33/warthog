@@ -19,6 +19,8 @@ const (
 	CmdUpdateQuery         GUICommand = "query.update"
 	CmdRunQuery            GUICommand = "query.run"
 	CmdCancelQuery         GUICommand = "query.cancel"
+	CmdCloseStream         GUICommand = "query.close.stream"
+	CmdQueryResponse       GUICommand = "query.response"
 	CmdDevTools            GUICommand = "dev.tools.show"
 	CmdMenuSettings        GUICommand = "menu.settings"
 	CmdMenuAbout           GUICommand = "menu.about"

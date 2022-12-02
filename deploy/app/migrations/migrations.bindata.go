@@ -106,7 +106,7 @@ func migrations1633685677_initUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/1633685677_init.up.sql", size: 1200, mode: os.FileMode(0664), modTime: time.Unix(1668364647, 0)}
+	info := bindataFileInfo{name: "migrations/1633685677_init.up.sql", size: 1200, mode: os.FileMode(0664), modTime: time.Unix(1669023217, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x60, 0xf, 0x22, 0xd5, 0x76, 0xef, 0xe6, 0x6e, 0xa4, 0x9f, 0xe3, 0xd3, 0x87, 0xa0, 0xb0, 0xbc, 0x67, 0x3, 0xc2, 0xeb, 0x6b, 0xee, 0xb4, 0xe0, 0xa0, 0xd3, 0x3f, 0x48, 0x65, 0xb2, 0x30, 0xfe}}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func migrations1668845636_settingsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/1668845636_settings.down.sql", size: 379, mode: os.FileMode(0664), modTime: time.Unix(1668867328, 0)}
+	info := bindataFileInfo{name: "migrations/1668845636_settings.down.sql", size: 379, mode: os.FileMode(0664), modTime: time.Unix(1669023217, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x78, 0xa4, 0x33, 0xf7, 0x12, 0x45, 0xf2, 0xea, 0x41, 0xfc, 0xe1, 0x1c, 0x5d, 0x54, 0xf2, 0x98, 0x36, 0x99, 0x26, 0x30, 0x7d, 0x3e, 0x80, 0xbe, 0xd, 0x39, 0xdf, 0xae, 0x24, 0xb3, 0xd1, 0xbb}}
 	return a, nil
 }
@@ -146,7 +146,7 @@ func migrations1668845636_settingsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/1668845636_settings.up.sql", size: 530, mode: os.FileMode(0664), modTime: time.Unix(1668846464, 0)}
+	info := bindataFileInfo{name: "migrations/1668845636_settings.up.sql", size: 530, mode: os.FileMode(0664), modTime: time.Unix(1669023217, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x5b, 0x57, 0xe4, 0xf2, 0x27, 0x7f, 0x1d, 0x60, 0x68, 0xf0, 0x9a, 0x8e, 0x90, 0xa9, 0xa, 0x39, 0xbd, 0x14, 0x15, 0x4c, 0xa, 0x2a, 0x7b, 0x1e, 0xd9, 0xc7, 0xaa, 0x8d, 0x24, 0x81, 0x4, 0xb8}}
 	return a, nil
 }

@@ -2,12 +2,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"runtime"
 	"sync"
 
 	"github.com/asticode/go-astilectron"
-	"golang.org/x/net/context"
 
 	db "github.com/forest33/warthog/adapter/database"
 	"github.com/forest33/warthog/adapter/grpc"
@@ -126,7 +126,7 @@ func initAdapters() {
 }
 
 func initClients() {
-	grpcClient = grpc.New(ctx)
+	grpcClient = grpc.New(ctx, zlog)
 }
 
 func initUseCases() {

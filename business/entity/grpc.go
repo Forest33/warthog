@@ -7,11 +7,11 @@ import (
 
 // constants for gRPC client
 const (
-	ReflectionServiceFQN         = "grpc.reflection.v1alpha.ServerReflection"
-	MethodTypeUnary              = "u"
-	MethodTypeClientStream       = "cs"
-	MethodTypeServerStream       = "ss"
-	MethodTypeClientServerStream = "css"
+	ReflectionServiceFQN   = "grpc.reflection.v1alpha.ServerReflection"
+	MethodTypeUnary        = "u"
+	MethodTypeClientStream = "cs"
+	MethodTypeServerStream = "ss"
+	MethodTypeBidiStream   = "css"
 )
 
 // Service gRPC service

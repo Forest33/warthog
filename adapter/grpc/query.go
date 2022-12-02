@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"reflect"
 	"runtime/debug"
 	"time"
@@ -14,14 +15,15 @@ import (
 	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/dynamic/grpcdynamic"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/forest33/warthog/business/entity"
 )
 
-// Query executes a gRPC request
-func (c *Client) Query(method *entity.Method, data map[string]interface{}, requestMetadata []string) (qResp *entity.QueryResponse, err error) {
+func (c *Client) createMessage(method *entity.Method, data map[string]interface{}, metadata []string) (ms *dynamic.Message, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			switch x := r.(type) {
@@ -36,7 +38,7 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 		}
 	}()
 
-	ms := dynamic.NewMessage(method.Descriptor.GetInputType())
+	ms = dynamic.NewMessage(method.Descriptor.GetInputType())
 
 	for _, f := range method.Input {
 		if _, ok := data[getProtoFQN(f)]; !ok {
@@ -57,110 +59,252 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, reque
 		}
 	}
 
-	var ctx context.Context
-	if *c.cfg.RequestTimeout > 0 {
-		ctx, c.cancelQuery = context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.RequestTimeout))
+	if *c.cfg.RequestTimeout > 0 && method.Type == entity.MethodTypeUnary {
+		c.queryCtx, c.queryCancel = context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.RequestTimeout))
 	} else {
-		ctx, c.cancelQuery = context.WithCancel(c.ctx)
-	}
-	defer func() {
-		c.cancelQueryMux.Lock()
-		defer c.cancelQueryMux.Unlock()
-
-		if c.cancelQuery != nil {
-			c.cancelQuery()
-			c.cancelQuery = nil
-		}
-	}()
-
-	ctx = addMetadata(ctx, requestMetadata)
-
-	var (
-		header   metadata.MD
-		trailer  metadata.MD
-		resp     proto.Message
-		jsonResp string
-	)
-
-	stub := grpcdynamic.NewStub(c.conn)
-	startTime := time.Now()
-
-	switch {
-	case method.Descriptor.IsClientStreaming() && method.Descriptor.IsServerStreaming():
-		var stream *grpcdynamic.BidiStream
-		stream, err = stub.InvokeRpcBidiStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
-		if err != nil {
-			return nil, err
-		}
-		if err = stream.SendMsg(ms); err != nil {
-			return nil, err
-		}
-		if header, err = stream.Header(); err != nil {
-			return nil, err
-		}
-		if resp, err = stream.RecvMsg(); err != nil {
-			return nil, err
-		}
-		trailer = stream.Trailer()
-	case method.Descriptor.IsClientStreaming():
-		var stream *grpcdynamic.ClientStream
-		stream, err = stub.InvokeRpcClientStream(ctx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
-		if err != nil {
-			return nil, err
-		}
-		if err = stream.SendMsg(ms); err != nil {
-			return nil, err
-		}
-		resp, err = stream.CloseAndReceive()
-	case method.Descriptor.IsServerStreaming():
-		var stream *grpcdynamic.ServerStream
-		stream, err = stub.InvokeRpcServerStream(ctx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
-		if err != nil {
-			return nil, err
-		}
-		if header, err = stream.Header(); err != nil {
-			return nil, err
-		}
-		if resp, err = stream.RecvMsg(); err != nil {
-			return nil, err
-		}
-		trailer = stream.Trailer()
-	default:
-		resp, err = stub.InvokeRpc(ctx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
+		c.queryCtx, c.queryCancel = context.WithCancel(c.ctx)
 	}
 
-	spentTime := time.Since(startTime)
+	c.queryCtx = addMetadata(c.queryCtx, metadata)
+
+	return
+}
+
+// Query executes a gRPC request
+func (c *Client) Query(method *entity.Method, data map[string]interface{}, metadata []string) {
+	ms, err := c.createMessage(method, data, metadata)
 	if err != nil {
-		return nil, err
+		c.responseError(err, "")
+		return
 	}
 
-	if resp != nil {
-		jsonResp, err = c.getResponse(resp)
-		if err != nil {
-			return nil, err
-		}
+	var isNew bool
+
+	switch method.Type {
+	case entity.MethodTypeUnary:
+		c.unary(method, ms)
+	case entity.MethodTypeClientStream:
+		isNew, err = c.clientStream(method)
+	case entity.MethodTypeServerStream:
+		c.serverStream(method, ms)
+	case entity.MethodTypeBidiStream:
+		c.bidiStream(method)
 	}
 
-	return &entity.QueryResponse{
-		JsonString: jsonResp,
-		SpentTime:  spentTime.String(),
-		Header:     header,
-		Trailer:    trailer,
-	}, nil
+	if err != nil {
+		return
+	}
+
+	if isNew || method.Type == entity.MethodTypeClientStream || method.Type == entity.MethodTypeBidiStream {
+		c.request(ms)
+	}
 }
 
 // CancelQuery aborting a running gRPC request
 func (c *Client) CancelQuery() {
-	c.cancelQueryMux.Lock()
-	defer c.cancelQueryMux.Unlock()
+	if c.queryCancel == nil {
+		return
+	}
+	c.queryCancel()
+}
 
-	if c.cancelQuery != nil {
-		c.cancelQuery()
-		c.cancelQuery = nil
+// CloseStream stops a running gRPC stream
+func (c *Client) CloseStream() {
+	c.closeStreamCh <- struct{}{}
+}
+
+// GetResponseChannel returns response channel
+func (c *Client) GetResponseChannel() chan *entity.QueryResponse {
+	return c.responseCh
+}
+
+// GetSentCounter returns sent messages counter
+func (c *Client) GetSentCounter() uint {
+	return c.sentMessages
+}
+
+func (c *Client) unary(method *entity.Method, ms *dynamic.Message) {
+	var (
+		header  metadata.MD
+		trailer metadata.MD
+	)
+
+	stub := grpcdynamic.NewStub(c.conn)
+	c.queryStartTime = time.Now()
+	resp, err := stub.InvokeRpc(c.queryCtx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
+	c.response(resp, header, trailer, err)
+
+	c.sentMessages = 0
+	c.receivedMessaged = 0
+}
+
+func (c *Client) clientStream(method *entity.Method) (bool, error) {
+	var (
+		header  metadata.MD
+		trailer metadata.MD
+		stream  *grpcdynamic.ClientStream
+		err     error
+	)
+
+	isNew := c.startRequest()
+	if isNew {
+		stub := grpcdynamic.NewStub(c.conn)
+		stream, err = stub.InvokeRpcClientStream(c.queryCtx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
+		if err != nil {
+			c.responseError(err, "")
+			return isNew, err
+		}
+
+		go func() {
+			defer func() {
+				c.stopRequest()
+			}()
+
+			c.queryStartTime = time.Now()
+
+			for {
+				select {
+				case <-c.queryCtx.Done():
+					c.response(nil, header, trailer, status.FromContextError(context.Canceled).Err())
+					_, _ = stream.CloseAndReceive()
+					c.log.Debug().Msg("stream canceled")
+					return
+				case <-c.closeStreamCh:
+					data, err := stream.CloseAndReceive()
+					c.response(data, header, trailer, err)
+					c.log.Debug().Msg("close & receive stream")
+					return
+				case ms := <-c.requestCh:
+					if err := stream.SendMsg(ms); err != nil {
+						c.response(nil, header, trailer, err)
+						return
+					}
+				}
+			}
+		}()
+	}
+
+	return isNew, nil
+}
+
+func (c *Client) serverStream(method *entity.Method, ms *dynamic.Message) {
+	var (
+		header  metadata.MD
+		trailer metadata.MD
+		isBreak bool
+	)
+
+	if c.startRequest() {
+		stub := grpcdynamic.NewStub(c.conn)
+		c.queryStartTime = time.Now()
+		stream, err := stub.InvokeRpcServerStream(c.queryCtx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
+		if err != nil {
+			c.responseError(err, "")
+			return
+		}
+
+		go func() {
+			defer func() {
+				c.stopRequest()
+			}()
+
+			for !isBreak {
+				data, err := stream.RecvMsg()
+				if err == io.EOF {
+					isBreak = true
+				} else if status.Code(err) == codes.Canceled {
+					c.responseError(err, time.Since(c.queryStartTime).String())
+					return
+				} else if err != nil {
+					c.responseError(err, "")
+					c.log.Error().Msgf("failed to receive message: %v", err)
+					return
+				}
+				header, hErr := stream.Header()
+				if hErr != nil {
+					c.log.Error().Msgf("failed to get message header: %v", err)
+				}
+				trailer = stream.Trailer()
+				c.response(data, header, trailer, nil)
+			}
+		}()
+	}
+}
+
+func (c *Client) bidiStream(method *entity.Method) {
+	var (
+		header  metadata.MD
+		trailer metadata.MD
+		isBreak bool
+	)
+
+	if c.startRequest() {
+		stub := grpcdynamic.NewStub(c.conn)
+		c.queryStartTime = time.Now()
+		stream, err := stub.InvokeRpcBidiStream(c.queryCtx, method.Descriptor, grpc.Header(&header), grpc.Trailer(&trailer))
+		if err != nil {
+			c.responseError(err, "")
+			return
+		}
+
+		go func() {
+			defer func() {
+				c.stopRequest()
+			}()
+
+			for !isBreak {
+				data, err := stream.RecvMsg()
+				if err == io.EOF || isStreamEOF(err) {
+					isBreak = true
+				} else if status.Code(err) == codes.Canceled {
+					c.responseError(err, time.Since(c.queryStartTime).String())
+					return
+				} else if err != nil {
+					c.responseError(err, time.Since(c.queryStartTime).String())
+					c.log.Error().Msgf("failed to receive message: %v", err)
+					return
+				}
+				header, hErr := stream.Header()
+				if hErr != nil {
+					c.log.Error().Msgf("failed to get message header: %v", err)
+				}
+				trailer = stream.Trailer()
+				c.response(data, header, trailer, err)
+			}
+		}()
+
+		go func() {
+			for {
+				select {
+				case <-c.queryCtx.Done():
+					c.response(nil, header, trailer, status.FromContextError(context.Canceled).Err())
+					_ = stream.CloseSend()
+					return
+				case <-c.closeStreamCh:
+					if err := stream.CloseSend(); err != nil {
+						c.log.Error().Msgf("failed to close stream: %v", err)
+					}
+					c.log.Debug().Msg("close & send stream")
+					return
+				case ms := <-c.requestCh:
+					if ms == nil {
+						continue
+					}
+					if err := stream.SendMsg(ms); err != nil {
+						c.response(nil, header, trailer, err)
+						return
+					}
+				}
+			}
+		}()
 	}
 }
 
 func (c *Client) getResponse(m proto.Message) (string, error) {
+	if m == nil {
+		return "", nil
+	}
+
 	switch t := m.(type) {
 	case *dynamic.Message:
 		buf, err := t.MarshalJSONPB(&jsonpb.Marshaler{Indent: "  ", OrigName: true})
@@ -171,7 +315,8 @@ func (c *Client) getResponse(m proto.Message) (string, error) {
 	case *emptypb.Empty:
 		return "google.protobuf.Empty", nil
 	default:
-		return "", fmt.Errorf("unknown response type: %s", reflect.TypeOf(m).Elem().String())
+		err := fmt.Errorf("unknown response type: %s", reflect.TypeOf(m).Elem().String())
+		return err.Error(), err
 	}
 }
 
@@ -189,7 +334,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 	case entity.TypeString:
 		resp = entity.GetString(field, data)
 	case entity.TypeBytes:
-		resp = entity.GetBytes(field, data)
+		resp, err = entity.GetBytes(field, data)
 	case entity.TypeInt32, entity.TypeSInt32, entity.TypeSFixed32:
 		resp, err = entity.GetInt32(field, data)
 	case entity.TypeInt64, entity.TypeSInt64, entity.TypeSFixed64:
@@ -338,4 +483,84 @@ func getProtoFQN(f *entity.Field) string {
 		return f.ProtoFQN
 	}
 	return f.FQN
+}
+
+func (c *Client) request(ms *dynamic.Message) {
+	c.sentMessages++
+	c.requestCh <- ms
+}
+
+func (c *Client) response(data proto.Message, header metadata.MD, trailer metadata.MD, err error) {
+	spent := time.Since(c.queryStartTime).String()
+
+	if err != nil {
+		c.responseError(err, spent)
+		return
+	}
+
+	if data != nil {
+		c.receivedMessaged++
+	}
+
+	resp := &entity.QueryResponse{
+		Time:      time.Now().Format("15:04:05.99"),
+		SpentTime: spent,
+		Header:    header,
+		Trailer:   trailer,
+		Error:     toError(err),
+		Sent:      c.sentMessages,
+		Received:  c.receivedMessaged,
+	}
+
+	jsonResp, err := c.getResponse(data)
+	resp.JsonString = jsonResp
+
+	c.responseCh <- resp
+}
+
+func (c *Client) responseError(err error, spent string) {
+	c.responseCh <- &entity.QueryResponse{
+		Error:     toError(err),
+		SpentTime: spent,
+	}
+}
+
+func (c *Client) startRequest() bool {
+	if c.requestCh != nil {
+		return false
+	}
+
+	c.requestCh = make(chan *dynamic.Message, requestChanCapacity)
+	c.sentMessages = 0
+	c.receivedMessaged = 0
+
+	return true
+}
+
+func (c *Client) stopRequest() {
+	close(c.requestCh)
+	c.requestCh = nil
+	c.sentMessages = 0
+	c.receivedMessaged = 0
+}
+
+func toError(err error) *entity.Error {
+	if err == nil {
+		return nil
+	}
+	return &entity.Error{
+		Code:            uint32(status.Code(err)),
+		CodeDescription: status.Code(err).String(),
+		Message:         status.Convert(err).Message(),
+	}
+}
+
+func isStreamEOF(err error) bool {
+	if err == nil {
+		return false
+	}
+	if s, ok := status.FromError(err); ok {
+		return s.Message() == "EOF"
+	}
+	return false
 }

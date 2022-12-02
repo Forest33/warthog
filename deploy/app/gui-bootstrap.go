@@ -75,6 +75,7 @@ func withBootstrap() {
 			tray = _t
 
 			initGUIEvents()
+			initGrpcResponse()
 			loadWorkspace()
 
 			return nil

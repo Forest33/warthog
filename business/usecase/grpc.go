@@ -19,6 +19,9 @@ type GrpcUseCase struct {
 	client        GrpcClient
 	services      []*entity.Service
 	workspaceRepo WorkspaceRepo
+	curServerID   int64
+	curService    string
+	curMethod     string
 }
 
 // GrpcClient is an interface for working with the gRPC client
@@ -29,8 +32,11 @@ type GrpcClient interface {
 	AddImport(path ...string)
 	LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError, *entity.ProtobufError)
 	LoadFromReflection() ([]*entity.Service, error)
-	Query(method *entity.Method, data map[string]interface{}, metadata []string) (*entity.QueryResponse, error)
+	GetResponseChannel() chan *entity.QueryResponse
+	GetSentCounter() uint
+	Query(method *entity.Method, data map[string]interface{}, metadata []string)
 	CancelQuery()
+	CloseStream()
 	Close()
 }
 
@@ -141,7 +147,6 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 	}
 }
 
-// Query executes a gRPC request
 func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.Query{}
 	if err := req.Model(payload); err != nil {
@@ -153,21 +158,37 @@ func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse
 		return entity.ErrorGUIResponse(err)
 	}
 
-	resp, err := uc.client.Query(method, req.Data, req.Metadata)
-	if err != nil {
-		uc.log.Error().Msgf("failed to execute query: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
+	uc.initQuery(req)
+	uc.client.Query(method, req.Data, req.Metadata)
 
 	return &entity.GUIResponse{
-		Status:  entity.GUIResponseStatusOK,
-		Payload: resp,
+		Status: entity.GUIResponseStatusOK,
+		Payload: &entity.QueryResponse{
+			Sent: uc.client.GetSentCounter(),
+		},
 	}
 }
 
 // CancelQuery aborting a running request
 func (uc *GrpcUseCase) CancelQuery() {
 	uc.client.CancelQuery()
+}
+
+// CloseStream stops a running gRPC stream
+func (uc *GrpcUseCase) CloseStream() {
+	uc.client.CloseStream()
+}
+
+func (uc *GrpcUseCase) initQuery(q *entity.Query) {
+	if uc.curServerID == q.ServerID && uc.curService == q.Service && uc.curMethod == q.Method {
+		return
+	}
+
+	uc.curServerID = q.ServerID
+	uc.curService = q.Service
+	uc.curMethod = q.Method
+
+	uc.CancelQuery()
 }
 
 func (uc *GrpcUseCase) getServiceByName(serviceName string) (*entity.Service, error) {

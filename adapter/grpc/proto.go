@@ -141,7 +141,7 @@ func (c *Client) getMethods(sd *desc.ServiceDescriptor) []*entity.Method {
 func getMethodType(md *desc.MethodDescriptor) string {
 	switch {
 	case md.IsClientStreaming() && md.IsServerStreaming():
-		return entity.MethodTypeClientServerStream
+		return entity.MethodTypeBidiStream
 	case md.IsClientStreaming():
 		return entity.MethodTypeClientStream
 	case md.IsServerStreaming():

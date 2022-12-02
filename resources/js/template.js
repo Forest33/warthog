@@ -6,8 +6,17 @@ let template = {
                                 <label class="label-type"></label>
                                 <input type="text" class="form-control field-value">
                             </div>`,
+  "request-bytes-input": `<div class="mb-2 form-group request-input">
+                            <label class="label-name"></label>
+                            <label class="label-type"></label>
+                            <div class="input-group input-bytes">
+                                <button class="btn btn-outline-secondary open" type="button"><i class="bi bi-folder2-open"></i></button>
+                                <button class="btn btn-outline-secondary remove" type="button"><i class="bi bi-x-lg"></i></button>                                
+                                <input type="text" class="form-control field-value">
+                            </div>
+                          </div>`,
   "request-bool-input": `<div class="mb-2 form-group request-input">
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch input-bool">
                                     <input class="form-check-input field-value" type="checkbox">
                                     <label class="form-check-label label-name"></label>
                                     <label class="form-check-label label-type"></label>

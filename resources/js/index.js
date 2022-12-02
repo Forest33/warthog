@@ -10,7 +10,6 @@ export {
 import { saveQuery } from "./query.js";
 import { showTree } from "./tree.js";
 import { editServer, initWorkspaceModal } from "./workspace.modal.js";
-import { query } from "./request.js";
 import { initSettingsModal, showSettingsModal } from "./settings.modal.js";
 import {
   createRequestForm,
@@ -25,6 +24,12 @@ import {
   setCurrentQuery,
   setRequestTitle,
 } from "./server.js";
+import {
+  hideStreamControl,
+  initStreamControl,
+  query,
+  response,
+} from "./request.js";
 
 let currentSettings = undefined;
 let treeRootNodes = new Set();
@@ -47,6 +52,10 @@ $(document).ready(function () {
           break;
         case "menu.about":
           showAbout(message.payload);
+          break;
+        case "query.response":
+          response(message.payload);
+          break;
       }
     });
 
@@ -85,6 +94,7 @@ $(document).ready(function () {
   initSidebars();
   initOffcanvas();
   initQueryPopover();
+  initStreamControl();
 
   const shell = require("electron").shell;
   $(document).on("click", 'a[href^="http"]', function (event) {
@@ -136,6 +146,7 @@ $(document).ready(function () {
     selMethods.children().remove();
     setCurrentQuery(undefined);
     setRequestTitle("");
+    hideStreamControl();
 
     if (isNull(service)) {
       return;
@@ -159,6 +170,7 @@ $(document).ready(function () {
 
   $("#sidebar-methods-list").on("change", function () {
     saveRequest();
+    hideStreamControl();
     let service = $("#sidebar-services-list option:selected").val();
     if (!isNull(currentQuery)) {
       currentServer.breadcrumb.pop();
