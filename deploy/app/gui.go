@@ -226,6 +226,26 @@ func initGUIEvents() {
 	})
 }
 
+func initGrpcResponse() {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case resp := <-grpcClient.GetResponseChannel():
+				req := &entity.GUIRequest{
+					Cmd:     entity.CmdQueryResponse,
+					Payload: resp,
+				}
+				err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
+				if err != nil {
+					zlog.Error().Msgf("failed to send gRPC response: %v", err)
+				}
+			}
+		}
+	}()
+}
+
 func loadWorkspace() {
 	if workspaceID == nil || *workspaceID == 0 {
 		return

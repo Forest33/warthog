@@ -48,6 +48,9 @@ func CreateApplicationDir() string {
 
 // GetApplicationIcon returns path to application icon
 func GetApplicationIcon() string {
+	if runtime.GOOS == "darwin" && entity.IsDebug() {
+		return ""
+	}
 	return getPath(cfg.Application.IconsPath, cfg.Application.AppIconLinux, cfg.Application.AppIconDarwin, cfg.Application.AppIconWindows)
 }
 

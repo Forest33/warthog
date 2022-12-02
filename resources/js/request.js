@@ -1,6 +1,9 @@
 export {
+  initStreamControl,
   hideQueryError,
+  hideStreamControl,
   query,
+  response,
   getRequestData,
   getRequestMetadata,
   showQueryError,
@@ -8,14 +11,23 @@ export {
 import {
   currentMethod,
   currentQuery,
+  currentServer,
   currentService,
   protoTypeBool,
+  protoTypeBytes,
   protoTypeEnum,
   protoTypeMessage,
   saveRequest,
 } from "./server.js";
 import { isNull } from "./index.js";
 import { template } from "./template.js";
+
+const MethodTypeUnary = "u";
+const MethodTypeClientStream = "cs";
+const MethodTypeServerStream = "ss";
+const MethodTypeBidiStream = "css";
+
+let streamStopped = false;
 
 function query() {
   if (currentService === undefined || currentMethod === undefined) {
@@ -43,6 +55,7 @@ function query() {
   let req = {
     name: "query.run",
     payload: {
+      server_id: currentServer.id,
       service: currentService.name,
       method: currentMethod.name,
       metadata: getRequestMetadata(),
@@ -50,30 +63,118 @@ function query() {
     },
   };
 
-  setQueryCancelButton();
+  if (currentMethod.type === MethodTypeUnary) {
+    setQueryCancelButton();
+  } else {
+    showStreamControl();
+    streamStopped = false;
+  }
 
   if (isNull(currentQuery)) {
     saveRequest();
   }
 
   astilectron.sendMessage(req, function (message) {
-    //console.log("query result: " + JSON.stringify(message, null, 1));
-    setQueryRunButton();
+    if (currentMethod.type === MethodTypeUnary) {
+      setQueryRunButton();
+    }
+    $("#stream-sent .sent").html(message.payload.data.sent);
     if (message.payload.status !== "ok") {
       showQueryError(message.payload.error);
-      return;
+    }
+  });
+}
+
+function initStreamControl() {
+  $("#stream-stop").on("click", function () {
+    streamStopped = true;
+    astilectron.sendMessage({ name: "query.close.stream" }, function () {});
+    hideStreamControl();
+  });
+
+  $("#stream-cancel").on("click", function () {
+    streamStopped = true;
+    astilectron.sendMessage({ name: "query.cancel" }, function () {});
+    hideStreamControl();
+  });
+}
+
+function showStreamControl() {
+  switch (currentMethod.type) {
+    case MethodTypeClientStream:
+      $("#stream-sent").show();
+      $("#stream-stop").html("Receive & Close").css("visibility", "visible");
+      break;
+    case MethodTypeServerStream:
+      $("#stream-received").show();
+      break;
+    case MethodTypeBidiStream:
+      $("#stream-sent").show();
+      $("#stream-received").show();
+      $("#stream-stop").html("Send & Close").css("visibility", "visible");
+      break;
+  }
+
+  $("#stream-info").show();
+  $("#stream-control").css("visibility", "visible");
+  $("#time-spent").html("");
+}
+
+function hideStreamControl() {
+  $("#stream-info").hide();
+  $("#stream-info .direction").hide();
+  $("#stream-stop").css("visibility", "hidden");
+  $("#stream-control").css("visibility", "hidden");
+}
+
+function response(data) {
+  if (isNull(data.error)) {
+    $("#stream-received .received").html(data.received);
+    $("#query-error").html("");
+    if (
+      currentMethod.type === MethodTypeUnary ||
+      currentMethod.type === MethodTypeClientStream ||
+      streamStopped
+    ) {
+      $("#badge-result")
+        .html("0: OK")
+        .css("visibility", "visible")
+        .removeClass("bg-danger")
+        .addClass("bg-success");
+      $("#time-spent").html(data.spent_time);
+      if (data.json_string !== "") {
+        $("#query-result").html(syntaxHighlight(data.json_string));
+      }
+      streamStopped = false;
+    } else if (data.json_string !== "") {
+      let sep = '<div class="hr"><span>' + data.time + "</span></div>";
+      if (data.received > 1) {
+        $("#query-result").prepend(sep + syntaxHighlight(data.json_string));
+      } else {
+        $("#query-result").html(sep + syntaxHighlight(data.json_string));
+      }
+    }
+  } else {
+    if (
+      currentMethod.type === MethodTypeUnary ||
+      currentMethod.type === MethodTypeClientStream
+    ) {
+      $("#query-result").html("");
     }
     $("#badge-result")
-      .html("0: OK")
+      .html(data.error.code + ": " + data.error.code_description)
       .css("visibility", "visible")
-      .addClass("bg-success");
-    $("#time-spent").html(message.payload.data.spent_time);
-    $("#query-result").html(syntaxHighlight(message.payload.data.json_string));
-    showHeadersTrailers(
-      message.payload.data.header,
-      message.payload.data.trailer
-    );
-  });
+      .removeClass("bg-success")
+      .addClass("bg-danger");
+    let tmpl = $(template["query-error"]);
+    $(tmpl.find(".code")[0]).html(data.error.code);
+    $(tmpl.find(".message")[0]).html(data.error.message);
+    $("#query-error").html(tmpl).show();
+    $("#time-spent").html(data.spent_time);
+    hideStreamControl();
+  }
+
+  showHeadersTrailers(data.header, data.trailer);
 }
 
 function getRequestData(field, root, disableProtoFQN) {
@@ -180,6 +281,28 @@ function getRequestData(field, root, disableProtoFQN) {
         }
       }
       break;
+    case protoTypeBytes:
+      let bytesValues = [];
+      root.find('[data-field-fqn="' + field.fqn + '"]').each(function () {
+        let val = {
+          value: "",
+          file: "",
+        }
+        if ($(this).prop("disabled")) {
+          val.file = $(this).val();
+        } else {
+          val.value = $(this).val();
+        }
+        bytesValues.push(val);
+      });
+      if (bytesValues.length > 0) {
+        if (!field.repeated) {
+          data[field.fqn] = bytesValues[0];
+        } else {
+          data[field.fqn] = bytesValues;
+        }
+      }
+      break;
     default:
       let textValues = [];
       root.find('[data-field-fqn="' + field.fqn + '"]').each(function () {
@@ -270,6 +393,7 @@ function showQueryError(err) {
 
 function hideQueryError() {
   $("#query-result").show();
+  $("#time-spent").html("");
   let badge = $("#badge-result");
   let error = $("#query-error");
   if (badge.hasClass("bg-danger") || error.find(".alert-warning")) {
@@ -297,6 +421,7 @@ function showHeadersTrailers(header, trailer) {
 }
 
 function isQueryRun() {
+  console.log(currentMethod);
   return $("#request-run").hasClass("btn-danger");
 }
 

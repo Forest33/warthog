@@ -100,13 +100,16 @@ message M2 {
 message M3 {
   int64 m3_id = 1;
   string m3_name = 2;
+  repeated bytes buf = 3;
 }
 
 message M4 {
-  string name = 1;
-  repeated M1.EnumM1 repeated_enum_value = 2;
-  repeated bool repeated_bool = 3;
-  repeated double repeated_double = 4;
+  int64 m4_id = 1;
+  string name = 2;
+  repeated bytes buf = 3;
+  repeated M1.EnumM1 repeated_enum_value = 4;
+  repeated bool repeated_bool = 5;
+  repeated double repeated_double = 6;
 }
 
 message StreamMessage {
@@ -139,9 +142,14 @@ message Loop {
   repeated Loop child = 3;
 }
 
+message ClientStreamResponse {
+  repeated M3 header = 1;
+  repeated M4 payload = 2;
+}
+
 service test_proto {
   rpc Unary(M1) returns (M1);
-  rpc ClientStream(stream StreamMessage) returns(StreamMessage);
+  rpc ClientStream(stream StreamMessage) returns(ClientStreamResponse);
   rpc ServerStream(StreamMessage) returns(stream StreamMessage);
   rpc ClientServerStream(stream StreamMessage) returns(stream StreamMessage);
   rpc TypesTest(Types) returns (Types);

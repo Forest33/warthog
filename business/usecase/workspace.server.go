@@ -90,7 +90,7 @@ func (uc *WorkspaceUseCase) UpdateServerRequest(payload map[string]interface{}) 
 		return entity.ErrorGUIResponse(err)
 	}
 
-	return uc.successServerResponse(server)
+	return &entity.GUIResponse{Status: entity.GUIResponseStatusOK}
 }
 
 func (uc *WorkspaceUseCase) successServerResponse(server *entity.Workspace) *entity.GUIResponse {

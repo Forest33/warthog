@@ -75,7 +75,7 @@
 
                     <div class="row" style="margin-right:0;margin-top:10px;">
                         <div class="col" style="max-width:0;">
-                            <h6 id="nav-request-data-title" style="line-height:0.7"></h6>
+                            <h6 id="nav-request-data-title"></h6>
                         </div>
                         <div class="col" style="margin-right:0;">
                             <div style="text-align:right;">
@@ -126,10 +126,31 @@
 
         <div id="main">
             <div class="d-flex flex-row bd-highlight mb-3 noselect" id="right-info">
+                <div id="stream-info">
+                    <div class="spinner-grow spinner-grow-sm" role="status"></div>
+                    <div id="stream-sent" class="direction">
+                        <i class="bi bi-arrow-up"></i>
+                        <span class="sent"></span>
+                    </div>
+                    <div id="stream-received" class="direction">
+                        <i class="bi bi-arrow-down"></i>
+                        <span class="received"></span>
+                    </div>
+                </div>
+
                 <div class="badge bg-success" id="badge-result">
                     &nbsp;
                 </div>
                 <div id="time-spent"></div>
+
+                <div id="stream-control">
+                    <button type="button" class="btn btn-primary btn-sm" id="stream-stop"
+                            style="padding-left:1rem;padding-right:1rem;">Close & Receive
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="stream-cancel"
+                            style="padding-left:1rem;padding-right:1rem;">Cancel
+                    </button>
+                </div>
             </div>
 
             <nav>
@@ -137,7 +158,7 @@
 
                     <button class="nav-link active" id="nav-result-tab" data-bs-toggle="tab"
                             data-bs-target="#nav-result" type="button" role="tab" aria-controls="nav-result"
-                            aria-selected="true">Payload
+                            aria-selected="true">Response
                     </button>
                     <button class="nav-link" id="nav-headers-tab" data-bs-toggle="tab" style="margin-right:10px;"
                             data-bs-target="#nav-headers" type="button" role="tab" aria-controls="nav-headers"

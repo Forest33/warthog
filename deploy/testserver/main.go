@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"net"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 )
 
 const (
-	addr = "127.0.0.1:33333"
+	addr = ":33333"
 )
 
 // Server object capable of interacting with Server
@@ -63,26 +64,36 @@ func (s *Server) LoopTest(_ context.Context, t *testProto.Loop) (*testProto.Loop
 
 // ClientStream is a ClientStream method handler
 func (s *Server) ClientStream(stream testProto.TestProto_ClientStreamServer) error {
-	req, err := stream.Recv()
-	if err != nil {
-		return err
-	}
+	var (
+		headers  = make([]*testProto.M3, 0, 1)
+		payloads = make([]*testProto.M4, 0, 1)
+	)
 
-	header := req.GetHeader()
-	payload := req.GetPayload()
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			s.log.Debug().Msg("caller canceled")
+			err := stream.SendAndClose(&testProto.ClientStreamResponse{Header: headers, Payload: payloads})
+			if err != nil {
+				s.log.Error().Msgf("failed to send: %v", err)
+			}
+			return err
+		}
+		if err != nil {
+			return err
+		}
 
-	if header != nil {
-		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendAndClose(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
-	} else {
-		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendAndClose(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
-	}
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
+		header := req.GetHeader()
+		payload := req.GetPayload()
 
-	return nil
+		if header != nil {
+			s.log.Debug().Msgf("header %+v", header)
+			headers = append(headers, header)
+		} else {
+			s.log.Debug().Msgf("payload %+v", payload)
+			payloads = append(payloads, payload)
+		}
+	}
 }
 
 // ServerStream is a ServerStream method handler
@@ -91,42 +102,54 @@ func (s *Server) ServerStream(req *testProto.StreamMessage, stream testProto.Tes
 	payload := req.GetPayload()
 
 	var err error
-	if header != nil {
-		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
-	} else {
-		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
+
+	for stream.Context().Err() == nil {
+		if header != nil {
+			s.log.Debug().Msgf("send header %+v", header)
+			err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
+		} else {
+			s.log.Debug().Msgf("send payload %+v", payload)
+			err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
+		}
+		if err != nil {
+			s.log.Error().Msgf("failed to send message: %v", err)
+			return status.Error(codes.Internal, err.Error())
+		}
+		time.Sleep(time.Second * 3)
 	}
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
+
+	s.log.Debug().Msg("caller canceled")
 
 	return nil
 }
 
 // ClientServerStream is a ClientServerStream method handler
 func (s *Server) ClientServerStream(stream testProto.TestProto_ClientServerStreamServer) error {
-	req, err := stream.Recv()
-	if err != nil {
-		return err
-	}
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			s.log.Debug().Msg("caller canceled")
+			return err
+		}
+		if err != nil {
+			return err
+		}
 
-	header := req.GetHeader()
-	payload := req.GetPayload()
+		header := req.GetHeader()
+		payload := req.GetPayload()
 
-	if header != nil {
-		s.log.Debug().Msgf("header %+v", header)
-		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
-	} else {
-		s.log.Debug().Msgf("payload %+v", payload)
-		err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
+		if header != nil {
+			s.log.Debug().Msgf("send header %+v", header)
+			err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Header{Header: header}})
+		} else {
+			s.log.Debug().Msgf("send payload %+v", payload)
+			err = stream.SendMsg(&testProto.StreamMessage{TestStream: &testProto.StreamMessage_Payload{Payload: payload}})
+		}
+		if err != nil {
+			s.log.Error().Msgf("failed to send message: %v", err)
+			return status.Error(codes.Internal, err.Error())
+		}
 	}
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
-
-	return nil
 }
 
 func (s *Server) unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {

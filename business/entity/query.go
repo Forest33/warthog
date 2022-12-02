@@ -3,6 +3,7 @@ package entity
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/forest33/warthog/pkg/structs"
@@ -31,6 +32,7 @@ const (
 
 // Query gRPC request
 type Query struct {
+	ServerID int64
 	Service  string
 	Method   string
 	Data     map[string]interface{}
@@ -39,10 +41,14 @@ type Query struct {
 
 // QueryResponse gRPC response
 type QueryResponse struct {
+	Time       string              `json:"time"`
 	JsonString string              `json:"json_string"`
 	SpentTime  string              `json:"spent_time"`
 	Header     map[string][]string `json:"header"`
 	Trailer    map[string][]string `json:"trailer"`
+	Error      *Error              `json:"error"`
+	Sent       uint                `json:"sent"`
+	Received   uint                `json:"received"`
 }
 
 // Model creates Query from UI request
@@ -51,6 +57,9 @@ func (r *Query) Model(server map[string]interface{}) error {
 		return fmt.Errorf("empty data")
 	}
 
+	if v, ok := server["server_id"]; ok && v != nil {
+		r.ServerID = int64(v.(float64))
+	}
 	if v, ok := server["service"]; ok {
 		r.Service = v.(string)
 	}
@@ -86,12 +95,32 @@ func GetString(f *Field, val interface{}) interface{} {
 	return val.(string)
 }
 
-// GetBytes transforms to bytes
-func GetBytes(f *Field, val interface{}) interface{} {
-	if f.Repeated {
-		return structs.Map(val.([]interface{}), func(i interface{}) []byte { return []byte(i.(string)) })
+func getBytesValue(val map[string]interface{}) ([]byte, error) {
+	if v, ok := val["file"]; ok && v.(string) != "" {
+		data, err := os.ReadFile(v.(string))
+		if err != nil {
+			return nil, err
+		}
+		return data, nil
+	} else {
+		return []byte(val["value"].(string)), nil
 	}
-	return []byte(val.(string))
+}
+
+// GetBytes transforms to bytes
+func GetBytes(f *Field, val interface{}) (interface{}, error) {
+	if f.Repeated {
+		bytes := make([][]byte, len(val.([]interface{})))
+		for i, item := range val.([]interface{}) {
+			v, err := getBytesValue(item.(map[string]interface{}))
+			if err != nil {
+				return nil, err
+			}
+			bytes[i] = v
+		}
+		return bytes, nil
+	}
+	return getBytesValue(val.(map[string]interface{}))
 }
 
 // GetInt32 transforms to int32
