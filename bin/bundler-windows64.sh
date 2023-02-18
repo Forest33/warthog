@@ -9,7 +9,7 @@ cp -R ../resources/* ../deploy/app/resources
 mv ../deploy/app/bind.go ../deploy/app/bind.go.tmp
 
 cd ../deploy/app || exit
-astilectron-bundler -c ../../bin/bundler-windows64.json -ldflags X:main.UseBootstrap=true -ldflags X:main.AppVersion="${version}" -ldflags "-s -w"
+astilectron-bundler -c ../../bin/bundler-windows64.json -ldflags X:main.UseBootstrap=true -ldflags X:main.AppVersion="${version}" -ldflags "-s -w" || exit
 
 rm -R resources
 mv bind.go.tmp bind.go

@@ -177,6 +177,8 @@ label {
 
 .string {
   color: green;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .number {

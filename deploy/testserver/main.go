@@ -52,6 +52,11 @@ func (s *Server) Unary(_ context.Context, m1 *testProto.M1) (*testProto.M1, erro
 	return m1, nil
 }
 
+// CreateUser is a CreateUser method handler
+func (s *Server) CreateUser(_ context.Context, u *testProto.User) (*testProto.User, error) {
+	return u, nil
+}
+
 // TypesTest is a TypesTest method handler
 func (s *Server) TypesTest(_ context.Context, t *testProto.Types) (*testProto.Types, error) {
 	return t, nil
