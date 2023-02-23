@@ -3,12 +3,17 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"io"
 	"net"
+	"os"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
@@ -18,7 +23,8 @@ import (
 )
 
 const (
-	addr = ":33333"
+	addr    = ":33333"
+	withTLS = true
 )
 
 // Server object capable of interacting with Server
@@ -31,7 +37,17 @@ func main() {
 		log: logger.NewDefaultZerolog(),
 	}
 
-	srv := grpc.NewServer(grpc.UnaryInterceptor(s.unaryInterceptor), grpc.StreamInterceptor(s.streamInterceptor))
+	opts := []grpc.ServerOption{grpc.UnaryInterceptor(s.unaryInterceptor), grpc.StreamInterceptor(s.streamInterceptor)}
+
+	if withTLS {
+		tlsCredentials, err := loadTLSCredentials()
+		if err != nil {
+			s.log.Fatal("cannot load TLS credentials: ", err)
+		}
+		opts = append(opts, grpc.Creds(tlsCredentials))
+	}
+
+	srv := grpc.NewServer(opts...)
 	testProto.RegisterTestProtoServer(srv, s)
 	reflection.Register(srv)
 
@@ -45,6 +61,31 @@ func main() {
 	if err = srv.Serve(listener); err != nil {
 		s.log.Fatal("unable to start server: %v", err)
 	}
+}
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	pemClientCA, err := os.ReadFile("cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemClientCA) {
+		return nil, fmt.Errorf("failed to add client CA's certificate")
+	}
+
+	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	}
+
+	return credentials.NewTLS(config), nil
 }
 
 // Unary is a Unary method handler
@@ -157,6 +198,21 @@ func (s *Server) ClientServerStream(stream testProto.TestProto_ClientServerStrea
 	}
 }
 
+// AuthBasic is a AuthBasic method handler
+func (s *Server) AuthBasic(_ context.Context, m1 *testProto.M1) (*testProto.M1, error) {
+	return m1, nil
+}
+
+// AuthBearer is a AuthBearer method handler
+func (s *Server) AuthBearer(_ context.Context, m1 *testProto.M1) (*testProto.M1, error) {
+	return m1, nil
+}
+
+// AuthJWT is a AuthJWT method handler
+func (s *Server) AuthJWT(_ context.Context, m1 *testProto.M1) (*testProto.M1, error) {
+	return m1, nil
+}
+
 func (s *Server) unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	ev := s.log.Debug()
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
@@ -169,6 +225,20 @@ func (s *Server) unaryInterceptor(ctx context.Context, req interface{}, info *gr
 	}
 
 	if err := grpc.SetTrailer(ctx, metadata.Pairs("trailer-key", time.Now().UTC().String())); err != nil {
+		return nil, err
+	}
+
+	var err error
+	switch info.FullMethod {
+	case "/test.proto.v1.test_proto/AuthBasic":
+		err = ensureValidBasicCredentials(ctx)
+	case "/test.proto.v1.test_proto/AuthBearer":
+		err = ensureValidToken(ctx)
+	case "/test.proto.v1.test_proto/AuthJWT":
+		err = ensureValidJWT(ctx)
+	}
+
+	if err != nil {
 		return nil, err
 	}
 

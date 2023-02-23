@@ -139,7 +139,8 @@ label {
 }
 
 #nav-request-data,
-#nav-request-metadata {
+#nav-request-metadata,
+#nav-request-authentication {
   padding: 10px;
 }
 
@@ -517,6 +518,19 @@ h6 {
 
 .input-bool {
   margin-top: 1.3rem;
+}
+
+.auth {
+  margin-top: 10px;
+}
+
+#nav-workspace-authentication .authentication {
+  display: none;
+}
+
+#nav-workspace-authentication .error {
+  border-color: #d9534f;
+  box-shadow: 0 0 0 0.25rem rgb(217 83 79 / 25%);
 }
 
 

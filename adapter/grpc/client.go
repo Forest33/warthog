@@ -61,7 +61,7 @@ func (c *Client) SetSettings(cfg *entity.Settings) {
 }
 
 // Connect connecting to gRPC server
-func (c *Client) Connect(addr string, opts ...ClientOpt) error {
+func (c *Client) Connect(addr string, auth *entity.Auth, opts ...ClientOpt) error {
 	if defaultOptions != nil {
 		c.opts = *defaultOptions
 	}
@@ -76,6 +76,12 @@ func (c *Client) Connect(addr string, opts ...ClientOpt) error {
 	dialOptions, err := c.getDialOptions()
 	if err != nil {
 		return err
+	}
+
+	if opt, err := c.getAuth(auth); err != nil {
+		return err
+	} else if opt != nil {
+		dialOptions = append(dialOptions, opt)
 	}
 
 	ctx := c.ctx
@@ -115,15 +121,17 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 		return nil, fmt.Errorf("failed to add server CA's certificate")
 	}
 
-	clientCert, err := tls.X509KeyPair([]byte(c.opts.clientCertificate), []byte(c.opts.clientKey))
-	if err != nil {
-		return nil, err
-	}
-
 	cfg := &tls.Config{
-		Certificates:       []tls.Certificate{clientCert},
 		RootCAs:            pool,
 		InsecureSkipVerify: c.opts.insecureSkipVerify,
+	}
+
+	if c.opts.clientCertificate != "" && c.opts.clientKey != "" {
+		certificates, err := tls.X509KeyPair([]byte(c.opts.clientCertificate), []byte(c.opts.clientKey))
+		if err != nil {
+			return nil, err
+		}
+		cfg.Certificates = []tls.Certificate{certificates}
 	}
 
 	return credentials.NewTLS(cfg), nil

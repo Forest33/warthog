@@ -8,19 +8,29 @@ import "google/protobuf/struct.proto";
 option go_package = "./;testProto";
 
 message User {
-  enum Source {
+  enum Type {
     UNKNOWN = 0;
-    SOURCE1 = 1;
-    SOURCE2 = 2;
-    SOURCE3 = 3;
+    USER = 1;
+    MANAGER = 2;
+    ADMIN = 3;
   }
 
   string id = 1;
   string name = 2;
-  bool status = 3;
+  bool active = 3;
   uint32 age = 4;
-  repeated uint32 flag = 5;
-  repeated M1.NestedM1.NestedM2.NestedEnum repeated_nested_enum = 6;
+  Location location = 5;
+}
+
+message Location {
+  string country = 1;
+  string city = 2;
+  Coordinates coordinates = 3;
+}
+
+message Coordinates {
+  double lat = 1;
+  double lng = 2;
 }
 
 message M1 {
@@ -69,7 +79,7 @@ message M1 {
   repeated bool repeated_bool_value = 13;
   EnumM1 enum_value = 14;
   repeated EnumM1 repeated_enum_value = 15;
-  User.Source source = 16;
+  User.Type type = 16;
   repeated User user = 17;
   repeated User repeated_user = 18;
   map<string, M4> string2M4 = 19;
@@ -154,4 +164,8 @@ service test_proto {
   rpc ClientServerStream(stream StreamMessage) returns(stream StreamMessage);
   rpc TypesTest(Types) returns (Types);
   rpc LoopTest(Loop) returns (Loop);
+  rpc CreateUser(User) returns (User);
+  rpc AuthBasic(M1) returns (M1);
+  rpc AuthBearer(M1) returns (M1);
+  rpc AuthJWT(M1) returns (M1);
 }

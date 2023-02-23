@@ -23,12 +23,16 @@
                             aria-controls="nav-tls-workspace-modal"
                             aria-selected="false">TLS
                     </button>
+                    <button class="nav-link" id="nav-workspace-authentication-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-workspace-modal-authentication" type="button" role="tab"
+                            aria-controls="nav-tls-workspace-modal"
+                            aria-selected="false">Authentication
+                    </button>
                 </div>
 
                 <div class="tab-content" id="workspace-modal-nav-tab-content">
 
-                    <div class="tab-pane fade show active" id="nav-workspace-modal-basic" role="tabpanel"
-                         aria-labelledby="nav-basic-tab">
+                    <div class="tab-pane fade show active" id="nav-workspace-modal-basic" role="tabpanel" aria-labelledby="nav-basic-tab">
 
                         <form id="workspace-modal-basic-form">
 
@@ -43,7 +47,8 @@
                                 <label for="workspace-modal-grpc-addr">
                                     gRPC server address
                                 </label>
-                                <input type="text" class="form-control" id="workspace-modal-grpc-addr" required pattern="(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|([a-zA-Z0-9-.]+)):[0-9]{1,5}">
+                                <input type="text" class="form-control" id="workspace-modal-grpc-addr" required
+                                       pattern="(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|([a-zA-Z0-9-.]+)):[0-9]{1,5}">
                             </div>
 
 
@@ -134,20 +139,116 @@
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-root-certificate">Trusted root certificate(s)</label>
-                                <textarea class="form-control ssl-certificate" id="workspace-modal-root-certificate"
-                                          rows="7" required></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-root-certificate" rows="7" required></textarea>
                             </div>
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-client-certificate">Client certificate (public key)</label>
-                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-certificate"
-                                          rows="7" required></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-certificate" rows="7"></textarea>
                             </div>
 
                             <div class="mb-2 form-group">
                                 <label for="workspace-modal-client-key">Client private key</label>
-                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-key" rows="7"
-                                          required></textarea>
+                                <textarea class="form-control ssl-certificate" id="workspace-modal-client-key" rows="7"></textarea>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="nav-workspace-modal-authentication" role="tabpanel" aria-labelledby="nav-authentication-tab">
+                        <form>
+                            <div id="nav-workspace-authentication">
+                                <div class="auth">
+                                    <div class="mb-2 form-group">
+                                        <select class="form-select" aria-label="Authentication" id="authentication-type">
+                                            <option value="none" selected>No Authentication</option>
+                                            <option value="basic">Basic Authentication</option>
+                                            <option value="bearer">Bearer Token</option>
+                                            <option value="jwt">JWT Bearer</option>
+                                            <option value="google">Google Compute Engine</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-2 form-group authentication authentication-basic">
+                                        <label for="authentication-basic-login">Login</label>
+                                        <input type="text" class="form-control" id="authentication-basic-login">
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-basic">
+                                        <label for="authentication-basic-password">Password</label>
+                                        <input type="text" class="form-control" id="authentication-basic-password">
+                                    </div>
+
+                                    <div class="mb-2 form-group authentication authentication-bearer">
+                                        <label for="authentication-bearer-token">Access token</label>
+                                        <textarea class="form-control" id="authentication-bearer-token" rows="5"></textarea>
+                                    </div>
+
+                                    <div class="mb-2 form-group authentication authentication-jwt">
+                                        <label for="authentication-jwt-algorithm">Algorithm</label>
+                                        <select class="form-select" aria-label="Algorithm" id="authentication-jwt-algorithm">
+                                            <option value="HS256" selected>HS256</option>
+                                            <option value="HS384">HS384</option>
+                                            <option value="HS512">HS512</option>
+                                            <option value="RS256">RS256</option>
+                                            <option value="RS384">RS384</option>
+                                            <option value="RS512">RS512</option>
+                                            <option value="PS256">PS256</option>
+                                            <option value="PS384">PS384</option>
+                                            <option value="PS512">PS512</option>
+                                            <option value="ES256">ES256</option>
+                                            <option value="ES384">ES384</option>
+                                            <option value="ES512">ES512</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt symmetric">
+                                        <label for="authentication-jwt-secret">Secret</label>
+                                        <input type="text" class="form-control" id="authentication-jwt-secret">
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt symmetric">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="authentication-jwt-secret-base64" value="true">
+                                            <label class="form-check-label" for="authentication-jwt-secret-base64">
+                                                Secret Base64 encoded
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt asymmetric">
+                                        <label for="authentication-jwt-private-key" style="vertical-align: bottom;">Private key</label>
+                                        <textarea class="form-control" id="authentication-jwt-private-key" rows="5"></textarea>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt asymmetric">
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                                id="authentication-jwt-private-key-select-file">Select File
+                                        </button>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt">
+                                        <label for="authentication-jwt-payload">Payload</label>
+                                        <textarea class="form-control" id="authentication-jwt-payload" rows="5"></textarea>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt">
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                                id="authentication-jwt-standard-claims">Standard Claims
+                                        </button>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-jwt">
+                                        <label for="authentication-jwt-header-prefix">Header prefix</label>
+                                        <input type="text" class="form-control" id="authentication-jwt-header-prefix" value="Bearer">
+                                    </div>
+
+                                    <div class="mb-2 form-group authentication authentication-google">
+                                        <label for="authentication-google-scopes">Scopes (comma separated)</label>
+                                        <input type="text" class="form-control" id="authentication-google-scopes">
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-google">
+                                        <label for="authentication-google-token" style="vertical-align: bottom;">Token</label>
+                                        <textarea class="form-control" id="authentication-google-token" rows="5"></textarea>
+                                    </div>
+                                    <div class="mb-2 form-group authentication authentication-google">
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                                id="authentication-google-token-select-file">Select File
+                                        </button>
+                                    </div>
+
+                                </div>
                             </div>
                         </form>
                     </div>

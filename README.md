@@ -10,12 +10,14 @@
 <img src="assets/gui.webp" alt="Warthog UI" title="Warthog cross platform gRPC client"
 </p>
 
+
 ## Features
 
 - Automatic parsing of proto definitions to render services and input messages
 - `.proto` file discovery
 - Selection of multiple services and methods
 - Configuration of TLS, including disabling TLS (plain text)
+- Authentication: Basic, Bearer Token, JWT, GCE 
 - Input generation for all scalar types
 - Input generation for nested and looped messages 
 - Input generation for enums, including nested

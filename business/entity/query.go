@@ -37,6 +37,7 @@ type Query struct {
 	Method   string
 	Data     map[string]interface{}
 	Metadata []string
+	Auth     *Auth
 }
 
 // QueryResponse gRPC response
@@ -73,6 +74,12 @@ func (r *Query) Model(server map[string]interface{}) error {
 		r.Metadata = make([]string, 0, len(v.(map[string]interface{}))*2)
 		for k, v := range v.(map[string]interface{}) {
 			r.Metadata = append(r.Metadata, k, v.(string))
+		}
+	}
+	if v, ok := server["auth"]; ok {
+		r.Auth = &Auth{}
+		if err := r.Auth.Model(v.(map[string]interface{})); err != nil {
+			return err
 		}
 	}
 

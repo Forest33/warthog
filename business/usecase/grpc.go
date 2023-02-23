@@ -14,20 +14,23 @@ import (
 
 // GrpcUseCase object capable of interacting with GrpcUseCase
 type GrpcUseCase struct {
-	ctx           context.Context
-	log           *logger.Zerolog
-	client        GrpcClient
-	services      []*entity.Service
-	workspaceRepo WorkspaceRepo
-	curServerID   int64
-	curService    string
-	curMethod     string
+	ctx                    context.Context
+	log                    *logger.Zerolog
+	client                 GrpcClient
+	services               []*entity.Service
+	workspaceRepo          WorkspaceRepo
+	curServerID            int64
+	curConnectedServerID   int64
+	curService             string
+	curMethod              string
+	curServer              *entity.WorkspaceItemServer
+	curServerClientOptions []grpc.ClientOpt
 }
 
 // GrpcClient is an interface for working with the gRPC client
 type GrpcClient interface {
 	SetSettings(cfg *entity.Settings)
-	Connect(addr string, opts ...grpc.ClientOpt) error
+	Connect(addr string, auth *entity.Auth, opts ...grpc.ClientOpt) error
 	AddProtobuf(path ...string)
 	AddImport(path ...string)
 	LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError, *entity.ProtobufError)
@@ -83,29 +86,32 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 		}
 	}
 
-	serverData := server.Data.(*entity.WorkspaceItemServer)
+	uc.curServer = server.Data.(*entity.WorkspaceItemServer)
+	uc.curServerClientOptions = nil
+	uc.curServerClientOptions = make([]grpc.ClientOpt, 0, 4)
 
-	opts := make([]grpc.ClientOpt, 0, 4)
-	if serverData.NoTLS {
-		opts = append(opts, grpc.WithNoTLS())
+	if uc.curServer.NoTLS {
+		uc.curServerClientOptions = append(uc.curServerClientOptions, grpc.WithNoTLS())
 	} else {
-		if serverData.Insecure {
-			opts = append(opts, grpc.WithInsecure())
+		if uc.curServer.Insecure {
+			uc.curServerClientOptions = append(uc.curServerClientOptions, grpc.WithInsecure())
 		}
-		opts = append(opts,
-			grpc.WithRootCertificate(serverData.RootCertificate),
-			grpc.WithClientCertificate(serverData.ClientCertificate),
-			grpc.WithClientKey(serverData.ClientKey),
-		)
+		uc.curServerClientOptions = append(uc.curServerClientOptions, grpc.WithRootCertificate(uc.curServer.RootCertificate))
+		if uc.curServer.ClientCertificate != "" && uc.curServer.ClientKey != "" {
+			uc.curServerClientOptions = append(uc.curServerClientOptions,
+				grpc.WithClientCertificate(uc.curServer.ClientCertificate),
+				grpc.WithClientKey(uc.curServer.ClientKey))
+		}
 	}
 
-	err = uc.client.Connect(serverData.Addr, opts...)
-	if err != nil {
-		uc.log.Error().Msgf("failed connect to gRPC server: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
+	if uc.curServer.UseReflection {
+		err = uc.client.Connect(uc.curServer.Addr, uc.curServer.Auth, uc.curServerClientOptions...)
+		if err != nil {
+			uc.log.Error().Msgf("failed connect to gRPC server: %v", err)
+			return entity.ErrorGUIResponse(err)
+		}
+		uc.curConnectedServerID = req.ID
 
-	if serverData.UseReflection {
 		uc.services, err = uc.client.LoadFromReflection()
 		if err != nil {
 			uc.log.Error().Msgf("failed to get services: %v", err)
@@ -113,8 +119,8 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 		}
 	} else {
 		var protoErr *entity.ProtobufError
-		uc.client.AddProtobuf(serverData.ProtoFiles...)
-		uc.client.AddImport(serverData.ImportPath...)
+		uc.client.AddProtobuf(uc.curServer.ProtoFiles...)
+		uc.client.AddImport(uc.curServer.ImportPath...)
 		uc.services, warn, protoErr = uc.client.LoadFromProtobuf()
 		if protoErr != nil {
 			uc.log.Error().Msgf("failed to get services: %v", protoErr.Err)
@@ -151,6 +157,15 @@ func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse
 	req := &entity.Query{}
 	if err := req.Model(payload); err != nil {
 		return entity.ErrorGUIResponse(err)
+	}
+
+	if uc.curConnectedServerID != req.ServerID {
+		err := uc.client.Connect(uc.curServer.Addr, uc.curServer.Auth, uc.curServerClientOptions...)
+		if err != nil {
+			uc.log.Error().Msgf("failed connect to gRPC server: %v", err)
+			return entity.ErrorGUIResponse(err)
+		}
+		uc.curConnectedServerID = req.ServerID
 	}
 
 	method, err := uc.getMethodByName(req.Service, req.Method)
