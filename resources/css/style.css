@@ -200,7 +200,7 @@ label {
 
 #query-error {
   width: 100%;
-  padding: 10px 10px 0 10px;
+  padding: 0 10px 0 10px;
 }
 
 #query-error .alert {
@@ -533,4 +533,18 @@ h6 {
   box-shadow: 0 0 0 0.25rem rgb(217 83 79 / 25%);
 }
 
+#workspace-modal-k8s-form .col {
+  padding-left: 0;
+  padding-right: 0;
+}
 
+#nav-workspace-k8s .gcs {
+  display: none;
+}
+
+#info-message {
+  display: none;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 0;
+}

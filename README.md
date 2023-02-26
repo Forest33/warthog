@@ -17,7 +17,9 @@
 - `.proto` file discovery
 - Selection of multiple services and methods
 - Configuration of TLS, including disabling TLS (plain text)
-- Authentication: Basic, Bearer Token, JWT, GCE 
+- Authentication: Basic, Bearer Token, JWT, GCE
+- Kubernetes port forwarding
+- Authorization in Google Cloud services
 - Input generation for all scalar types
 - Input generation for nested and looped messages 
 - Input generation for enums, including nested
@@ -56,3 +58,10 @@ the `Applications` folder and run from `Applications`.
 ### Windows
 
 [Download](https://github.com/Forest33/warthog/releases) and run `Warthog*-windows-x86-64.exe`.
+
+## Google Cloud services authorization
+- Enable Kubernetes Engine API and check quota for your project at [https://console.developers.google.com/apis/api/container](https://console.developers.google.com/apis/api/container)
+- Install gcloud CLI from [https://cloud.google.com/sdk/](https://cloud.google.com/sdk/) and run
+````
+  gcloud beta auth application-default login
+````

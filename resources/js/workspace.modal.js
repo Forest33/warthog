@@ -3,6 +3,7 @@ import {onTreeNodeRender, WorkspaceTypeFolder} from "./tree.js";
 import {isNull, modalTreeExpandedNodes} from "./index.js";
 import {loadServer} from "./server.js";
 import {getServerAuth, initAuth, setServerAuth, validateAuthJWTPayload} from "./auth.js";
+import {getServerK8S, initK8S, setServerK8S} from "./k8s.js";
 
 function initWorkspaceModal() {
     let workspaceModal = document.getElementById("workspaceModal");
@@ -69,9 +70,12 @@ function initWorkspaceModal() {
             $("#workspace-modal-badge-server-id").css("visibility", "hidden");
             $("#workspace-modal-basic-form").removeClass("was-validated");
             $("#workspace-modal-tls-form").removeClass("was-validated");
+            $("#workspace-modal-k8s-form").removeClass("was-validated");
             $("#workspaceModal .proto-files").attr("disabled", false);
             $("#workspaceModal .ssl-certificate").attr("disabled", false);
             $('#authentication-type').val("none").trigger('change');
+            $("#workspace-modal-k8s-enabled").prop("checked", false).trigger('change');
+            $("#workspace-modal-k8s-gcs-enabled").prop("checked", false).trigger('change');
         });
     });
 
@@ -82,6 +86,7 @@ function initWorkspaceModal() {
     $("#workspace-modal-submit").click(function (event) {
         let basicForm = $("#workspace-modal-basic-form")[0];
         let tlsForm = $("#workspace-modal-tls-form")[0];
+        let k8sForm = $("#workspace-modal-k8s-form")[0];
         if (!basicForm.checkValidity()) {
             event.preventDefault();
             event.stopPropagation();
@@ -90,6 +95,10 @@ function initWorkspaceModal() {
             event.preventDefault();
             event.stopPropagation();
             $("#nav-workspace-modal-tls-tab").tab("show");
+        } else if ($("#workspace-modal-k8s-enabled").is(":checked") && !k8sForm.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            $("#nav-workspace-modal-k8s-tab").tab("show");
         } else if (!validateAuthJWTPayload()) {
             $("#nav-workspace-authentication-tab").tab("show");
         } else {
@@ -97,6 +106,7 @@ function initWorkspaceModal() {
         }
         basicForm.classList.add("was-validated");
         tlsForm.classList.add("was-validated");
+        k8sForm.classList.add("was-validated");
     });
 
     $("#workspace-modal-add-proto-files").click(function () {
@@ -135,6 +145,7 @@ function initWorkspaceModal() {
     });
 
     initAuth();
+    initK8S();
 }
 
 function createFolder() {
@@ -240,6 +251,7 @@ function createWorkspace() {
             client_certificate: clientCertificate,
             client_key: clientKey,
             auth: getServerAuth(),
+            k8s: getServerK8S(),
         },
     };
 
@@ -374,6 +386,9 @@ function editServer(srv) {
 
     if (!isNull(srv.data.auth)) {
         setServerAuth(srv.data.auth);
+    }
+    if (!isNull(srv.data.k8s)) {
+        setServerK8S(srv.data.k8s);
     }
 
     $("#workspaceModal").modal("show");

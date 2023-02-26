@@ -246,6 +246,35 @@ func initGrpcResponse() {
 	}()
 }
 
+func initAsyncMessages() {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case resp := <-grpcUseCase.GetInfoChannel():
+				req := &entity.GUIRequest{
+					Cmd:     entity.CmdMessageInfo,
+					Payload: resp,
+				}
+				err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
+				if err != nil {
+					zlog.Error().Msgf("failed to send info message: %v", err)
+				}
+			case resp := <-grpcUseCase.GetErrorChannel():
+				req := &entity.GUIRequest{
+					Cmd:     entity.CmdMessageError,
+					Payload: resp,
+				}
+				err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
+				if err != nil {
+					zlog.Error().Msgf("failed to send error message: %v", err)
+				}
+			}
+		}
+	}()
+}
+
 func loadWorkspace() {
 	if workspaceID == nil || *workspaceID == 0 {
 		return

@@ -5,7 +5,7 @@ export {
     validateAuthJWTPayload
 }
 
-import {isNull} from "./index.js";
+import {isNull, loadFile} from "./index.js";
 import {currentServer} from "./server.js";
 
 let jwtStandardClaims = {
@@ -179,21 +179,5 @@ function validateAuthJWTPayload() {
     return true;
 }
 
-function loadFile(elm) {
-    const {dialog} = require("electron").remote;
-    let files = dialog.showOpenDialogSync({
-        properties: ["openFile", "showHiddenFiles"],
-    });
-    if (files === undefined) {
-        return;
-    }
 
-    const fs = require("fs");
-    fs.readFile(files[0], (err, contents) => {
-        if (err) {
-            return;
-        }
-        elm.val(contents);
-    })
-}
 

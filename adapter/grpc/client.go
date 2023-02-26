@@ -34,7 +34,7 @@ type Client struct {
 	queryCtx         context.Context
 	queryCancel      context.CancelFunc
 	queryStartTime   time.Time
-	cancelQueryMux   sync.Mutex
+	connectionMux    sync.RWMutex
 	requestCh        chan *dynamic.Message
 	responseCh       chan *entity.QueryResponse
 	closeStreamCh    chan struct{}
@@ -90,7 +90,11 @@ func (c *Client) Connect(addr string, auth *entity.Auth, opts ...ClientOpt) erro
 		dialOptions = append(dialOptions, grpc.WithBlock())
 		if *c.cfg.ConnectTimeout > 0 {
 			ctx, cancel = context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.ConnectTimeout))
-			defer cancel()
+			defer func() {
+				c.connectionMux.Lock()
+				cancel()
+				c.connectionMux.Unlock()
+			}()
 		}
 	}
 
@@ -139,9 +143,19 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 
 // Close closes connection to gRPC server
 func (c *Client) Close() {
+	c.connectionMux.Lock()
+	defer c.connectionMux.Unlock()
+
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
 			c.log.Error().Msgf("failed to close connection: %v", err)
 		}
 	}
+}
+
+func (c *Client) isConnected() bool {
+	c.connectionMux.RLock()
+	defer c.connectionMux.RUnlock()
+
+	return c.conn != nil
 }

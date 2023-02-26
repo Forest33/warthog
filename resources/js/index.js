@@ -5,6 +5,7 @@ export {
     dataIdToNode,
     isNull,
     setCurrentSettings,
+    loadFile,
 };
 
 import {saveQuery} from "./query.js";
@@ -24,7 +25,8 @@ import {
     setCurrentQuery,
     setRequestTitle,
 } from "./server.js";
-import {hideStreamControl, initStreamControl, query, response,} from "./request.js";
+import {hideStreamControl, initStreamControl, query, response, showQueryError,} from "./request.js";
+import {template} from "./template.js";
 
 let currentSettings = undefined;
 let treeRootNodes = new Set();
@@ -50,6 +52,12 @@ $(document).ready(function () {
                     break;
                 case "query.response":
                     response(message.payload);
+                    break;
+                case "message.info":
+                    addInfoMessage(message.payload);
+                    break;
+                case "message.error":
+                    showQueryError(message.payload)
                     break;
             }
         });
@@ -341,4 +349,32 @@ function isNull(v) {
 
 function setCurrentSettings(settinigs) {
     currentSettings = settinigs;
+}
+
+function loadFile(elm) {
+    const {dialog} = require("electron").remote;
+    let files = dialog.showOpenDialogSync({
+        properties: ["openFile", "showHiddenFiles"],
+    });
+    if (files === undefined) {
+        return;
+    }
+
+    const fs = require("fs");
+    fs.readFile(files[0], (err, contents) => {
+        if (err) {
+            return;
+        }
+        elm.val(contents);
+    })
+}
+
+function addInfoMessage(data) {
+    let info = $("#info-message");
+    if (data.message === "") {
+        info.html("").hide();
+        return
+    }
+    info.append("<div>" + data.message + "</div>");
+    info.show();
 }

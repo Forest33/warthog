@@ -16,6 +16,7 @@ type Settings struct {
 	SingleInstance        *bool `json:"single_instance"`
 	ConnectTimeout        *int  `json:"connect_timeout"`
 	RequestTimeout        *int  `json:"request_timeout"`
+	K8SRequestTimeout     *int  `json:"k8s_request_timeout"`
 	NonBlockingConnection *bool `json:"non_blocking_connection"`
 	SortMethodsByName     *bool `json:"sort_methods_by_name"`
 	MaxLoopDepth          *int  `json:"max_loop_depth"`
@@ -30,6 +31,7 @@ var DefaultSettings = &Settings{
 	SingleInstance:        structs.Ref(true),
 	ConnectTimeout:        structs.Ref(10),
 	RequestTimeout:        structs.Ref(30),
+	K8SRequestTimeout:     structs.Ref(30),
 	NonBlockingConnection: structs.Ref(true),
 	SortMethodsByName:     structs.Ref(true),
 	MaxLoopDepth:          structs.Ref(10),
@@ -49,6 +51,9 @@ func (s *Settings) Model(payload map[string]interface{}) error {
 	}
 	if v, ok := payload["request_timeout"]; ok && v != nil {
 		s.RequestTimeout = structs.Ref(int(v.(float64)))
+	}
+	if v, ok := payload["k8s_request_timeout"]; ok && v != nil {
+		s.K8SRequestTimeout = structs.Ref(int(v.(float64)))
 	}
 	if v, ok := payload["non_blocking_connection"]; ok && v != nil {
 		s.NonBlockingConnection = structs.Ref(v.(bool))

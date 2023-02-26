@@ -24,6 +24,8 @@ const (
 	CmdDevTools            GUICommand = "dev.tools.show"
 	CmdMenuSettings        GUICommand = "menu.settings"
 	CmdMenuAbout           GUICommand = "menu.about"
+	CmdMessageInfo         GUICommand = "message.info"
+	CmdMessageError        GUICommand = "message.error"
 )
 
 // GUICommand UI command

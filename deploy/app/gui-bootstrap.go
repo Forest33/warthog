@@ -76,6 +76,7 @@ func withBootstrap() {
 
 			initGUIEvents()
 			initGrpcResponse()
+			initAsyncMessages()
 			loadWorkspace()
 
 			return nil

@@ -13,7 +13,7 @@ import (
 const (
 	settingsTable       = "settings"
 	settingsTableFields = `window_width, window_height, window_x, window_y, single_instance, connect_timeout,
-							request_timeout, non_blocking_connection, sort_methods_by_name, max_loop_depth`
+							request_timeout, k8s_request_timeout, non_blocking_connection, sort_methods_by_name, max_loop_depth`
 )
 
 // SettingsRepository object capable of interacting with SettingsRepository
@@ -38,6 +38,7 @@ type settingsDTO struct {
 	SingleInstance        bool `db:"single_instance"`
 	ConnectTimeout        int  `db:"connect_timeout"`
 	RequestTimeout        int  `db:"request_timeout"`
+	K8SRequestTimeout     int  `db:"k8s_request_timeout"`
 	NonBlockingConnection bool `db:"non_blocking_connection"`
 	SortMethodsByName     bool `db:"sort_methods_by_name"`
 	MaxLoopDepth          int  `db:"max_loop_depth"`
@@ -52,6 +53,7 @@ func (dto *settingsDTO) entity() *entity.Settings {
 		SingleInstance:        &dto.SingleInstance,
 		ConnectTimeout:        &dto.ConnectTimeout,
 		RequestTimeout:        &dto.RequestTimeout,
+		K8SRequestTimeout:     &dto.K8SRequestTimeout,
 		NonBlockingConnection: &dto.NonBlockingConnection,
 		SortMethodsByName:     &dto.SortMethodsByName,
 		MaxLoopDepth:          &dto.MaxLoopDepth,
@@ -74,7 +76,7 @@ func (repo *SettingsRepository) Get() (*entity.Settings, error) {
 func (repo *SettingsRepository) Update(in *entity.Settings) (*entity.Settings, error) {
 	dto := &settingsDTO{}
 	attrs := make([]string, 0, 10)
-	mapper := make(map[string]interface{}, 10)
+	mapper := make(map[string]interface{}, 11)
 
 	if in.WindowWidth > 0 {
 		attrs = append(attrs, "window_width = :window_width")
@@ -103,6 +105,10 @@ func (repo *SettingsRepository) Update(in *entity.Settings) (*entity.Settings, e
 	if in.RequestTimeout != nil {
 		attrs = append(attrs, "request_timeout = :request_timeout")
 		mapper["request_timeout"] = in.RequestTimeout
+	}
+	if in.K8SRequestTimeout != nil {
+		attrs = append(attrs, "k8s_request_timeout = :k8s_request_timeout")
+		mapper["k8s_request_timeout"] = in.K8SRequestTimeout
 	}
 	if in.NonBlockingConnection != nil {
 		attrs = append(attrs, "non_blocking_connection = :non_blocking_connection")

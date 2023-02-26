@@ -12,7 +12,6 @@
                         <span class="badge bg-light text-dark" id="workspace-modal-badge-server-id"></span>
                     </div>
 
-
                     <button class="nav-link active" id="nav-workspace-modal-basic-tab" data-bs-toggle="tab"
                             data-bs-target="#nav-workspace-modal-basic" type="button" role="tab"
                             aria-controls="nav-basic-workspace-modal"
@@ -22,6 +21,11 @@
                             data-bs-target="#nav-workspace-modal-tls" type="button" role="tab"
                             aria-controls="nav-tls-workspace-modal"
                             aria-selected="false">TLS
+                    </button>
+                    <button class="nav-link" id="nav-workspace-modal-k8s-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-workspace-modal-k8s" type="button" role="tab"
+                            aria-controls="nav-k8s-workspace-modal"
+                            aria-selected="false">K8S
                     </button>
                     <button class="nav-link" id="nav-workspace-authentication-tab" data-bs-toggle="tab"
                             data-bs-target="#nav-workspace-modal-authentication" type="button" role="tab"
@@ -50,7 +54,6 @@
                                 <input type="text" class="form-control" id="workspace-modal-grpc-addr" required
                                        pattern="(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|([a-zA-Z0-9-.]+)):[0-9]{1,5}">
                             </div>
-
 
                             <div class="mb-2 form-group">
                                 <div class="form-check form-switch">
@@ -151,6 +154,92 @@
                                 <label for="workspace-modal-client-key">Client private key</label>
                                 <textarea class="form-control ssl-certificate" id="workspace-modal-client-key" rows="7"></textarea>
                             </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="nav-workspace-modal-k8s" role="tabpanel" aria-labelledby="nav-k8s-tab">
+                        <form id="workspace-modal-k8s-form">
+                            <div id="nav-workspace-k8s">
+                                <div class="mb-2 form-group" style="margin-top: 15px;">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="workspace-modal-k8s-enabled" value="true">
+                                        <label class="form-check-label" for="workspace-modal-k8s-enabled">
+                                            Enabled Kubernetes port forwarding
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <label for="k8s-namespace">Namespace</label>
+                                    <input type="text" class="form-control k8s" id="k8s-namespace" required disabled>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col" style="padding-right: 0.375rem">
+                                                <label for="k8s-local-port">Local port</label>
+                                                <input type="number" class="form-control k8s" id="k8s-local-port" required disabled>
+                                            </div>
+                                            <div class="col" style="padding-left: 0.375rem">
+                                                <label for="k8s-pod-port">Pod port</label>
+                                                <input type="number" class="form-control k8s" id="k8s-pod-port" required disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <label for="k8s-pod-name">Pod name</label>
+                                    <input type="text" class="form-control k8s" id="k8s-pod-name" required disabled>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <label for="k8s-pod-name-selector">Pod selector</label>
+                                    <input type="text" class="form-control k8s" id="k8s-pod-name-selector" required disabled>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <label for="k8s-config-file-path">Kubernetes config file path</label>
+                                    <div class="input-group mb-3" style="margin-bottom: 0!important;">
+                                        <input type="text" id="k8s-config-file-path" minlength="1"
+                                               class="form-control k8s"
+                                               aria-describedby="k8s-config-select-file" disabled>
+                                        <button class="btn btn-primary k8s" type="button" id="k8s-config-select-file" disabled><i class="bi bi-file-plus"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2 form-group">
+                                    <label for="k8s-token" style="vertical-align: bottom;">Bearer token</label>
+                                    <textarea class="form-control k8s" id="k8s-token" rows="3" disabled></textarea>
+                                </div>
+                                <div class="mb-2 form-group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm k8s" id="k8s-token-select-file" disabled>Select File</button>
+                                </div>
+
+                                <div class="mb-2 form-group" style="margin-top: 15px;">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input k8s" type="checkbox" id="workspace-modal-k8s-gcs-enabled" value="true" disabled>
+                                        <label class="form-check-label" for="workspace-modal-k8s-gcs-enabled">
+                                            Enabled Google Cloud services authorization
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2 form-group gcs">
+                                    <label for="k8s-gcs-project">Project</label>
+                                    <input type="text" class="form-control gcs-control" id="k8s-gcs-project">
+                                </div>
+                                <div class="mb-2 form-group gcs">
+                                    <label for="k8s-gcs-location">Location</label>
+                                    <input type="text" class="form-control gcs-control" id="k8s-gcs-location">
+                                </div>
+                                <div class="mb-2 form-group gcs">
+                                    <label for="k8s-gcs-cluster">Cluster</label>
+                                    <input type="text" class="form-control gcs-control" id="k8s-gcs-cluster">
+                                </div>
+                            </div>
+
                         </form>
                     </div>
 

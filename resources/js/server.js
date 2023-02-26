@@ -17,7 +17,7 @@ export {
     setCurrentQuery,
 };
 import {isNull} from "./index.js";
-import {getRequestData, getRequestMetadata, hideStreamControl, showQueryError,} from "./request.js";
+import {getRequestData, getRequestMetadata, hideQueryError, hideStreamControl, showQueryError} from "./request.js";
 import {WorkspaceTypeQuery} from "./tree.js";
 import {template} from "./template.js";
 
@@ -68,11 +68,15 @@ function loadServer(srv, show) {
 
     clearRequestPanel();
     hideStreamControl();
+    hideQueryError();
 
     astilectron.sendMessage(req, function (message) {
         if (message.payload.status !== "ok") {
-            showQueryError(message.payload.error);
-            currentServer = undefined;
+            console.log("server ", message.payload.data.server_id, " - ", srv.id)
+            if (isNull(currentServer) || (!isNull(message.payload.data) && !isNull(currentServer) && message.payload.data.server_id === currentServer.id)) {
+                showQueryError(message.payload.error);
+                currentServer = undefined;
+            }
             return;
         }
 
@@ -182,6 +186,7 @@ function createRequestForm(service, method) {
 
     if (
         isNull(currentQuery) &&
+        !isNull(currentServer) &&
         !isNull(currentServer.data.request) &&
         !isNull(currentServer.data.request[service.name]) &&
         !isNull(currentServer.data.request[service.name][method.name])

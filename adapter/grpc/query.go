@@ -71,11 +71,15 @@ func (c *Client) createMessage(method *entity.Method, data map[string]interface{
 }
 
 // Query executes a gRPC request
-func (c *Client) Query(method *entity.Method, data map[string]interface{}, metadata []string) {
+func (c *Client) Query(method *entity.Method, data map[string]interface{}, metadata []string) error {
+	if !c.isConnected() {
+		return entity.ErrNotConnected
+	}
+
 	ms, err := c.createMessage(method, data, metadata)
 	if err != nil {
 		c.responseError(err, "")
-		return
+		return err
 	}
 
 	var isNew bool
@@ -92,12 +96,14 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, metad
 	}
 
 	if err != nil {
-		return
+		return err
 	}
 
 	if isNew || method.Type == entity.MethodTypeClientStream || method.Type == entity.MethodTypeBidiStream {
 		c.request(ms)
 	}
+
+	return nil
 }
 
 // CancelQuery aborting a running gRPC request

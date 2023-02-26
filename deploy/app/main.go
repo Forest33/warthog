@@ -11,12 +11,12 @@ import (
 
 	db "github.com/forest33/warthog/adapter/database"
 	"github.com/forest33/warthog/adapter/grpc"
+	"github.com/forest33/warthog/adapter/k8s"
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/business/usecase"
+	"github.com/forest33/warthog/pkg/database"
 	"github.com/forest33/warthog/pkg/logger"
 	"github.com/forest33/warthog/pkg/resources"
-
-	"github.com/forest33/warthog/pkg/database"
 )
 
 var (
@@ -48,6 +48,7 @@ var (
 	settingsRepo  *db.SettingsRepository
 	workspaceRepo *db.WorkspaceRepository
 	grpcClient    *grpc.Client
+	k8sClient     *k8s.Client
 
 	settingsUseCase  *usecase.SettingsUseCase
 	workspaceUseCase *usecase.WorkspaceUseCase
@@ -127,15 +128,46 @@ func initAdapters() {
 
 func initClients() {
 	grpcClient = grpc.New(ctx, zlog)
+	k8sClient = k8s.New(ctx, zlog)
 }
 
 func initUseCases() {
 	settingsUseCase = usecase.NewSettingsUseCase(ctx, &wg, zlog, settingsRepo, grpcClient)
-	grpcClient.SetSettings(initSettings())
+
+	settings := initSettings()
+	grpcClient.SetSettings(settings)
+	k8sClient.SetSettings(settings)
 
 	workspaceUseCase = usecase.NewWorkspaceUseCase(ctx, zlog, workspaceRepo, workspaceID)
-	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, workspaceRepo)
+	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, k8sClient, workspaceRepo)
 	usecase.SetWorkspaceUseCase(workspaceUseCase)
+
+	////////////////////////
+	//config := &entity.K8SClientConfig{
+	//	GCSAuth: &entity.GCSAuth{
+	//		Enabled:  true,
+	//		Project:  "impaya-nonprod",
+	//		Location: "europe-west1-b",
+	//		Cluster:  "lp-dev",
+	//	},
+	//}
+	//
+	//pf := entity.K8SPortForward{
+	//	ClientConfig:    config,
+	//	Namespace:       "impaya-dev",
+	//	PodNameSelector: "app=directory,release=directory-develop,tier=backend",
+	//	LocalPort:       7001,
+	//	PodPort:         7001,
+	//	ErrHandler: func(err error) {
+	//		zlog.Error().Msg(err.Error())
+	//	},
+	//}
+	//
+	//_, err := k8sClient.PortForward(pf)
+	//if err != nil {
+	//	zlog.Fatal(err)
+	//}
+	////////////////////////
 }
 
 func initSettings() *entity.Settings {

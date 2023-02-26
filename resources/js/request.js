@@ -377,11 +377,13 @@ function showQueryError(err) {
     $("#query-error").html(tmpl).show();
     $("#query-result").html("").hide();
     $("#time-spent").html("");
-    $("#badge-result")
-        .html(err.code + ": " + err.code_description)
-        .css("visibility", "visible")
-        .removeClass("bg-success")
-        .addClass("bg-danger");
+    if (err.code_description !== "") {
+        $("#badge-result")
+            .html(err.code + ": " + err.code_description)
+            .css("visibility", "visible")
+            .removeClass("bg-success")
+            .addClass("bg-danger");
+    }
     showHeadersTrailers(null, null);
 }
 
@@ -415,7 +417,6 @@ function showHeadersTrailers(header, trailer) {
 }
 
 function isQueryRun() {
-    console.log(currentMethod);
     return $("#request-run").hasClass("btn-danger");
 }
 

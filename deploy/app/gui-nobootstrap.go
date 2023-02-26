@@ -105,6 +105,7 @@ func withoutBootstrap() {
 
 	initGUIEvents()
 	initGrpcResponse()
+	initAsyncMessages()
 	loadWorkspace()
 
 	ast.Wait()

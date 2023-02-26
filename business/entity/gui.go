@@ -38,6 +38,11 @@ type Error struct {
 	Message         string        `json:"message"`
 }
 
+// Info UI info message
+type Info struct {
+	Message string `json:"message"`
+}
+
 // Error returns error string
 func (e Error) Error() string {
 	if e.Code > 0 {
@@ -47,8 +52,8 @@ func (e Error) Error() string {
 }
 
 // ErrorGUIResponse returns UI error response
-func ErrorGUIResponse(err error) *GUIResponse {
-	return &GUIResponse{
+func ErrorGUIResponse(err error, payload ...interface{}) *GUIResponse {
+	resp := &GUIResponse{
 		Status: GUIResponseStatusError,
 		Error: Error{
 			Code:            uint32(status.Code(err)),
@@ -56,4 +61,14 @@ func ErrorGUIResponse(err error) *GUIResponse {
 			Message:         err.Error(),
 		},
 	}
+
+	if len(payload) > 1 && len(payload)%2 == 0 {
+		resp.Payload = make(map[string]interface{}, len(payload)/2)
+	}
+
+	for i := 0; i < len(payload); i += 2 {
+		resp.Payload.(map[string]interface{})[payload[i].(string)] = payload[i+1]
+	}
+
+	return resp
 }
