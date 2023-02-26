@@ -1,7 +1,7 @@
 <p align="center">
 <img src="resources/icons/app.png" style="width:150px" width="150" alt="Warthog" />
-<h2 align="center">Warthog</h2>
-<h4 align="center">Cross platform gRPC client</h4>
+<h1 align="center">Warthog</h1>
+<h4 align="center">Cross platform gRPC GUI client</h4>
 </p>
 <p align="center">
 <a href="https://goreportcard.com/report/github.com/forest33/warthog" target=”_blank”><img src="https://goreportcard.com/badge/github.com/forest33/warthog"/></a>
@@ -61,7 +61,7 @@ the `Applications` folder and run from `Applications`.
 
 ## Google Cloud services authorization
 - Enable Kubernetes Engine API and check quota for your project at [https://console.developers.google.com/apis/api/container](https://console.developers.google.com/apis/api/container)
-- Install gcloud CLI from [https://cloud.google.com/sdk/](https://cloud.google.com/sdk/) and run
+- Install gcloud CLI from [https://cloud.google.com/sdk/](https://cloud.google.com/sdk/) and run:
 ````
   gcloud beta auth application-default login
 ````
