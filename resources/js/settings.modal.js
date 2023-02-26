@@ -49,6 +49,10 @@ function saveSettings() {
         $("#settings-modal-form-request-timeout").val(),
         10
       ),
+      k8s_request_timeout: parseInt(
+          $("#settings-modal-form-k8s-request-timeout").val(),
+          10
+      ),
       max_loop_depth: parseInt(
         $("#settings-modal-form-max-loop-depth").val(),
         10
@@ -81,6 +85,9 @@ function showSettingsModal() {
   );
   $("#settings-modal-form-request-timeout").val(
     currentSettings.request_timeout
+  );
+  $("#settings-modal-form-k8s-request-timeout").val(
+      currentSettings.k8s_request_timeout
   );
   $("#settings-modal-form-max-loop-depth").val(currentSettings.max_loop_depth);
   $("#settings-modal-form-non-blocking-connection").prop(

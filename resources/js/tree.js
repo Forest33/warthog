@@ -73,6 +73,9 @@ function initTreeDrag() {
       case "delete":
         treeMenuDelete(node);
         break;
+      case "duplicate":
+        treeMenuDuplicate(node);
+        break;
     }
   });
 
@@ -304,6 +307,13 @@ function getTreeDropdown(node) {
         )
       );
       menu.append(
+          $(
+              '<li><a class="dropdown-item" data-id="' +
+              node.data.id +
+              '" data-action="duplicate"><i class="bi bi bi-files"></i> Duplicate</a></li>'
+          )
+      );
+      menu.append(
         $(
           '<li><a class="dropdown-item' +
             ext +
@@ -314,6 +324,13 @@ function getTreeDropdown(node) {
       );
       break;
     case WorkspaceTypeQuery:
+      menu.append(
+          $(
+              '<li><a class="dropdown-item" data-id="' +
+              node.data.id +
+              '" data-action="duplicate"><i class="bi bi bi-files"></i> Duplicate</a></li>'
+          )
+      );
       menu.append(
         $(
           '<li><a class="dropdown-item" data-id="' +
@@ -439,6 +456,21 @@ function treeMenuEditServer(node) {
 function treeMenuDelete(node) {
   let req = {
     name: "workspace.delete",
+    payload: {
+      id: node.data.id,
+    },
+  };
+  astilectron.sendMessage(req, function (message) {
+    if (message.payload.status !== "ok") {
+      return;
+    }
+    showTree(message.payload.data);
+  });
+}
+
+function treeMenuDuplicate(node) {
+  let req = {
+    name: "workspace.duplicate",
     payload: {
       id: node.data.id,
     },

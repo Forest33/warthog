@@ -96,7 +96,12 @@ func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardContro
 			return
 		}
 
-		dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, http.MethodPost, &url.URL{Scheme: "https", Path: path, Host: u.Host})
+		httpClient := &http.Client{
+			Transport: transport,
+			Timeout:   time.Duration(*c.cfg.K8SRequestTimeout) * time.Second,
+		}
+
+		dialer := spdy.NewDialer(upgrader, httpClient, http.MethodPost, &url.URL{Scheme: "https", Path: path, Host: u.Host})
 		fw, err := portforward.New(dialer, []string{fmt.Sprintf("%d:%d", r.LocalPort, r.PodPort)}, ctrl.stopCh, readyCh, ctrl.out, ctrl.errOut)
 		if err != nil {
 			writeError(err)
@@ -120,7 +125,10 @@ func (c *Client) createClient(cfg *entity.K8SClientConfig) (*rest.Config, *kuber
 	)
 
 	if cfg.GCSAuth != nil && cfg.GCSAuth.Enabled {
-		restConfig, err = c.gcsAuth(c.ctx, cfg.GCSAuth)
+		ctx, cancel := context.WithTimeout(c.ctx, time.Duration(*c.cfg.K8SRequestTimeout)*time.Second)
+		defer cancel()
+
+		restConfig, err = c.gcsAuth(ctx, cfg.GCSAuth)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -139,6 +147,8 @@ func (c *Client) createClient(cfg *entity.K8SClientConfig) (*rest.Config, *kuber
 
 		restConfig.BearerToken = cfg.BearerToken
 	}
+
+	restConfig.Timeout = time.Duration(*c.cfg.K8SRequestTimeout) * time.Second
 
 	client, err := kubernetes.NewForConfig(restConfig)
 	if err != nil {

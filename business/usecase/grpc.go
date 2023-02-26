@@ -225,6 +225,7 @@ func (uc *GrpcUseCase) connect(serverID int64) error {
 		}
 
 		if createForward {
+			uc.curConnectedServerID = 0
 			uc.addInfoMessage(&entity.Info{Message: entity.MsgCreatingPortForward})
 			uc.curServer.K8SPortForward.ErrHandler = uc.getPortForwardErrorHandler(*uc.curServer, serverID)
 			control, err := uc.k8sClient.PortForward(uc.curServer.K8SPortForward)

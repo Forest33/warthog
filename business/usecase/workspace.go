@@ -4,6 +4,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/forest33/warthog/business/entity"
 	"github.com/forest33/warthog/pkg/logger"
@@ -128,6 +129,33 @@ func (uc *WorkspaceUseCase) Delete(payload map[string]interface{}) *entity.GUIRe
 	}
 
 	if err := uc.workspaceRepo.Delete(int64(payload["id"].(float64))); err != nil {
+		return entity.ErrorGUIResponse(err)
+	}
+
+	return uc.Get(nil)
+}
+
+// Duplicate duplicates workspace item
+func (uc *WorkspaceUseCase) Duplicate(payload map[string]interface{}) *entity.GUIResponse {
+	if payload == nil {
+		return entity.ErrorGUIResponse(errors.New("nil payload"))
+	}
+	if _, ok := payload["id"]; !ok {
+		return entity.ErrorGUIResponse(errors.New("no workspace id"))
+	}
+
+	item, err := uc.workspaceRepo.GetByID(int64(payload["id"].(float64)))
+	if err != nil {
+		return entity.ErrorGUIResponse(errors.New("failed to get workspace item"))
+	}
+
+	if item.Type != entity.WorkspaceTypeServer && item.Type != entity.WorkspaceTypeQuery {
+		return entity.ErrorGUIResponse(errors.New("wrong workspace item type"))
+	}
+
+	item.Title = fmt.Sprintf("%s %s", item.Title, entity.WorkspaceDuplicatePostfix)
+
+	if _, err := uc.workspaceRepo.Create(item); err != nil {
 		return entity.ErrorGUIResponse(err)
 	}
 

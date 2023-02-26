@@ -28,6 +28,8 @@ func eventsHandler(r *entity.GUIRequest) *entity.GUIResponse {
 		resp = workspaceUseCase.Get(payload)
 	case entity.CmdSortingWorkspace:
 		resp = workspaceUseCase.Sorting(payload)
+	case entity.CmdDuplicateWorkspace:
+		resp = workspaceUseCase.Duplicate(payload)
 	case entity.CmdDeleteWorkspace:
 		resp = workspaceUseCase.Delete(payload)
 	case entity.CmdExpandWorkspace:

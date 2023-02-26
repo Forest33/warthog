@@ -72,7 +72,6 @@ function loadServer(srv, show) {
 
     astilectron.sendMessage(req, function (message) {
         if (message.payload.status !== "ok") {
-            console.log("server ", message.payload.data.server_id, " - ", srv.id)
             if (isNull(currentServer) || (!isNull(message.payload.data) && !isNull(currentServer) && message.payload.data.server_id === currentServer.id)) {
                 showQueryError(message.payload.error);
                 currentServer = undefined;

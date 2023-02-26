@@ -13,6 +13,8 @@ const (
 	WorkspaceTypeFolder WorkspaceType = "f"
 	WorkspaceTypeServer WorkspaceType = "s"
 	WorkspaceTypeQuery  WorkspaceType = "r"
+
+	WorkspaceDuplicatePostfix = "Copy"
 )
 
 var (

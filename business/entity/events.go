@@ -8,6 +8,7 @@ const (
 	CmdGetWorkspace        GUICommand = "workspace.get"
 	CmdSortingWorkspace    GUICommand = "workspace.sorting"
 	CmdDeleteWorkspace     GUICommand = "workspace.delete"
+	CmdDuplicateWorkspace  GUICommand = "workspace.duplicate"
 	CmdExpandWorkspace     GUICommand = "workspace.expand"
 	CmdCreateServer        GUICommand = "server.create"
 	CmdUpdateServer        GUICommand = "server.update"

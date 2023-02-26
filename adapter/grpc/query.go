@@ -518,7 +518,7 @@ func (c *Client) response(data proto.Message, header metadata.MD, trailer metada
 		Received:  c.receivedMessaged,
 	}
 
-	resp.JsonString, err = c.getResponse(data)
+	resp.JsonString, _ = c.getResponse(data)
 
 	c.responseCh <- resp
 }

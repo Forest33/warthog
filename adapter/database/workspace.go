@@ -46,7 +46,7 @@ type workspaceDTO struct {
 	Type     string         `db:"type"`
 	Title    string         `db:"title"`
 	Data     sql.NullString `db:"data"`
-	Sort     int64          `db:"sort"`
+	Sort     int            `db:"sort"`
 	Expanded bool           `db:"expanded"`
 }
 
@@ -64,6 +64,9 @@ func newWorkspaceDTO(in *entity.Workspace) (dto *workspaceDTO, err error) {
 		}
 		dto.Data = types.StringToSQL(string(data))
 	}
+	if in.Sort != nil {
+		dto.Sort = *in.Sort
+	}
 
 	return
 }
@@ -75,6 +78,7 @@ func (dto *workspaceDTO) entity() (*entity.Workspace, error) {
 		HasChild: &dto.HasChild,
 		Type:     entity.WorkspaceType(dto.Type),
 		Title:    dto.Title,
+		Sort:     &dto.Sort,
 		Expanded: &dto.Expanded,
 	}
 
@@ -168,7 +172,7 @@ func (repo *WorkspaceRepository) Get() ([]*entity.Workspace, error) {
 	err := repo.db.Connector.SelectContext(repo.ctx, &dto, fmt.Sprintf(`
 		SELECT %s 
 		FROM %s
-		ORDER BY type, sort;`, workspaceTableFields, workspaceTable))
+		ORDER BY type, sort, created_at;`, workspaceTableFields, workspaceTable))
 	if err != nil {
 		return nil, err
 	}
@@ -197,8 +201,8 @@ func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace
 	defer repo.commit(tx, err)
 
 	query, args, err = tx.BindNamed(fmt.Sprintf(`
-			INSERT INTO %s (parent_id, has_child, type, title, data)
-			VALUES (:parent_id, :has_child, :type, :title, :data)
+			INSERT INTO %s (parent_id, has_child, type, title, data, sort)
+			VALUES (:parent_id, :has_child, :type, :title, :data, :sort)
 			RETURNING %s;`, workspaceTable, workspaceTableFields), dto)
 	if err != nil {
 		return nil, err
