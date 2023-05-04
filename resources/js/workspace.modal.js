@@ -219,6 +219,7 @@ function createWorkspace() {
     let folderID = selected[0].data.id;
 
     let useReflection = $("#workspace-modal-use-reflection").is(":checked");
+    let useGrpcWeb = $("#workspace-modal-use-grpc-web").is(":checked");
     let noTLS = $("#workspace-modal-use-plain-text").is(":checked");
     let insecure = $("#workspace-modal-skip-verification").is(":checked");
     let rootCertificate = $("#workspace-modal-root-certificate").val();
@@ -245,6 +246,7 @@ function createWorkspace() {
             proto_files: protoFiles,
             import_path: importPath,
             use_reflection: useReflection,
+            use_grpc_web: useGrpcWeb,
             no_tls: noTLS,
             insecure: insecure,
             root_certificate: rootCertificate,
@@ -345,6 +347,7 @@ function editServer(srv) {
     $("#workspace-modal-folder-id").val(srv.parent_id);
     $("#workspace-modal-grpc-name").val(srv.text);
     $("#workspace-modal-grpc-addr").val(srv.data.addr);
+    $("#workspace-modal-use-grpc-web").prop("checked", srv.data.use_grpc_web);
     $("#workspace-modal-use-reflection").prop("checked", srv.data.use_reflection);
     $("#workspace-modal-use-plain-text").prop("checked", srv.data.no_tls);
     $("#workspace-modal-skip-verification").prop("checked", srv.data.insecure);
