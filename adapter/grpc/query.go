@@ -3,11 +3,15 @@ package grpc
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"net/http"
 	"reflect"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -129,16 +133,59 @@ func (c *Client) GetSentCounter() uint {
 	return c.sentMessages
 }
 
+func (c *Client) grpcWebUnary(method *entity.Method, ms *dynamic.Message) {
+	fullMethodName := fmt.Sprintf("/%s/%s", method.Descriptor.GetService().GetFullyQualifiedName(), method.Descriptor.GetName())
+	payload, _ := proto.Marshal(ms)
+
+	// Encode the payload as base64
+	encodedPayload := base64.StdEncoding.EncodeToString(payload)
+
+	// Create an HTTP POST request with the appropriate headers
+	req, _ := http.NewRequest("POST", c.conn.Target()+fullMethodName, strings.NewReader(encodedPayload))
+	req.Header.Set("Content-Type", "application/grpc-web+proto")
+	req.Header.Set("X-Grpc-Web", "1")
+	req.Header.Set("Accept", "application/grpc-web+proto")
+
+	// Send the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Printf("Error making gRPC-Web request: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	// Decode the base64 response
+	decodedBody, _ := base64.StdEncoding.DecodeString(string(body))
+
+	// Unmarshal the response into a dynamic.Message
+	responseMsg := dynamic.NewMessage(method.Descriptor.GetOutputType())
+	err = proto.Unmarshal(decodedBody, responseMsg)
+	if err != nil {
+		fmt.Printf("Error unmarshalling gRPC-Web response: %v", err)
+		return
+	}
+
+	// Call the response function with the response message and empty metadata (since gRPC-Web does not support full metadata)
+	c.response(responseMsg, nil, nil, nil)
+}
+
 func (c *Client) unary(method *entity.Method, ms *dynamic.Message) {
 	var (
 		header  metadata.MD
 		trailer metadata.MD
 	)
 
-	stub := grpcdynamic.NewStub(c.conn)
-	c.queryStartTime = time.Now()
-	resp, err := stub.InvokeRpc(c.queryCtx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
-	c.response(resp, header, trailer, err)
+	if c.opts.useWeb {
+		c.grpcWebUnary(method, ms)
+	} else {
+		stub := grpcdynamic.NewStub(c.conn)
+		c.queryStartTime = time.Now()
+		resp, err := stub.InvokeRpc(c.queryCtx, method.Descriptor, ms, grpc.Header(&header), grpc.Trailer(&trailer))
+		c.response(resp, header, trailer, err)
+	}
 
 	c.sentMessages = 0
 	c.receivedMessaged = 0

@@ -44,6 +44,7 @@ type WorkspaceItemServer struct {
 	Request           map[string]map[string]*SavedQuery `json:"request"`
 	Auth              *Auth                             `json:"auth"`
 	K8SPortForward    *K8SPortForward                   `json:"k8s"`
+	UseGrpcWeb        bool                              `json:"use_grpc_web,omitempty"`
 }
 
 // Model creates ServerRequest from UI request
@@ -135,6 +136,9 @@ func (s *WorkspaceItemServer) Model(server map[string]interface{}) error {
 		if err := s.Auth.Model(v.(map[string]interface{})); err != nil {
 			return err
 		}
+	}
+	if v, ok := server["use_grpc_web"]; ok && v != nil {
+		s.UseGrpcWeb = v.(bool)
 	}
 
 	return nil

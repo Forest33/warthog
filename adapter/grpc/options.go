@@ -8,6 +8,7 @@ type ClientOptions struct {
 	rootCertificate    string
 	clientCertificate  string
 	clientKey          string
+	useWeb             bool
 }
 
 type ClientOpt func(options *ClientOptions)
@@ -18,6 +19,7 @@ var defaultOptions = &ClientOptions{
 	rootCertificate:    "",
 	clientCertificate:  "",
 	clientKey:          "",
+	useWeb:             false,
 }
 
 // WithNoTLS returns ClientOpt which disables transport security
@@ -52,5 +54,12 @@ func WithClientCertificate(cert string) ClientOpt {
 func WithClientKey(key string) ClientOpt {
 	return func(options *ClientOptions) {
 		options.clientKey = key
+	}
+}
+
+// WithUseWeb returns ClientOpt which sets useWeb
+func WithUseWeb() ClientOpt {
+	return func(options *ClientOptions) {
+		options.useWeb = true
 	}
 }

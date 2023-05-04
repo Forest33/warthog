@@ -111,6 +111,10 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 	uc.curServerClientOptions = nil
 	uc.curServerClientOptions = make([]grpc.ClientOpt, 0, 4)
 
+	if uc.curServer.UseGrpcWeb {
+		uc.curServerClientOptions = append(uc.curServerClientOptions, grpc.WithUseWeb())
+	}
+
 	if uc.curServer.NoTLS {
 		uc.curServerClientOptions = append(uc.curServerClientOptions, grpc.WithNoTLS())
 	} else {
