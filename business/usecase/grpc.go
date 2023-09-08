@@ -3,8 +3,6 @@ package usecase
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"sync"
 
@@ -63,7 +61,7 @@ type forwardPort struct {
 
 // NewGrpcUseCase creates a new GrpcUseCase
 func NewGrpcUseCase(ctx context.Context, log *logger.Zerolog, grpcClient GrpcClient, k8sClient K8SClient, workspaceRepo WorkspaceRepo) *GrpcUseCase {
-	return &GrpcUseCase{
+	useCase := &GrpcUseCase{
 		ctx:           ctx,
 		log:           log,
 		grpcClient:    grpcClient,
@@ -72,6 +70,25 @@ func NewGrpcUseCase(ctx context.Context, log *logger.Zerolog, grpcClient GrpcCli
 		infoCh:        make(chan *entity.Info),
 		errorCh:       make(chan *entity.Error),
 	}
+
+	useCase.initSubscriptions()
+
+	return useCase
+}
+
+func (uc *GrpcUseCase) initSubscriptions() {
+	workspaceUseCase.Subscribe(func(e entity.WorkspaceEvent, payload interface{}) {
+		switch e {
+		case entity.WorkspaceEventServerUpdated:
+			w := payload.(*entity.Workspace)
+			if w.ID == uc.curServerID {
+				uc.curServer = w.Data.(*entity.WorkspaceItemServer)
+				uc.curConnectedServerID = 0
+			}
+		default:
+			uc.log.Error().Msgf("unknown workspace event: %s", e.String())
+		}
+	})
 }
 
 // LoadServer reads the server description from the database and returns it to the GUI
@@ -107,6 +124,7 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 		}
 	}
 
+	uc.curServerID = server.ID
 	uc.curServer = server.Data.(*entity.WorkspaceItemServer)
 	uc.curServerClientOptions = nil
 	uc.curServerClientOptions = make([]grpc.ClientOpt, 0, 4)
@@ -178,40 +196,6 @@ func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIRes
 	}
 }
 
-func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse {
-	req := &entity.Query{}
-	if err := req.Model(payload); err != nil {
-		return entity.ErrorGUIResponse(err)
-	}
-
-	if err := uc.connect(req.ServerID); err != nil {
-		uc.log.Error().Msgf("failed connect to gRPC server: %v", err)
-		return entity.ErrorGUIResponse(err)
-	}
-
-	uc.clearInfoMessages()
-
-	method, err := uc.getMethodByName(req.Service, req.Method)
-	if err != nil {
-		return entity.ErrorGUIResponse(err)
-	}
-
-	uc.initQuery(req)
-	err = uc.grpcClient.Query(method, req.Data, req.Metadata)
-	if errors.Is(err, entity.ErrNotConnected) {
-		uc.curConnectedServerID = 0
-		uc.clearInfoMessages()
-		return uc.Query(payload)
-	}
-
-	return &entity.GUIResponse{
-		Status: entity.GUIResponseStatusOK,
-		Payload: &entity.QueryResponse{
-			Sent: uc.grpcClient.GetSentCounter(),
-		},
-	}
-}
-
 func (uc *GrpcUseCase) connect(serverID int64) error {
 	if uc.curServer.IsK8SEnabled() {
 		createForward := true
@@ -258,28 +242,6 @@ func (uc *GrpcUseCase) connect(serverID int64) error {
 	return nil
 }
 
-// CancelQuery aborting a running request
-func (uc *GrpcUseCase) CancelQuery() {
-	uc.grpcClient.CancelQuery()
-}
-
-// CloseStream stops a running gRPC stream
-func (uc *GrpcUseCase) CloseStream() {
-	uc.grpcClient.CloseStream()
-}
-
-func (uc *GrpcUseCase) initQuery(q *entity.Query) {
-	if uc.curServerID == q.ServerID && uc.curService == q.Service && uc.curMethod == q.Method {
-		return
-	}
-
-	uc.curServerID = q.ServerID
-	uc.curService = q.Service
-	uc.curMethod = q.Method
-
-	uc.CancelQuery()
-}
-
 func (uc *GrpcUseCase) getServiceByName(serviceName string) (*entity.Service, error) {
 	if uc.services == nil {
 		return nil, errors.New("services not initialized")
@@ -309,58 +271,6 @@ func (uc *GrpcUseCase) getMethodByName(serviceName, methodName string) (*entity.
 	return nil, fmt.Errorf("method \"%s.%s\" not found", serviceName, methodName)
 }
 
-func (uc *GrpcUseCase) getPortForwardErrorHandler(srv entity.WorkspaceItemServer, serverID int64) func(error) {
-	return func(err error) {
-		uc.deletePortForward(srv)
-		if uc.curConnectedServerID == serverID {
-			uc.curConnectedServerID = 0
-			uc.errorCh <- &entity.Error{
-				Message: err.Error(),
-			}
-		}
-	}
-}
-
-func (uc *GrpcUseCase) getPortForward(srv *entity.WorkspaceItemServer) *forwardPort {
-	uc.muForwardPorts.RLock()
-	defer uc.muForwardPorts.RUnlock()
-
-	if uc.forwardPorts == nil {
-		return nil
-	}
-
-	if fp, ok := uc.forwardPorts[srv.K8SPortForward.LocalPort]; ok {
-		return fp
-	}
-
-	return nil
-}
-
-func (uc *GrpcUseCase) addPortForward(srv *entity.WorkspaceItemServer, control entity.PortForwardControl) {
-	uc.muForwardPorts.Lock()
-	defer uc.muForwardPorts.Unlock()
-
-	if uc.forwardPorts == nil {
-		uc.forwardPorts = make(map[int16]*forwardPort, 10)
-	}
-
-	uc.forwardPorts[srv.K8SPortForward.LocalPort] = &forwardPort{
-		control: control,
-		hash:    getPortForwardHash(srv),
-	}
-}
-
-func (uc *GrpcUseCase) deletePortForward(srv entity.WorkspaceItemServer) {
-	uc.muForwardPorts.Lock()
-	defer uc.muForwardPorts.Unlock()
-
-	if uc.forwardPorts == nil {
-		return
-	}
-
-	delete(uc.forwardPorts, srv.K8SPortForward.LocalPort)
-}
-
 // GetInfoChannel returns info channel
 func (uc *GrpcUseCase) GetInfoChannel() chan *entity.Info {
 	return uc.infoCh
@@ -377,25 +287,4 @@ func (uc *GrpcUseCase) addInfoMessage(m *entity.Info) {
 
 func (uc *GrpcUseCase) clearInfoMessages() {
 	uc.infoCh <- &entity.Info{}
-}
-
-func getPortForwardHash(srv *entity.WorkspaceItemServer) string {
-	data := fmt.Sprintf("%d|%s|%s|%s",
-		srv.K8SPortForward.PodPort,
-		srv.K8SPortForward.Namespace,
-		srv.K8SPortForward.PodName,
-		srv.K8SPortForward.PodNameSelector,
-	)
-
-	if srv.K8SPortForward.ClientConfig.GCSAuth != nil && srv.K8SPortForward.ClientConfig.GCSAuth.Enabled {
-		data = fmt.Sprintf("|%s|%s|%s|%s",
-			data,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Project,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Location,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Cluster,
-		)
-	}
-
-	hash := md5.Sum([]byte(data))
-	return hex.EncodeToString(hash[:])
 }

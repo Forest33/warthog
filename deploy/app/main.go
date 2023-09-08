@@ -139,35 +139,9 @@ func initUseCases() {
 	k8sClient.SetSettings(settings)
 
 	workspaceUseCase = usecase.NewWorkspaceUseCase(ctx, zlog, workspaceRepo, workspaceID)
-	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, k8sClient, workspaceRepo)
 	usecase.SetWorkspaceUseCase(workspaceUseCase)
 
-	////////////////////////
-	//config := &entity.K8SClientConfig{
-	//	GCSAuth: &entity.GCSAuth{
-	//		Enabled:  true,
-	//		Project:  "impaya-nonprod",
-	//		Location: "europe-west1-b",
-	//		Cluster:  "lp-dev",
-	//	},
-	//}
-	//
-	//pf := entity.K8SPortForward{
-	//	ClientConfig:    config,
-	//	Namespace:       "impaya-dev",
-	//	PodNameSelector: "app=directory,release=directory-develop,tier=backend",
-	//	LocalPort:       7001,
-	//	PodPort:         7001,
-	//	ErrHandler: func(err error) {
-	//		zlog.Error().Msg(err.Error())
-	//	},
-	//}
-	//
-	//_, err := k8sClient.PortForward(pf)
-	//if err != nil {
-	//	zlog.Fatal(err)
-	//}
-	////////////////////////
+	grpcUseCase = usecase.NewGrpcUseCase(ctx, zlog, grpcClient, k8sClient, workspaceRepo)
 }
 
 func initSettings() *entity.Settings {

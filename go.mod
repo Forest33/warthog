@@ -1,10 +1,10 @@
 module github.com/forest33/warthog
 
-go 1.19
+go 1.21
 
 require (
-	github.com/asticode/go-astikit v0.37.0
-	github.com/asticode/go-astilectron v0.29.0
+	github.com/asticode/go-astikit v0.40.0
+	github.com/asticode/go-astilectron v0.30.0
 	github.com/asticode/go-astilectron-bootstrap v0.4.14
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
@@ -18,7 +18,7 @@ require (
 	golang.org/x/oauth2 v0.5.0
 	google.golang.org/api v0.110.0
 	google.golang.org/grpc v1.53.0
-	google.golang.org/protobuf v1.28.1
+	google.golang.org/protobuf v1.31.0
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 )

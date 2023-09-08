@@ -16,6 +16,7 @@ type WorkspaceUseCase struct {
 	log                *logger.Zerolog
 	workspaceRepo      WorkspaceRepo
 	startupWorkspaceID *int64
+	subscribers        []func(e entity.WorkspaceEvent, payload interface{})
 }
 
 // NewWorkspaceUseCase creates a new WorkspaceUseCase
@@ -169,4 +170,22 @@ func (uc *WorkspaceUseCase) GetBreadcrumb(id int64) ([]string, error) {
 		return nil, err
 	}
 	return entity.GetBreadcrumb(w, id), nil
+}
+
+// Subscribe event subscription
+func (uc *WorkspaceUseCase) Subscribe(handler func(e entity.WorkspaceEvent, payload interface{})) {
+	if uc.subscribers == nil {
+		uc.subscribers = make([]func(e entity.WorkspaceEvent, payload interface{}), 0, 1)
+	}
+	uc.subscribers = append(uc.subscribers, handler)
+}
+
+// Publish sending an event
+func (uc *WorkspaceUseCase) Publish(e entity.WorkspaceEvent, payload interface{}) {
+	if uc.subscribers == nil {
+		return
+	}
+	for _, s := range uc.subscribers {
+		go s(e, payload)
+	}
 }

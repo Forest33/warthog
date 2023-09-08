@@ -21,14 +21,19 @@ func (c *Client) gcsAuth(ctx context.Context, r *entity.GCSAuth) (*rest.Config, 
 	var token *oauth2.Token
 
 	credentials, err := auth.FindDefaultCredentials(ctx, gcsScopes...)
-	if err == nil {
-		token, err = credentials.TokenSource.Token()
-		if err != nil {
-			return nil, err
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	containerService, _ := container.NewService(ctx)
+	token, err = credentials.TokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	containerService, err := container.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	name := fmt.Sprintf("projects/%s/locations/%s/clusters/%s", r.Project, r.Location, r.Cluster)
 	resp, err := containerService.Projects.Locations.Clusters.Get(name).Do()

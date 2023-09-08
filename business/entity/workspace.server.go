@@ -140,6 +140,7 @@ func (s *WorkspaceItemServer) Model(server map[string]interface{}) error {
 	return nil
 }
 
+// IsK8SEnabled checks whether it is enabled k8s port forwarding
 func (s *WorkspaceItemServer) IsK8SEnabled() bool {
 	return s.K8SPortForward != nil && s.K8SPortForward.Enabled
 }

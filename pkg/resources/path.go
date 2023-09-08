@@ -50,6 +50,10 @@ func CreateApplicationDir() string {
 func GetApplicationIcon() string {
 	if runtime.GOOS == "darwin" && entity.IsDebug() {
 		return ""
+	} else if runtime.GOOS == "windows" {
+		if dir, err := os.UserConfigDir(); err == nil {
+			return filepath.Join(dir, applicationWindowsDir, cfg.Application.IconsPath, cfg.Application.AppIconWindows)
+		}
 	}
 	return getPath(cfg.Application.IconsPath, cfg.Application.AppIconLinux, cfg.Application.AppIconDarwin, cfg.Application.AppIconWindows)
 }

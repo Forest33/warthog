@@ -1,7 +1,10 @@
 package entity
 
 const (
-	MsgCreatingPortForward  = "Creating port forwarding..."
-	MsgConnectingServer     = "Connecting to server..."
+	// MsgCreatingPortForward message creating port forwarding
+	MsgCreatingPortForward = "Creating port forwarding..."
+	// MsgConnectingServer message connecting to server
+	MsgConnectingServer = "Connecting to server..."
+	// MsgServerReflectionInfo message getting information about services
 	MsgServerReflectionInfo = "Getting information about publicly-accessible gRPC services..."
 )

@@ -6,11 +6,16 @@ import (
 )
 
 const (
-	AuthTypeNone   = "none"
-	AuthTypeBasic  = "basic"
+	// AuthTypeNone do not use authentication
+	AuthTypeNone = "none"
+	// AuthTypeBasic basic authentication
+	AuthTypeBasic = "basic"
+	// AuthTypeBearer bearer token authentication
 	AuthTypeBearer = "bearer"
-	AuthTypeJWT    = "jwt"
-	AuthTypeGCE    = "google"
+	// AuthTypeJWT jwt token authentication
+	AuthTypeJWT = "jwt"
+	// AuthTypeGCE Google Compute Engine authentication
+	AuthTypeGCE = "google"
 )
 
 // Auth authentication data

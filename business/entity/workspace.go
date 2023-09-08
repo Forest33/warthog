@@ -15,6 +15,8 @@ const (
 	WorkspaceTypeQuery  WorkspaceType = "r"
 
 	WorkspaceDuplicatePostfix = "Copy"
+
+	WorkspaceEventServerUpdated = "server.updated"
 )
 
 var (
@@ -43,6 +45,14 @@ type WorkspaceType string
 // String returns workspace type string
 func (t WorkspaceType) String() string {
 	return string(t)
+}
+
+// WorkspaceEvent workspace event
+type WorkspaceEvent string
+
+// String returns workspace event string
+func (e WorkspaceEvent) String() string {
+	return string(e)
 }
 
 // WorkspaceRequest workspace request by type

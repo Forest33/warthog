@@ -72,7 +72,8 @@ function loadServer(srv, show) {
 
     astilectron.sendMessage(req, function (message) {
         if (message.payload.status !== "ok") {
-            if (isNull(currentServer) || (!isNull(message.payload.data) && !isNull(currentServer) && message.payload.data.server_id === currentServer.id)) {
+            //if (isNull(currentServer) || isNull(message.payload.data) || (!isNull(message.payload.data) && !isNull(currentServer) && message.payload.data.server_id === currentServer.id)) {
+            if (isNull(currentServer) || isNull(message.payload.data) || (!isNull(message.payload.data) && !isNull(currentServer))) {
                 showQueryError(message.payload.error);
                 currentServer = undefined;
             }

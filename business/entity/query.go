@@ -102,9 +102,8 @@ func getBytesValue(val map[string]interface{}) ([]byte, error) {
 			return nil, err
 		}
 		return data, nil
-	} else {
-		return []byte(val["value"].(string)), nil
 	}
+	return []byte(val["value"].(string)), nil
 }
 
 // GetBytes transforms to bytes

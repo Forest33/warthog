@@ -140,7 +140,8 @@ label {
 
 #nav-request-data,
 #nav-request-metadata,
-#nav-request-authentication {
+#nav-request-authentication,
+#nav-request-performance {
   padding: 10px;
 }
 

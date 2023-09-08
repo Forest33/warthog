@@ -54,6 +54,8 @@ func (uc *WorkspaceUseCase) UpdateServer(payload map[string]interface{}) *entity
 		return entity.ErrorGUIResponse(err)
 	}
 
+	uc.Publish(entity.WorkspaceEventServerUpdated, server)
+
 	return uc.successServerResponse(server)
 }
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#go install github.com/asticode/go-astilectron-bundler/astilectron-bundler
+
 version=$(cat version)
 
 mkdir -p distr
@@ -9,7 +11,7 @@ cp -R ../resources/* ../deploy/app/resources
 mv ../deploy/app/bind.go ../deploy/app/bind.go.tmp
 
 cd ../deploy/app || exit
-astilectron-bundler -c ../../bin/bundler-linux.json -ldflags X:main.UseBootstrap=true -ldflags X:main.AppVersion="${version}" -ldflags "-s -w" || exit
+astilectron-bundler -c ../../bin/bundler-linux.json -ldflags X:main.UseBootstrap=true -ldflags X:main.AppVersion="${version}" -ldflags "-s -w"
 
 rm -R resources
 mv bind.go.tmp bind.go

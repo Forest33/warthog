@@ -10,6 +10,7 @@ type ClientOptions struct {
 	clientKey          string
 }
 
+// ClientOpt represents Client option
 type ClientOpt func(options *ClientOptions)
 
 var defaultOptions = &ClientOptions{

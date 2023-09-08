@@ -61,9 +61,13 @@
                             aria-selected="true">Request
                     </button>
                     <button class="nav-link" id="nav-metadata-tab" data-bs-toggle="tab"
-                            data-bs-target="#nav-metadata" type="button" role="tab" aria-controls="nav-metadata" style="margin-right: 10px"
-                            aria-selected="false">Metadata
+                            data-bs-target="#nav-metadata" type="button" role="tab" aria-controls="nav-metadata"
+                            aria-selected="false" style="margin-right: 10px">Metadata
                     </button>
+<!--                    <button class="nav-link" id="nav-performance-tab" data-bs-toggle="tab"-->
+<!--                            data-bs-target="#nav-performance" type="button" role="tab" aria-controls="nav-performance" style="margin-right: 10px"-->
+<!--                            aria-selected="false">Performance-->
+<!--                    </button>-->
 
                 </div>
 
@@ -99,6 +103,7 @@
                         </div>
                     </form>
                 </div>
+
                 <div class="tab-pane fade" id="nav-metadata" role="tabpanel" aria-labelledby="nav-metadata-tab">
                     <div id="nav-request-metadata">
                         <div class="d-flex flex-row bd-highlight mb-2 metadata-row">
@@ -114,6 +119,30 @@
                                 <button type="button"
                                         class="btn btn-outline-primary btn-sm request-metadata-button-delete"><i
                                         class="bi bi-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-performance" role="tabpanel" aria-labelledby="nav-performance-tab">
+                    <div id="nav-request-performance">
+                        <div class="d-flex flex-row bd-highlight mb-2">
+
+                            <div class="mb-2 form-group col" style="margin-right: 15px;">
+                                <label class="label-name">Concurrency</label>
+                                <input type="text" class="form-control" aria-label="key">
+                            </div>
+                            <div class="mb-2 form-group col" style="margin-right: 15px;">
+                                <label class="label-name">Number of requests</label>
+                                <input type="text" class="form-control" aria-label="key">
+                            </div>
+                            <div class="mb-2 form-group col" style="margin-right: 15px;">
+                                <label class="label-name">Duration (s, m or h)</label>
+                                <input type="text" class="form-control" aria-label="key">
+                            </div>
+                            <div class="mb-2 form-group col">
+                                <label class="label-name">Requests per second</label>
+                                <input type="text" class="form-control" aria-label="key">
                             </div>
                         </div>
                     </div>
