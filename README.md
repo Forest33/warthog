@@ -4,8 +4,10 @@
 <h4 align="center">Cross platform gRPC GUI client</h4>
 </p>
 <p align="center">
+<a href="https://github.com/forest33/warthog/releases"><img src="https://img.shields.io/github/v/release/forest33/warthog?include_prereleases&style=flat-square" alt="Github release"></a>
 <a href="https://goreportcard.com/report/github.com/forest33/warthog" target=”_blank”><img src="https://goreportcard.com/badge/github.com/forest33/warthog"/></a>
 <img src="https://img.shields.io/github/go-mod/go-version/forest33/warthog?style=flat-square"/>
+<a href="https://github.com/grpc-ecosystem/awesome-grpc"><img alt="Awesome gRPC" src="https://raw.githubusercontent.com/sindresorhus/awesome/main/media/badge-flat.svg" /></a>
 <br/><br/>
 <img src="assets/gui.webp" alt="Warthog UI" title="Warthog cross platform gRPC client"
 </p>
