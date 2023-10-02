@@ -17,3 +17,4 @@ cp resources/icons/tray24.png ../../bin/distr/darwin-amd64/warthog.app/Contents/
 rm -R resources
 mv bind.go.tmp bind.go
 rm bind_darwin_amd64.go
+rm bind_darwin_arm64.go
