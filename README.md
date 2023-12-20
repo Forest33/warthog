@@ -9,7 +9,7 @@
 <img src="https://img.shields.io/github/go-mod/go-version/forest33/warthog?style=flat-square"/>
 <a href="https://github.com/grpc-ecosystem/awesome-grpc"><img alt="Awesome gRPC" src="https://raw.githubusercontent.com/sindresorhus/awesome/main/media/badge-flat.svg" /></a>
 <br/><br/>
-<img src="assets/gui.webp" alt="Warthog UI" title="Warthog cross platform gRPC client"
+<img src="assets/gui.webp" alt="Warthog UI" title="Warthog cross platform gRPC client">
 </p>
 
 

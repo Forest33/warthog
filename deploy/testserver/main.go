@@ -24,7 +24,7 @@ import (
 
 const (
 	addr    = ":33333"
-	withTLS = true
+	withTLS = false
 )
 
 // Server object capable of interacting with Server

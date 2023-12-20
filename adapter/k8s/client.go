@@ -3,6 +3,7 @@ package k8s
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -75,6 +76,7 @@ func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardContro
 		if _, err := ctrl.errOut.Write([]byte(err.Error())); err != nil {
 			c.log.Error().Msgf("failed write to error stream: %v", err)
 		}
+		readyCh <- struct{}{}
 	}
 
 	if r.ErrHandler != nil {
@@ -110,10 +112,15 @@ func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardContro
 
 		if err := fw.ForwardPorts(); err != nil {
 			writeError(err)
+			return
 		}
 	}()
 
 	<-readyCh
+
+	if ctrl.errOut.Len() != 0 {
+		return nil, errors.New(ctrl.errOut.String())
+	}
 
 	return ctrl, nil
 }
