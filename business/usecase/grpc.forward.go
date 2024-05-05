@@ -1,10 +1,6 @@
 package usecase
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
-
 	"github.com/forest33/warthog/business/entity"
 )
 
@@ -40,12 +36,12 @@ func (uc *GrpcUseCase) addPortForward(srv *entity.WorkspaceItemServer, control e
 	defer uc.muForwardPorts.Unlock()
 
 	if uc.forwardPorts == nil {
-		uc.forwardPorts = make(map[int16]*forwardPort, 10)
+		uc.forwardPorts = make(map[uint16]*forwardPort, 10)
 	}
 
 	uc.forwardPorts[srv.K8SPortForward.LocalPort] = &forwardPort{
 		control: control,
-		hash:    getPortForwardHash(srv),
+		hash:    srv.PortForwardHash(),
 	}
 }
 
@@ -58,25 +54,4 @@ func (uc *GrpcUseCase) deletePortForward(srv entity.WorkspaceItemServer) {
 	}
 
 	delete(uc.forwardPorts, srv.K8SPortForward.LocalPort)
-}
-
-func getPortForwardHash(srv *entity.WorkspaceItemServer) string {
-	data := fmt.Sprintf("%d|%s|%s|%s",
-		srv.K8SPortForward.PodPort,
-		srv.K8SPortForward.Namespace,
-		srv.K8SPortForward.PodName,
-		srv.K8SPortForward.PodNameSelector,
-	)
-
-	if srv.K8SPortForward.ClientConfig.GCSAuth != nil && srv.K8SPortForward.ClientConfig.GCSAuth.Enabled {
-		data = fmt.Sprintf("|%s|%s|%s|%s",
-			data,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Project,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Location,
-			srv.K8SPortForward.ClientConfig.GCSAuth.Cluster,
-		)
-	}
-
-	hash := md5.Sum([]byte(data))
-	return hex.EncodeToString(hash[:])
 }

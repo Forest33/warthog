@@ -64,6 +64,8 @@ function saveSettings() {
         ":checked"
       ),
       single_instance: $("#settings-modal-form-single-instance").is(":checked"),
+      emit_defaults: $("#settings-modal-form-emit-defaults").is(":checked"),
+      check_updates: $("#settings-modal-form-check-updates").is(":checked"),
     },
   };
   astilectron.sendMessage(req, function (message) {
@@ -101,6 +103,14 @@ function showSettingsModal() {
   $("#settings-modal-form-single-instance").prop(
     "checked",
     currentSettings.single_instance
+  );
+  $("#settings-modal-form-emit-defaults").prop(
+      "checked",
+      currentSettings.emit_defaults
+  );
+  $("#settings-modal-form-check-updates").prop(
+      "checked",
+      currentSettings.check_updates
   );
   $("#settingsModal").modal("show");
 }

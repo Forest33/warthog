@@ -13,7 +13,7 @@ import (
 	"github.com/forest33/warthog/pkg/logger"
 )
 
-// GrpcUseCase object capable of interacting with GrpcUseCase
+// GrpcUseCase object capable of interacting with GrpcUseCase.
 type GrpcUseCase struct {
 	ctx                    context.Context
 	log                    *logger.Zerolog
@@ -27,13 +27,13 @@ type GrpcUseCase struct {
 	curMethod              string
 	curServer              *entity.WorkspaceItemServer
 	curServerClientOptions []grpc.ClientOpt
-	forwardPorts           map[int16]*forwardPort
+	forwardPorts           map[uint16]*forwardPort
 	muForwardPorts         sync.RWMutex
 	infoCh                 chan *entity.Info
 	errorCh                chan *entity.Error
 }
 
-// GrpcClient is an interface for working with the gRPC client
+// GrpcClient is an interface for working with the gRPC client.
 type GrpcClient interface {
 	SetSettings(cfg *entity.Settings)
 	Connect(addr string, auth *entity.Auth, opts ...grpc.ClientOpt) error
@@ -49,7 +49,7 @@ type GrpcClient interface {
 	Close()
 }
 
-// K8SClient is an interface for working with the K8S
+// K8SClient is an interface for working with the K8S.
 type K8SClient interface {
 	PortForward(r *entity.K8SPortForward) (entity.PortForwardControl, error)
 }
@@ -59,7 +59,7 @@ type forwardPort struct {
 	hash    string
 }
 
-// NewGrpcUseCase creates a new GrpcUseCase
+// NewGrpcUseCase creates a new GrpcUseCase.
 func NewGrpcUseCase(ctx context.Context, log *logger.Zerolog, grpcClient GrpcClient, k8sClient K8SClient, workspaceRepo WorkspaceRepo) *GrpcUseCase {
 	useCase := &GrpcUseCase{
 		ctx:           ctx,
@@ -91,7 +91,7 @@ func (uc *GrpcUseCase) initSubscriptions() {
 	})
 }
 
-// LoadServer reads the server description from the database and returns it to the GUI
+// LoadServer reads the server description from the database and returns it to the GUI.
 func (uc *GrpcUseCase) LoadServer(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.ServerRequest{}
 	if err := req.Model(payload); err != nil {
@@ -201,7 +201,7 @@ func (uc *GrpcUseCase) connect(serverID int64) error {
 		createForward := true
 		existsForward := uc.getPortForward(uc.curServer)
 		if existsForward != nil {
-			if existsForward.hash != getPortForwardHash(uc.curServer) {
+			if existsForward.hash != uc.curServer.PortForwardHash() {
 				existsForward.control.Close()
 			} else {
 				createForward = false
@@ -271,12 +271,12 @@ func (uc *GrpcUseCase) getMethodByName(serviceName, methodName string) (*entity.
 	return nil, fmt.Errorf("method \"%s.%s\" not found", serviceName, methodName)
 }
 
-// GetInfoChannel returns info channel
+// GetInfoChannel returns info channel.
 func (uc *GrpcUseCase) GetInfoChannel() chan *entity.Info {
 	return uc.infoCh
 }
 
-// GetErrorChannel returns error channel
+// GetErrorChannel returns error channel.
 func (uc *GrpcUseCase) GetErrorChannel() chan *entity.Error {
 	return uc.errorCh
 }

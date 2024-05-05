@@ -9,16 +9,15 @@ const (
 	debugEnv = "WARTHOG_DEBUG"
 )
 
-// Config application configuration
+// Config application configuration.
 type Config struct {
 	Application *ApplicationConfig `json:"application"`
 	Database    *DatabaseConfig    `json:"database"`
-	//Grpc        *GrpcConfig        `json:"grpc"`
-	Logger  *LoggerConfig  `json:"logger"`
-	Runtime *RuntimeConfig `json:"runtime"`
+	Logger      *LoggerConfig      `json:"logger"`
+	Runtime     *RuntimeConfig     `json:"runtime"`
 }
 
-// ApplicationConfig base application params
+// ApplicationConfig base application params.
 type ApplicationConfig struct {
 	Homepage        string `json:"homepage" default:"resources/index.html"`
 	HomepageWin     string `json:"homepage_win" default:"../index.html"`
@@ -31,13 +30,13 @@ type ApplicationConfig struct {
 	TrayIconWindows string `json:"tray_icon_windows" default:"tray.ico"`
 }
 
-// DatabaseConfig database settings
+// DatabaseConfig database settings.
 type DatabaseConfig struct {
 	DatasourceName string `json:"datasource_name" default:"warthog.db"`
 	DriverName     string `json:"driver_name" default:"sqlite3"`
 }
 
-// LoggerConfig logger settings
+// LoggerConfig logger settings.
 type LoggerConfig struct {
 	Level             string `json:"level" default:"debug"`
 	TimeFieldFormat   string `json:"time_field_format" default:"2006-01-02T15:04:05Z07:00"`
@@ -48,12 +47,12 @@ type LoggerConfig struct {
 	ShowCaller        bool   `json:"show_caller" default:"false"`
 }
 
-// RuntimeConfig runtime settings
+// RuntimeConfig runtime settings.
 type RuntimeConfig struct {
 	GoMaxProcs int `json:"go_max_procs" default:"0"`
 }
 
-// IsDebug returns true if application runs on debug mode
+// IsDebug returns true if application runs on debug mode.
 func IsDebug() bool {
 	return os.Getenv(debugEnv) != ""
 }

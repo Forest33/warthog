@@ -5,7 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
+	"errors"
 	"sync"
 	"time"
 
@@ -25,7 +25,7 @@ const (
 	responseChanCapacity = 10
 )
 
-// Client object capable of interacting with Client
+// Client object capable of interacting with Client.
 type Client struct {
 	ctx              context.Context
 	cfg              *entity.Settings
@@ -45,7 +45,7 @@ type Client struct {
 	importPath       []string
 }
 
-// New creates a new Client
+// New creates a new Client.
 func New(ctx context.Context, log *logger.Zerolog) *Client {
 	return &Client{
 		ctx:           ctx,
@@ -55,12 +55,12 @@ func New(ctx context.Context, log *logger.Zerolog) *Client {
 	}
 }
 
-// SetSettings sets application settings
+// SetSettings sets application settings.
 func (c *Client) SetSettings(cfg *entity.Settings) {
 	c.cfg = cfg
 }
 
-// Connect connecting to gRPC server
+// Connect connecting to gRPC server.
 func (c *Client) Connect(addr string, auth *entity.Auth, opts ...ClientOpt) error {
 	if defaultOptions != nil {
 		c.opts = *defaultOptions
@@ -122,9 +122,10 @@ func (c *Client) getDialOptions() ([]grpc.DialOption, error) {
 func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) {
 	pool := x509.NewCertPool()
 	if !pool.AppendCertsFromPEM([]byte(c.opts.rootCertificate)) {
-		return nil, fmt.Errorf("failed to add server CA's certificate")
+		return nil, errors.New("failed to add server CA's certificate")
 	}
 
+	// nolint:gosec
 	cfg := &tls.Config{
 		RootCAs:            pool,
 		InsecureSkipVerify: c.opts.insecureSkipVerify,
@@ -141,7 +142,7 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 	return credentials.NewTLS(cfg), nil
 }
 
-// Close closes connection to gRPC server
+// Close closes connection to gRPC server.
 func (c *Client) Close() {
 	c.connectionMux.Lock()
 	defer c.connectionMux.Unlock()

@@ -3,6 +3,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -15,20 +16,20 @@ import (
 	"github.com/forest33/warthog/business/entity"
 )
 
-// AddProtobuf adds protobuf files
+// AddProtobuf adds protobuf files.
 func (c *Client) AddProtobuf(path ...string) {
 	c.protoPath = path
 }
 
-// AddImport adds import paths
+// AddImport adds import paths.
 func (c *Client) AddImport(path ...string) {
 	c.importPath = path
 }
 
-// LoadFromProtobuf loads services from protobuf
+// LoadFromProtobuf loads services from protobuf.
 func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError, *entity.ProtobufError) {
 	if len(c.protoPath) == 0 {
-		return nil, nil, &entity.ProtobufError{Err: fmt.Errorf("empty path to protobuf's")}
+		return nil, nil, &entity.ProtobufError{Err: errors.New("empty path to protobuf's")}
 	}
 
 	var (
@@ -70,7 +71,7 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 			return nil, nil, protoErr
 		}
 		if len(fd) != 1 {
-			return nil, nil, &entity.ProtobufError{Err: fmt.Errorf("wrong parse result")}
+			return nil, nil, &entity.ProtobufError{Err: errors.New("wrong parse result")}
 		}
 
 		for _, sd := range fd[0].GetServices() {
@@ -87,7 +88,7 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 	return services, protoWarn, nil
 }
 
-// LoadFromReflection loads services using reflection
+// LoadFromReflection loads services using reflection.
 func (c *Client) LoadFromReflection() ([]*entity.Service, error) {
 	ctx, cancel := context.WithTimeout(c.ctx, time.Second*time.Duration(*c.cfg.ConnectTimeout))
 	defer cancel()
@@ -258,13 +259,14 @@ func getMapFieldTypeName(f *desc.FieldDescriptor) (string, string, string) {
 	var valueTypeName string
 	keyType := f.GetMapKeyType().GetType().String()
 	valueType := f.GetMapValueType().GetType().String()
-	if valueType == entity.ProtoTypeMessage {
+	switch valueType {
+	case entity.ProtoTypeMessage:
 		if mt := f.GetMapValueType().GetMessageType(); mt != nil {
 			valueTypeName = mt.GetName()
 		}
-	} else if valueType == entity.ProtoTypeEnum {
+	case entity.ProtoTypeEnum:
 		valueTypeName = f.GetMapValueType().GetEnumType().GetName()
-	} else {
+	default:
 		valueTypeName = valueType
 	}
 	return keyType, valueType, valueTypeName

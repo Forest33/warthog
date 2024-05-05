@@ -1,6 +1,6 @@
 module github.com/forest33/warthog
 
-go 1.21
+go 1.22
 
 require (
 	github.com/asticode/go-astikit v0.42.0
@@ -8,17 +8,18 @@ require (
 	github.com/asticode/go-astilectron-bootstrap v0.4.14
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
-	github.com/golang/protobuf v1.5.3
-	github.com/jhump/protoreflect v1.15.4
+	github.com/golang/protobuf v1.5.4
+	github.com/jhump/protoreflect v1.16.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
 	go.uber.org/multierr v1.11.0
-	golang.org/x/net v0.19.0
+	golang.org/x/net v0.24.0
 	golang.org/x/oauth2 v0.15.0
 	google.golang.org/api v0.154.0
-	google.golang.org/grpc v1.60.1
-	google.golang.org/protobuf v1.31.1-0.20231027082548-f4a6c1f6e5c1
+	google.golang.org/genproto v0.0.0-20231120223509-83a465c0220f
+	google.golang.org/grpc v1.61.0
+	google.golang.org/protobuf v1.33.1-0.20240408130810-98873a205002
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
 )
@@ -29,7 +30,7 @@ require (
 	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/asticode/go-astilectron-bundler v0.7.12 // indirect
 	github.com/asticode/go-bindata v1.0.0 // indirect
-	github.com/bufbuild/protocompile v0.7.1 // indirect
+	github.com/bufbuild/protocompile v0.10.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -54,7 +55,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-sqlite3 v1.14.16 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -68,10 +69,10 @@ require (
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/term v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect

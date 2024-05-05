@@ -13,6 +13,10 @@ import (
 const (
 	applicationDir        = ".warthog"
 	applicationWindowsDir = "Warthog"
+
+	osDarwin  = "darwin"
+	osLinux   = "linux"
+	osWindows = "windows"
 )
 
 var (
@@ -21,13 +25,13 @@ var (
 	homeDir string
 )
 
-// Init initialize package
+// Init initialize package.
 func Init(c *entity.Config, l *logger.Zerolog) {
 	cfg = c
 	log = l
 }
 
-// CreateApplicationDir creates application folder
+// CreateApplicationDir creates application folder.
 func CreateApplicationDir() string {
 	userHome, err := os.UserHomeDir()
 	if err != nil {
@@ -46,11 +50,11 @@ func CreateApplicationDir() string {
 	return homeDir
 }
 
-// GetApplicationIcon returns path to application icon
+// GetApplicationIcon returns path to application icon.
 func GetApplicationIcon() string {
-	if runtime.GOOS == "darwin" && entity.IsDebug() {
+	if runtime.GOOS == osDarwin && entity.IsDebug() {
 		return ""
-	} else if runtime.GOOS == "windows" {
+	} else if runtime.GOOS == osWindows {
 		if dir, err := os.UserConfigDir(); err == nil {
 			return filepath.Join(dir, applicationWindowsDir, cfg.Application.IconsPath, cfg.Application.AppIconWindows)
 		}
@@ -58,9 +62,9 @@ func GetApplicationIcon() string {
 	return getPath(cfg.Application.IconsPath, cfg.Application.AppIconLinux, cfg.Application.AppIconDarwin, cfg.Application.AppIconWindows)
 }
 
-// GetTrayIcon returns path to tray icon
+// GetTrayIcon returns path to tray icon.
 func GetTrayIcon() string {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != osWindows {
 		return getPath(cfg.Application.IconsPath, cfg.Application.TrayIconLinux, cfg.Application.TrayIconDarwin, cfg.Application.TrayIconWindows)
 	}
 	if dir, err := os.UserConfigDir(); err == nil {
@@ -69,10 +73,10 @@ func GetTrayIcon() string {
 	return cfg.Application.TrayIconWindows
 }
 
-// GetHomepage returns path to application homepage
+// GetHomepage returns path to application homepage.
 func GetHomepage() string {
 	if !entity.IsDebug() {
-		if runtime.GOOS != "windows" {
+		if runtime.GOOS != osWindows {
 			return filepath.Join(homeDir, cfg.Application.Homepage)
 		}
 		return cfg.Application.HomepageWin
@@ -80,7 +84,7 @@ func GetHomepage() string {
 	return cfg.Application.Homepage
 }
 
-// GetDatabase returns path to SQLite database
+// GetDatabase returns path to SQLite database.
 func GetDatabase() string {
 	return filepath.Join(homeDir, cfg.Database.DatasourceName)
 }
@@ -88,9 +92,9 @@ func GetDatabase() string {
 func getPath(root, linux, darwin, windows string) string {
 	if !entity.IsDebug() {
 		switch runtime.GOOS {
-		case "linux":
+		case osLinux:
 			return filepath.Join(homeDir, root, linux)
-		case "darwin":
+		case osDarwin:
 			ex, _ := os.Executable()
 			return filepath.Join(filepath.Dir(ex), "../Resources", darwin)
 		default:
@@ -99,9 +103,9 @@ func getPath(root, linux, darwin, windows string) string {
 	}
 
 	switch runtime.GOOS {
-	case "linux":
+	case osLinux:
 		return filepath.Join(root, linux)
-	case "darwin":
+	case osDarwin:
 		return filepath.Join(root, darwin)
 	default:
 		return filepath.Join(root, windows)

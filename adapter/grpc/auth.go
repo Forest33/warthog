@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,6 +17,10 @@ import (
 type basicAuth struct {
 	login    string
 	password string
+}
+
+type oauthToken struct {
+	token *oauth2.Token
 }
 
 var symmetricAlgorithms = map[string]struct{}{
@@ -57,7 +62,7 @@ func (c *Client) authBearer(auth *entity.Auth) (grpc.DialOption, error) {
 	token.TokenType = auth.HeaderPrefix
 
 	return grpc.WithPerRPCCredentials(
-		oauth.NewOauthAccess(token),
+		oauth.TokenSource{TokenSource: oauthToken{token: token}},
 	), nil
 }
 
@@ -117,4 +122,11 @@ func (b basicAuth) GetRequestMetadata(ctx context.Context, _ ...string) (map[str
 
 func (b basicAuth) RequireTransportSecurity() bool {
 	return true
+}
+
+func (t oauthToken) Token() (*oauth2.Token, error) {
+	if t.token == nil {
+		return nil, errors.New("nil token")
+	}
+	return t.token, nil
 }

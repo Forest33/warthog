@@ -6,6 +6,8 @@
 // migrations/1668845636_settings.up.sql
 // migrations/1677165148_k8s.down.sql
 // migrations/1677165148_k8s.up.sql
+// migrations/1714890607_settings.down.sql
+// migrations/1714890607_settings.up.sql
 package migrations
 
 import (
@@ -177,7 +179,7 @@ func migrations1677165148_k8sDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/1677165148_k8s.down.sql", size: 58, mode: os.FileMode(436), modTime: time.Unix(1677165237, 0)}
+	info := bindataFileInfo{name: "migrations/1677165148_k8s.down.sql", size: 58, mode: os.FileMode(436), modTime: time.Unix(1677388568, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -197,7 +199,47 @@ func migrations1677165148_k8sUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/1677165148_k8s.up.sql", size: 81, mode: os.FileMode(436), modTime: time.Unix(1677165237, 0)}
+	info := bindataFileInfo{name: "migrations/1677165148_k8s.up.sql", size: 81, mode: os.FileMode(436), modTime: time.Unix(1677388568, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations1714890607_settingsDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\xf4\x09\x71\x0d\x52\x08\x71\x74\xf2\x71\x55\x28\x4e\x2d\x29\xc9\xcc\x4b\x2f\xe6\x52\x50\x50\x50\x70\x09\xf2\x0f\x50\x70\xf6\xf7\x09\xf5\xf5\x53\x48\xcd\xcd\x2c\x89\x4f\x49\x4d\x4b\x2c\xcd\x29\x29\xb6\xe6\x22\x4a\x4f\x72\x46\x6a\x72\x76\x7c\x69\x41\x4a\x62\x49\x6a\xb1\x35\x17\x20\x00\x00\xff\xff\x53\x48\x0b\x27\x68\x00\x00\x00")
+
+func migrations1714890607_settingsDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations1714890607_settingsDownSql,
+		"migrations/1714890607_settings.down.sql",
+	)
+}
+
+func migrations1714890607_settingsDownSql() (*asset, error) {
+	bytes, err := migrations1714890607_settingsDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/1714890607_settings.down.sql", size: 104, mode: os.FileMode(436), modTime: time.Unix(1714900169, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations1714890607_settingsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xcc\xcb\x0d\xc2\x30\x0c\x06\xe0\x7b\xa6\xf8\xf7\xe8\xc9\x25\xee\xc9\x24\x52\xb1\xcf\x55\xd5\x1a\xa8\x78\x08\x29\xce\xfe\x4c\x80\xc4\x02\x1f\x89\xf2\x0c\xa5\x51\x18\xcd\x23\x8e\xf7\xad\x25\x00\xa0\x9c\x71\xaa\x62\xe7\x02\x7f\x1d\xb1\xec\x7e\x5d\xfb\x33\x1a\xc6\x5a\x05\xa5\x2a\x8a\x89\x20\xf3\x44\x26\x8a\x89\xe4\xc2\x43\xfa\x87\xdb\xee\xbe\x3d\x96\xfe\xd9\xd7\xf0\x5f\x9c\xce\xc6\x43\xfa\x06\x00\x00\xff\xff\x38\xa7\xf2\x02\x9d\x00\x00\x00")
+
+func migrations1714890607_settingsUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations1714890607_settingsUpSql,
+		"migrations/1714890607_settings.up.sql",
+	)
+}
+
+func migrations1714890607_settingsUpSql() (*asset, error) {
+	bytes, err := migrations1714890607_settingsUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/1714890607_settings.up.sql", size: 157, mode: os.FileMode(436), modTime: time.Unix(1714900153, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -260,6 +302,8 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/1668845636_settings.up.sql":   migrations1668845636_settingsUpSql,
 	"migrations/1677165148_k8s.down.sql":      migrations1677165148_k8sDownSql,
 	"migrations/1677165148_k8s.up.sql":        migrations1677165148_k8sUpSql,
+	"migrations/1714890607_settings.down.sql": migrations1714890607_settingsDownSql,
+	"migrations/1714890607_settings.up.sql":   migrations1714890607_settingsUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -312,6 +356,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"1668845636_settings.up.sql":   &bintree{migrations1668845636_settingsUpSql, map[string]*bintree{}},
 		"1677165148_k8s.down.sql":      &bintree{migrations1677165148_k8sDownSql, map[string]*bintree{}},
 		"1677165148_k8s.up.sql":        &bintree{migrations1677165148_k8sUpSql, map[string]*bintree{}},
+		"1714890607_settings.down.sql": &bintree{migrations1714890607_settingsDownSql, map[string]*bintree{}},
+		"1714890607_settings.up.sql":   &bintree{migrations1714890607_settingsUpSql, map[string]*bintree{}},
 	}},
 }}
 

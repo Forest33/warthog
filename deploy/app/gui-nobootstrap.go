@@ -17,24 +17,24 @@ func createWindow() error {
 
 	ast, err = astilectron.New(zlog, getAstilectronOptions())
 	if err != nil {
-		return fmt.Errorf("creating astilectron failed: %v", err)
+		return fmt.Errorf("creating astilectron failed: %w", err)
 	}
 
 	ast.HandleSignals()
 
 	if err = ast.Start(); err != nil {
-		return fmt.Errorf("starting astilectron failed: %v", err)
+		return fmt.Errorf("starting astilectron failed: %w", err)
 	}
 
 	homepage := resources.GetHomepage()
 	zlog.Debug().Str("path", homepage).Msg("homepage")
 
 	if window, err = ast.NewWindow(homepage, getWindowOptions()); err != nil {
-		return fmt.Errorf("new window failed: %v", err)
+		return fmt.Errorf("new window failed: %w", err)
 	}
 
 	if err = window.Create(); err != nil {
-		return fmt.Errorf("creating window failed: %v", err)
+		return fmt.Errorf("creating window failed: %w", err)
 	}
 
 	return nil

@@ -2,23 +2,24 @@ package entity
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 )
 
 const (
-	// AuthTypeNone do not use authentication
+	// AuthTypeNone do not use authentication.
 	AuthTypeNone = "none"
-	// AuthTypeBasic basic authentication
+	// AuthTypeBasic basic authentication.
 	AuthTypeBasic = "basic"
-	// AuthTypeBearer bearer token authentication
+	// AuthTypeBearer bearer token authentication.
 	AuthTypeBearer = "bearer"
-	// AuthTypeJWT jwt token authentication
+	// AuthTypeJWT jwt token authentication.
 	AuthTypeJWT = "jwt"
-	// AuthTypeGCE Google Compute Engine authentication
+	// AuthTypeGCE Google Compute Engine authentication.
 	AuthTypeGCE = "google"
 )
 
-// Auth authentication data
+// Auth authentication data.
 type Auth struct {
 	Type         string                 `json:"type,omitempty"`
 	Login        string                 `json:"login,omitempty"`
@@ -34,7 +35,7 @@ type Auth struct {
 	GoogleToken  string                 `json:"google_token,omitempty"`
 }
 
-// Model creates Auth from UI request
+// Model creates Auth from UI request.
 func (s *Auth) Model(auth map[string]interface{}) error {
 	authType, ok := auth["type"]
 	if !ok || authType == AuthTypeNone {
@@ -42,43 +43,73 @@ func (s *Auth) Model(auth map[string]interface{}) error {
 		return nil
 	}
 
-	s.Type = authType.(string)
+	if s.Type, ok = authType.(string); !ok {
+		return errors.New("authType not a string")
+	}
 
 	if v, ok := auth["login"]; ok {
-		s.Login = v.(string)
+		if s.Login, ok = v.(string); !ok {
+			return errors.New("login not a string")
+		}
 	}
 	if v, ok := auth["password"]; ok {
-		s.Password = v.(string)
+		if s.Password, ok = v.(string); !ok {
+			return errors.New("password not a string")
+		}
 	}
 	if v, ok := auth["token"]; ok {
-		s.Token = v.(string)
+		if s.Token, ok = v.(string); !ok {
+			return errors.New("token not a string")
+		}
 	}
 	if v, ok := auth["algorithm"]; ok {
-		s.Algorithm = v.(string)
+		if s.Algorithm, ok = v.(string); !ok {
+			return errors.New("algorithm not a string")
+		}
 	}
 	if v, ok := auth["secret"]; ok {
-		s.Secret = v.(string)
+		if s.Secret, ok = v.(string); !ok {
+			return errors.New("secret not a string")
+		}
 	}
 	if v, ok := auth["private_key"]; ok {
-		s.PrivateKey = v.(string)
+		if s.PrivateKey, ok = v.(string); !ok {
+			return errors.New("private key not a string")
+		}
 	}
 	if v, ok := auth["secret_base64"]; ok {
-		s.SecretBase64 = v.(bool)
+		if s.SecretBase64, ok = v.(bool); !ok {
+			return errors.New("secret base64 not a boolean")
+		}
 	}
 	if v, ok := auth["header_prefix"]; ok {
-		s.HeaderPrefix = strings.TrimSpace(v.(string))
+		if hp, ok := v.(string); !ok {
+			return errors.New("header prefix not a string")
+		} else {
+			s.HeaderPrefix = strings.TrimSpace(hp)
+		}
 	}
 	if v, ok := auth["payload"]; ok {
-		s.Payload = map[string]interface{}{}
-		if err := json.Unmarshal([]byte(v.(string)), &s.Payload); err != nil {
-			return err
+		if p, ok := v.(string); !ok {
+			return errors.New("payload not a string")
+		} else {
+			s.Payload = map[string]interface{}{}
+			if err := json.Unmarshal([]byte(p), &s.Payload); err != nil {
+				return err
+			}
 		}
 	}
 	if v, ok := auth["google_token"]; ok {
-		s.GoogleToken = v.(string)
+		if s.GoogleToken, ok = v.(string); !ok {
+			return errors.New("google token not a string")
+		}
 	}
 	if v, ok := auth["google_scopes"]; ok {
-		s.GoogleScopes = strings.Split(v.(string), ",")
+		if gs, ok := v.(string); !ok {
+			return errors.New("google scopes not a string")
+		} else {
+			s.GoogleScopes = strings.Split(gs, ",")
+		}
 	}
 
 	return nil

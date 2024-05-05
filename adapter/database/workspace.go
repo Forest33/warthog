@@ -23,14 +23,14 @@ const (
 	workspaceTableFields = "id, parent_id, has_child, type, title, data, sort, expanded"
 )
 
-// WorkspaceRepository object capable of interacting with WorkspaceRepository
+// WorkspaceRepository object capable of interacting with WorkspaceRepository.
 type WorkspaceRepository struct {
 	db  *database.Database
 	ctx context.Context
 	log *logger.Zerolog
 }
 
-// NewWorkspaceRepository creates a new WorkspaceRepository
+// NewWorkspaceRepository creates a new WorkspaceRepository.
 func NewWorkspaceRepository(ctx context.Context, db *database.Database, log *logger.Zerolog) *WorkspaceRepository {
 	return &WorkspaceRepository{
 		db:  db,
@@ -101,7 +101,7 @@ func (dto *workspaceDTO) entity() (*entity.Workspace, error) {
 	return out, nil
 }
 
-// GetByID returns workspace item by id
+// GetByID returns workspace item by id.
 func (repo *WorkspaceRepository) GetByID(id int64) (*entity.Workspace, error) {
 	dto := &workspaceDTO{ID: id}
 
@@ -126,7 +126,7 @@ func (repo *WorkspaceRepository) GetByID(id int64) (*entity.Workspace, error) {
 	return nil, entity.ErrWorkspaceNotExists
 }
 
-// GetByParentID returns workspace item by parent id
+// GetByParentID returns workspace item by parent id.
 func (repo *WorkspaceRepository) GetByParentID(parentID int64, tx *sqlx.Tx) ([]*entity.Workspace, error) {
 	dto := &workspaceDTO{ParentID: types.Int64ToSQL(parentID)}
 	res := make([]*entity.Workspace, 0, 10)
@@ -165,7 +165,7 @@ func (repo *WorkspaceRepository) GetByParentID(parentID int64, tx *sqlx.Tx) ([]*
 	return res, nil
 }
 
-// Get returns workspace
+// Get returns workspace.
 func (repo *WorkspaceRepository) Get() ([]*entity.Workspace, error) {
 	var dto []*workspaceDTO
 
@@ -185,7 +185,7 @@ func (repo *WorkspaceRepository) Get() ([]*entity.Workspace, error) {
 	return resp, nil
 }
 
-// Create creates new workspace item
+// Create creates new workspace item.
 func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace, error) {
 	dto, err := newWorkspaceDTO(in)
 	if err != nil {
@@ -220,7 +220,7 @@ func (repo *WorkspaceRepository) Create(in *entity.Workspace) (*entity.Workspace
 	return dto.entity()
 }
 
-// Update updates workspace item
+// Update updates workspace item.
 func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace, error) {
 	dto := &workspaceDTO{}
 	attrs := make([]string, 0, 6)
@@ -248,7 +248,7 @@ func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace
 	}
 	if in.Sort != nil {
 		attrs = append(attrs, "sort = :sort")
-		mapper["sort"] = *in.Sort
+		mapper["sort"] = in.Sort
 	}
 	if in.Expanded != nil {
 		attrs = append(attrs, "expanded = :expanded")
@@ -290,7 +290,7 @@ func (repo *WorkspaceRepository) Update(in *entity.Workspace) (*entity.Workspace
 	return dto.entity()
 }
 
-// Delete deletes workspace item
+// Delete deletes workspace item.
 func (repo *WorkspaceRepository) Delete(id int64) error {
 	workspace, err := repo.GetByID(id)
 	if err != nil {

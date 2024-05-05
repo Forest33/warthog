@@ -56,7 +56,7 @@ func (c *Client) gcsAuth(ctx context.Context, r *entity.GCSAuth) (*rest.Config, 
 		Clusters: map[string]*api.Cluster{
 			r.Cluster: {
 				CertificateAuthorityData: cert,
-				Server:                   fmt.Sprintf("https://%s", resp.Endpoint),
+				Server:                   "https://" + resp.Endpoint,
 			},
 		},
 		Contexts: map[string]*api.Context{

@@ -5,13 +5,13 @@ import (
 	"errors"
 )
 
-// SavedQuery saved query
+// SavedQuery saved query.
 type SavedQuery struct {
 	Input    interface{} `json:"input"`
 	Metadata interface{} `json:"metadata"`
 }
 
-// WorkspaceItemQuery stored query data
+// WorkspaceItemQuery stored query data.
 type WorkspaceItemQuery struct {
 	Service     string      `json:"service"`
 	Method      string      `json:"method"`
@@ -19,7 +19,7 @@ type WorkspaceItemQuery struct {
 	Request     *SavedQuery `json:"request"`
 }
 
-// QueryRequest read/create/update/delete query
+// QueryRequest read/create/update/delete query.
 type QueryRequest struct {
 	ID       int64  `json:"id"`
 	ServerID int64  `json:"server_id"`
@@ -27,7 +27,7 @@ type QueryRequest struct {
 	WorkspaceItemQuery
 }
 
-// Model creates QueryRequest from UI request
+// Model creates QueryRequest from UI request.
 func (r *QueryRequest) Model(req map[string]interface{}) error {
 	if req == nil {
 		return errors.New("no data")
@@ -48,7 +48,7 @@ func (r *QueryRequest) Model(req map[string]interface{}) error {
 	return r.WorkspaceItemQuery.Model(req)
 }
 
-// Model creates WorkspaceItemQuery from UI request
+// Model creates WorkspaceItemQuery from UI request.
 func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	if req == nil {
 		return errors.New("no data")
@@ -72,7 +72,7 @@ func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	return nil
 }
 
-// Model creates SavedQuery from UI request
+// Model creates SavedQuery from UI request.
 func (s *SavedQuery) Model(req map[string]interface{}) {
 	if req == nil {
 		return

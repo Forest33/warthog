@@ -1,4 +1,4 @@
-// Package main warthog main package
+// Package main warthog main package.
 package main
 
 import (
@@ -19,25 +19,27 @@ import (
 	"github.com/forest33/warthog/pkg/resources"
 )
 
+//go:generate golangci-lint run -v ../.././...
+
 var (
 	zlog    *logger.Zerolog
 	homeDir string
 )
 
 var (
-	// AppName application name
+	// AppName application name.
 	AppName string
-	// AppVersion application version
+	// AppVersion application version.
 	AppVersion string
-	// AppURL application homepage
+	// AppURL application homepage.
 	AppURL = "https://github.com/forest33/warthog"
-	// BuiltAt build date
+	// BuiltAt build date.
 	BuiltAt string
-	// VersionAstilectron Astilectron version
+	// VersionAstilectron Astilectron version.
 	VersionAstilectron string
-	// VersionElectron Electron version
+	// VersionElectron Electron version.
 	VersionElectron string
-	// UseBootstrap true if using bootstrap
+	// UseBootstrap true if using bootstrap.
 	UseBootstrap = "false"
 )
 

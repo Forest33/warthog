@@ -40,12 +40,12 @@ func (uc *GrpcUseCase) Query(payload map[string]interface{}) *entity.GUIResponse
 	}
 }
 
-// CancelQuery aborting a running request
+// CancelQuery aborting a running request.
 func (uc *GrpcUseCase) CancelQuery() {
 	uc.grpcClient.CancelQuery()
 }
 
-// CloseStream stops a running gRPC stream
+// CloseStream stops a running gRPC stream.
 func (uc *GrpcUseCase) CloseStream() {
 	uc.grpcClient.CloseStream()
 }

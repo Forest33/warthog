@@ -1,10 +1,15 @@
 syntax = "proto3";
 package test.proto.v1;
 import "google/protobuf/any.proto";
+import "google/protobuf/api.proto";
+import "google/protobuf/type.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/source_context.proto";
+import "google/protobuf/empty.proto";
 option go_package = "./;testProto";
 
 message User {
@@ -64,7 +69,7 @@ message M1 {
     SECOND = 2;
   }
 
-  int32 int_val = 1;
+  int32 int_val32 = 1;
   repeated string repeated_string_val = 2;
   NestedM1 nested_m1 = 3;
   repeated NestedM1 repeated_nested_m1 = 4;
@@ -92,6 +97,11 @@ message M1 {
   google.protobuf.Any any = 22;
   map<string, google.protobuf.Any> any_map = 23;
   repeated OneOf repeated_oneof = 24;
+  int64 int_val64 = 25;
+  uint64 uint_val64 = 26;
+  sint64 sint_val64 = 27;
+  sint32 sint_val32 = 28;
+  uint32 uint_val32 = 29;
 }
 
 message OneOf {
@@ -144,6 +154,9 @@ message Types {
   google.protobuf.StringValue string_value = 10;
   google.protobuf.BytesValue bytes_value = 11;
   google.protobuf.Struct struct_value = 12;
+
+  google.protobuf.Value value = 13;
+  google.protobuf.ListValue list_value = 14;
 }
 
 message Loop {
@@ -157,6 +170,13 @@ message ClientStreamResponse {
   repeated M4 payload = 2;
 }
 
+enum Test {
+  UNKNOWN = 0;
+  USER = 1;
+  MANAGER = 2;
+  ADMIN = 3;
+}
+
 service test_proto {
   rpc Unary(M1) returns (M1);
   rpc ClientStream(stream StreamMessage) returns(ClientStreamResponse);
@@ -168,4 +188,31 @@ service test_proto {
   rpc AuthBasic(M1) returns (M1);
   rpc AuthBearer(M1) returns (M1);
   rpc AuthJWT(M1) returns (M1);
+
+  rpc Any(google.protobuf.Any) returns (google.protobuf.Any);
+  rpc Api(google.protobuf.Api) returns (google.protobuf.Api);
+  rpc BoolValue(google.protobuf.BoolValue) returns (google.protobuf.BoolValue);
+  rpc BytesValue(google.protobuf.BytesValue) returns (google.protobuf.BytesValue);
+  rpc DoubleValue(google.protobuf.DoubleValue) returns (google.protobuf.DoubleValue);
+  rpc Duration(google.protobuf.Duration) returns (google.protobuf.Duration);
+  rpc Empty(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Enum(google.protobuf.Enum) returns (google.protobuf.Enum);
+  rpc EnumValue(google.protobuf.EnumValue) returns (google.protobuf.EnumValue);
+  rpc Field(google.protobuf.Field) returns (google.protobuf.Field);
+  rpc FieldMask(google.protobuf.FieldMask) returns (google.protobuf.FieldMask);
+  rpc FloatValue(google.protobuf.FloatValue) returns (google.protobuf.FloatValue);
+  rpc Int32Value(google.protobuf.Int32Value) returns (google.protobuf.Int32Value);
+  rpc Int64Value(google.protobuf.Int64Value) returns (google.protobuf.Int64Value);
+  rpc ListValue(google.protobuf.ListValue) returns (google.protobuf.ListValue);
+  rpc Method(google.protobuf.Method) returns (google.protobuf.Method);
+  rpc Mixin(google.protobuf.Mixin) returns (google.protobuf.Mixin);
+  rpc Option(google.protobuf.Option) returns (google.protobuf.Option);
+  rpc SourceContext(google.protobuf.SourceContext) returns (google.protobuf.SourceContext);
+  rpc StringValue(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+  rpc Struct(google.protobuf.Struct) returns (google.protobuf.Struct);
+  rpc Timestamp(google.protobuf.Timestamp) returns (google.protobuf.Timestamp);
+  rpc Type(google.protobuf.Type) returns (google.protobuf.Type);
+  rpc UInt32Value(google.protobuf.UInt32Value) returns (google.protobuf.UInt32Value);
+  rpc UInt64Value(google.protobuf.UInt64Value) returns (google.protobuf.UInt64Value);
+  rpc Value(google.protobuf.Value) returns (google.protobuf.Value);
 }

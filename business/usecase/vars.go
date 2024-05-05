@@ -9,7 +9,7 @@ var (
 	workspaceUseCase *WorkspaceUseCase
 )
 
-// WorkspaceRepo is the common interface implemented WorkspaceRepository methods
+// WorkspaceRepo is the common interface implemented WorkspaceRepository methods.
 type WorkspaceRepo interface {
 	Get() ([]*entity.Workspace, error)
 	GetByID(id int64) (*entity.Workspace, error)
@@ -18,7 +18,7 @@ type WorkspaceRepo interface {
 	Delete(id int64) error
 }
 
-// SetWorkspaceUseCase sets WorkspaceUseCase instance
+// SetWorkspaceUseCase sets WorkspaceUseCase instance.
 func SetWorkspaceUseCase(uc *WorkspaceUseCase) {
 	workspaceUseCase = uc
 }

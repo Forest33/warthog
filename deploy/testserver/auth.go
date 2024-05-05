@@ -62,11 +62,8 @@ func validJWT(authorization []string) bool {
 			}
 			return []byte(jwtSecret), nil
 		})
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func ensureValidToken(ctx context.Context) error {

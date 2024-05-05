@@ -13,16 +13,17 @@ import (
 const (
 	settingsTable       = "settings"
 	settingsTableFields = `window_width, window_height, window_x, window_y, single_instance, connect_timeout,
-							request_timeout, k8s_request_timeout, non_blocking_connection, sort_methods_by_name, max_loop_depth`
+							request_timeout, k8s_request_timeout, non_blocking_connection, sort_methods_by_name, max_loop_depth, 
+							emit_defaults, check_updates`
 )
 
-// SettingsRepository object capable of interacting with SettingsRepository
+// SettingsRepository object capable of interacting with SettingsRepository.
 type SettingsRepository struct {
 	db  *database.Database
 	ctx context.Context
 }
 
-// NewSettingsRepository creates a new SettingsRepository
+// NewSettingsRepository creates a new SettingsRepository.
 func NewSettingsRepository(ctx context.Context, db *database.Database) *SettingsRepository {
 	return &SettingsRepository{
 		db:  db,
@@ -42,6 +43,8 @@ type settingsDTO struct {
 	NonBlockingConnection bool `db:"non_blocking_connection"`
 	SortMethodsByName     bool `db:"sort_methods_by_name"`
 	MaxLoopDepth          int  `db:"max_loop_depth"`
+	EmitDefaults          bool `db:"emit_defaults"`
+	CheckUpdates          bool `db:"check_updates"`
 }
 
 func (dto *settingsDTO) entity() *entity.Settings {
@@ -57,10 +60,12 @@ func (dto *settingsDTO) entity() *entity.Settings {
 		NonBlockingConnection: &dto.NonBlockingConnection,
 		SortMethodsByName:     &dto.SortMethodsByName,
 		MaxLoopDepth:          &dto.MaxLoopDepth,
+		EmitDefaults:          &dto.EmitDefaults,
+		CheckUpdates:          &dto.CheckUpdates,
 	}
 }
 
-// Get returns Settings
+// Get returns Settings.
 func (repo *SettingsRepository) Get() (*entity.Settings, error) {
 	dto := &settingsDTO{}
 
@@ -72,11 +77,11 @@ func (repo *SettingsRepository) Get() (*entity.Settings, error) {
 	return dto.entity(), nil
 }
 
-// Update updates Settings
+// Update updates Settings.
 func (repo *SettingsRepository) Update(in *entity.Settings) (*entity.Settings, error) {
 	dto := &settingsDTO{}
-	attrs := make([]string, 0, 10)
-	mapper := make(map[string]interface{}, 11)
+	attrs := make([]string, 0, 13)
+	mapper := make(map[string]interface{}, 13)
 
 	if in.WindowWidth > 0 {
 		attrs = append(attrs, "window_width = :window_width")
@@ -121,6 +126,14 @@ func (repo *SettingsRepository) Update(in *entity.Settings) (*entity.Settings, e
 	if in.MaxLoopDepth != nil {
 		attrs = append(attrs, "max_loop_depth = :max_loop_depth")
 		mapper["max_loop_depth"] = in.MaxLoopDepth
+	}
+	if in.EmitDefaults != nil {
+		attrs = append(attrs, "emit_defaults = :emit_defaults")
+		mapper["emit_defaults"] = in.EmitDefaults
+	}
+	if in.CheckUpdates != nil {
+		attrs = append(attrs, "check_updates = :check_updates")
+		mapper["check_updates"] = in.CheckUpdates
 	}
 	if len(attrs) == 0 {
 		return repo.Get()

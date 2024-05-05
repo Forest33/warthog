@@ -8,7 +8,7 @@ import (
 	"github.com/forest33/warthog/pkg/structs"
 )
 
-// workspace types
+// workspace types.
 const (
 	WorkspaceTypeFolder WorkspaceType = "f"
 	WorkspaceTypeServer WorkspaceType = "s"
@@ -20,11 +20,11 @@ const (
 )
 
 var (
-	// ErrWorkspaceNotExists error workspace not exists
+	// ErrWorkspaceNotExists error workspace not exists.
 	ErrWorkspaceNotExists = errors.New("workspace not exists")
 )
 
-// Workspace workspace item
+// Workspace workspace item.
 type Workspace struct {
 	ID         int64         `json:"id"`
 	ParentID   *int64        `json:"parent_id"`
@@ -39,50 +39,68 @@ type Workspace struct {
 	UpdatedAt  time.Time     `json:"updated_at"`
 }
 
-// WorkspaceType workspace type
+// WorkspaceType workspace type.
 type WorkspaceType string
 
-// String returns workspace type string
+// String returns workspace type string.
 func (t WorkspaceType) String() string {
 	return string(t)
 }
 
-// WorkspaceEvent workspace event
+// WorkspaceEvent workspace event.
 type WorkspaceEvent string
 
-// String returns workspace event string
+// String returns workspace event string.
 func (e WorkspaceEvent) String() string {
 	return string(e)
 }
 
-// WorkspaceRequest workspace request by type
+// WorkspaceRequest workspace request by type.
 type WorkspaceRequest struct {
 	Type       []WorkspaceType `json:"type"`
 	SelectedID int64           `json:"selected_id"`
 }
 
-// Model creates WorkspaceRequest from UI request
+// Model creates WorkspaceRequest from UI request.
 func (r *WorkspaceRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return nil
 	}
 
 	if v, ok := payload["type"]; ok && v != nil {
-		r.Type = structs.Map(v.([]interface{}), func(t interface{}) WorkspaceType { return WorkspaceType(t.(string)) })
+		t, ok := v.([]interface{})
+		if !ok {
+			return errors.New("type not a []interface{}")
+		}
+		var err error
+		r.Type, err = structs.MapWithError(t, func(t interface{}) (WorkspaceType, error) {
+			s, ok := t.(string)
+			if !ok {
+				return "", errors.New("type value not a string")
+			}
+			return WorkspaceType(s), nil
+		})
+		if err != nil {
+			return err
+		}
 	}
 	if v, ok := payload["selected_id"]; ok && v != nil {
-		r.SelectedID = int64(v.(float64))
+		f, ok := v.(float64)
+		if !ok {
+			return errors.New("selected id not a float")
+		}
+		r.SelectedID = int64(f)
 	}
 
 	return nil
 }
 
-// WorkspaceSortingRequest workspace sorting request
+// WorkspaceSortingRequest workspace sorting request.
 type WorkspaceSortingRequest struct {
 	Nodes []*Workspace `json:"nodes"`
 }
 
-// Model creates WorkspaceSortingRequest from UI request
+// Model creates WorkspaceSortingRequest from UI request.
 func (r *WorkspaceSortingRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return errors.New("no nodes")
@@ -91,19 +109,36 @@ func (r *WorkspaceSortingRequest) Model(payload map[string]interface{}) error {
 		return errors.New("no nodes")
 	}
 
-	r.Nodes = make([]*Workspace, len(payload["nodes"].([]interface{})))
-	for i, n := range payload["nodes"].([]interface{}) {
+	nodes, ok := payload["nodes"].([]interface{})
+	if !ok {
+		return errors.New("nodes not a []interface{}")
+	}
+
+	r.Nodes = make([]*Workspace, len(nodes))
+	for i, n := range nodes {
 		var (
 			id       int64
 			parentID *int64
 		)
-		if v, ok := n.(map[string]interface{})["id"]; ok && v != nil {
-			id = int64(v.(float64))
+		node, ok := n.(map[string]interface{})
+		if !ok {
+			return errors.New("node not a map[string]interface{}")
+		}
+		if v, ok := node["id"]; ok && v != nil {
+			f, ok := v.(float64)
+			if !ok {
+				return errors.New("node id not a float")
+			}
+			id = int64(f)
 		} else {
 			return errors.New("id not exists")
 		}
-		if v, ok := n.(map[string]interface{})["parent_id"]; ok && v != nil {
-			parentID = structs.Ref(int64(v.(float64)))
+		if v, ok := node["parent_id"]; ok && v != nil {
+			f, ok := v.(float64)
+			if !ok {
+				return errors.New("node parent id not a float")
+			}
+			parentID = structs.Ref(int64(f))
 		}
 		r.Nodes[i] = &Workspace{ID: id, ParentID: parentID}
 	}
@@ -111,41 +146,47 @@ func (r *WorkspaceSortingRequest) Model(payload map[string]interface{}) error {
 	return nil
 }
 
-// WorkspaceExpandRequest workspace expand/collapse request
+// WorkspaceExpandRequest workspace expand/collapse request.
 type WorkspaceExpandRequest struct {
 	ID     int64 `json:"id"`
 	Expand bool  `json:"expand"`
 }
 
-// Model creates WorkspaceExpandRequest from UI request
+// Model creates WorkspaceExpandRequest from UI request.
 func (r *WorkspaceExpandRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {
 		return errors.New("no data")
 	}
 
 	if v, ok := payload["id"]; ok && v != nil {
-		r.ID = int64(v.(float64))
+		f, ok := v.(float64)
+		if !ok {
+			return errors.New("id not a float")
+		}
+		r.ID = int64(f)
 	}
 	if v, ok := payload["expand"]; ok && v != nil {
-		r.Expand = v.(bool)
+		if r.Expand, ok = v.(bool); !ok {
+			return errors.New("expand not a bool")
+		}
 	}
 
 	return nil
 }
 
-// WorkspaceTreeFilter filtering workspace by type
+// WorkspaceTreeFilter filtering workspace by type.
 type WorkspaceTreeFilter struct {
 	Type []WorkspaceType
 }
 
-// WorkspaceTreeNode workspace tree node
+// WorkspaceTreeNode workspace tree node.
 type WorkspaceTreeNode struct {
 	Data  *Workspace           `json:"data"`
 	Text  string               `json:"text"`
 	Nodes []*WorkspaceTreeNode `json:"nodes"`
 }
 
-// GetBreadcrumb returns breadcrumb
+// GetBreadcrumb returns breadcrumb.
 func GetBreadcrumb(w []*Workspace, id int64) []string {
 	nodeMap := structs.SliceToMap(w, func(w *Workspace) int64 { return w.ID })
 	return makeBreadcrumb(nodeMap, id, []string{})
@@ -177,7 +218,7 @@ func getExpandedNodes(w []*Workspace, nodeMap map[int64]int, id int64) map[int64
 	return parentNodes
 }
 
-// MakeWorkspaceTree creates workspace tree for UI
+// MakeWorkspaceTree creates workspace tree for UI.
 func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter, selectedID int64) []*WorkspaceTreeNode {
 	nodeMap := make(map[int64]int, len(w))
 	expandedNodes := make(map[int64]struct{}, len(w))
@@ -228,7 +269,7 @@ func MakeWorkspaceTree(w []*Workspace, filter *WorkspaceTreeFilter, selectedID i
 	return tree
 }
 
-// WorkspaceState count of folders/servers/queries
+// WorkspaceState count of folders/servers/queries.
 type WorkspaceState struct {
 	Folders            int    `json:"folders"`
 	Servers            int    `json:"servers"`

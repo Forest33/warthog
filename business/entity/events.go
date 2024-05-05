@@ -1,7 +1,7 @@
 // Package entity provides entities for business logic.
 package entity
 
-// UI events
+// UI events.
 const (
 	CmdApplicationState    GUICommand = "application.state"
 	CmdSettingsUpdate      GUICommand = "settings.update"
@@ -27,12 +27,13 @@ const (
 	CmdMenuAbout           GUICommand = "menu.about"
 	CmdMessageInfo         GUICommand = "message.info"
 	CmdMessageError        GUICommand = "message.error"
+	CmdCheckUpdates        GUICommand = "check.updates"
 )
 
-// GUICommand UI command
+// GUICommand UI command.
 type GUICommand string
 
-// String returns UI command string
+// String returns UI command string.
 func (c GUICommand) String() string {
 	return string(c)
 }

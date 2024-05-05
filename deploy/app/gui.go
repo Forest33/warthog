@@ -147,6 +147,13 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 			Label: astikit.StrPtr("Help"),
 			SubMenu: []*astilectron.MenuItemOptions{
 				{
+					Label: astikit.StrPtr("Check for Updates..."),
+					OnClick: func(e astilectron.Event) (deleteListener bool) {
+						menuCheckUpdates()
+						return
+					},
+				},
+				{
 					Label: astikit.StrPtr("About"),
 					OnClick: func(e astilectron.Event) (deleteListener bool) {
 						menuAbout()
@@ -317,6 +324,10 @@ func menuAbout() {
 	}
 }
 
+func menuCheckUpdates() {
+	settingsUseCase.CheckUpdates(getCheckUpdatesCallback(false))
+}
+
 func menuSettings(e astilectron.Event) (deleteListener bool) {
 	err := window.SendMessage(&entity.GUIRequest{Cmd: entity.CmdMenuSettings}, func(_ *astilectron.EventMessage) {})
 	if err != nil {
@@ -336,11 +347,44 @@ func getApplicationState() *entity.GUIResponse {
 		return entity.ErrorGUIResponse(err)
 	}
 
+	if settings.IsCheckUpdates() {
+		settingsUseCase.CheckUpdates(getCheckUpdatesCallback(true))
+	}
+
 	return &entity.GUIResponse{
 		Status: entity.GUIResponseStatusOK,
 		Payload: &applicationState{
 			State:    state,
 			Settings: settings,
 		},
+	}
+}
+
+func getCheckUpdatesCallback(background bool) func(r *entity.GithubRelease) {
+	return func(r *entity.GithubRelease) {
+		req := &entity.GUIRequest{
+			Cmd: entity.CmdCheckUpdates,
+		}
+
+		var version string
+		if r == nil {
+			version = AppVersion
+		} else {
+			version = strings.ReplaceAll(r.Name, "v", "")
+		}
+
+		if version != AppVersion {
+			req.Payload = map[string]interface{}{
+				"version": version,
+				"url":     r.HtmlUrl,
+			}
+		} else if background {
+			return
+		}
+
+		err := window.SendMessage(req, func(_ *astilectron.EventMessage) {})
+		if err != nil {
+			zlog.Error().Msgf("failed to send message: %v", err)
+		}
 	}
 }

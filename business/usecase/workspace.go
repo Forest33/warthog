@@ -10,7 +10,7 @@ import (
 	"github.com/forest33/warthog/pkg/logger"
 )
 
-// WorkspaceUseCase object capable of interacting with WorkspaceUseCase
+// WorkspaceUseCase object capable of interacting with WorkspaceUseCase.
 type WorkspaceUseCase struct {
 	ctx                context.Context
 	log                *logger.Zerolog
@@ -19,7 +19,7 @@ type WorkspaceUseCase struct {
 	subscribers        []func(e entity.WorkspaceEvent, payload interface{})
 }
 
-// NewWorkspaceUseCase creates a new WorkspaceUseCase
+// NewWorkspaceUseCase creates a new WorkspaceUseCase.
 func NewWorkspaceUseCase(ctx context.Context, log *logger.Zerolog, workspaceRepo WorkspaceRepo, startupWorkspaceID *int64) *WorkspaceUseCase {
 	uc := &WorkspaceUseCase{
 		ctx:                ctx,
@@ -31,7 +31,7 @@ func NewWorkspaceUseCase(ctx context.Context, log *logger.Zerolog, workspaceRepo
 	return uc
 }
 
-// Get returns workspace tree
+// Get returns workspace tree.
 func (uc *WorkspaceUseCase) Get(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.WorkspaceRequest{}
 	if err := req.Model(payload); err != nil {
@@ -57,7 +57,7 @@ func (uc *WorkspaceUseCase) Get(payload map[string]interface{}) *entity.GUIRespo
 	}
 }
 
-// Sorting gets the sorted workspace tree and stores it in the database
+// Sorting gets the sorted workspace tree and stores it in the database.
 func (uc *WorkspaceUseCase) Sorting(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.WorkspaceSortingRequest{}
 	if err := req.Model(payload); err != nil {
@@ -65,7 +65,8 @@ func (uc *WorkspaceUseCase) Sorting(payload map[string]interface{}) *entity.GUIR
 	}
 
 	for i, w := range req.Nodes {
-		w.Sort = &i
+		var sort = &i
+		w.Sort = sort
 		_, err := uc.workspaceRepo.Update(w)
 		if err != nil {
 			uc.log.Error().Msgf("failed to update workspace: %v", err)
@@ -76,7 +77,7 @@ func (uc *WorkspaceUseCase) Sorting(payload map[string]interface{}) *entity.GUIR
 	return uc.Get(nil)
 }
 
-// Expand stores expand/collapse status on database
+// Expand stores expand/collapse status on database.
 func (uc *WorkspaceUseCase) Expand(payload map[string]interface{}) *entity.GUIResponse {
 	req := &entity.WorkspaceExpandRequest{}
 	if err := req.Model(payload); err != nil {
@@ -97,7 +98,7 @@ func (uc *WorkspaceUseCase) Expand(payload map[string]interface{}) *entity.GUIRe
 	}
 }
 
-// GetState returns count of folders/servers/queries
+// GetState returns count of folders/servers/queries.
 func (uc *WorkspaceUseCase) GetState() (*entity.WorkspaceState, error) {
 	workspaces, err := uc.workspaceRepo.Get()
 	if err != nil {
@@ -120,7 +121,7 @@ func (uc *WorkspaceUseCase) GetState() (*entity.WorkspaceState, error) {
 	return state, nil
 }
 
-// Delete deletes workspace item
+// Delete deletes workspace item.
 func (uc *WorkspaceUseCase) Delete(payload map[string]interface{}) *entity.GUIResponse {
 	if payload == nil {
 		return entity.ErrorGUIResponse(errors.New("nil payload"))
@@ -136,7 +137,7 @@ func (uc *WorkspaceUseCase) Delete(payload map[string]interface{}) *entity.GUIRe
 	return uc.Get(nil)
 }
 
-// Duplicate duplicates workspace item
+// Duplicate duplicates workspace item.
 func (uc *WorkspaceUseCase) Duplicate(payload map[string]interface{}) *entity.GUIResponse {
 	if payload == nil {
 		return entity.ErrorGUIResponse(errors.New("nil payload"))
@@ -163,7 +164,7 @@ func (uc *WorkspaceUseCase) Duplicate(payload map[string]interface{}) *entity.GU
 	return uc.Get(nil)
 }
 
-// GetBreadcrumb returns the breadcrumbs
+// GetBreadcrumb returns the breadcrumbs.
 func (uc *WorkspaceUseCase) GetBreadcrumb(id int64) ([]string, error) {
 	w, err := uc.workspaceRepo.Get()
 	if err != nil {
@@ -172,7 +173,7 @@ func (uc *WorkspaceUseCase) GetBreadcrumb(id int64) ([]string, error) {
 	return entity.GetBreadcrumb(w, id), nil
 }
 
-// Subscribe event subscription
+// Subscribe event subscription.
 func (uc *WorkspaceUseCase) Subscribe(handler func(e entity.WorkspaceEvent, payload interface{})) {
 	if uc.subscribers == nil {
 		uc.subscribers = make([]func(e entity.WorkspaceEvent, payload interface{}), 0, 1)
@@ -180,7 +181,7 @@ func (uc *WorkspaceUseCase) Subscribe(handler func(e entity.WorkspaceEvent, payl
 	uc.subscribers = append(uc.subscribers, handler)
 }
 
-// Publish sending an event
+// Publish sending an event.
 func (uc *WorkspaceUseCase) Publish(e entity.WorkspaceEvent, payload interface{}) {
 	if uc.subscribers == nil {
 		return

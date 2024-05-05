@@ -23,14 +23,14 @@ import (
 	"github.com/forest33/warthog/pkg/logger"
 )
 
-// Client object capable of interacting with Client
+// Client object capable of interacting with Client.
 type Client struct {
 	ctx context.Context
 	cfg *entity.Settings
 	log *logger.Zerolog
 }
 
-// New creates a new Client
+// New creates a new Client.
 func New(ctx context.Context, log *logger.Zerolog) *Client {
 	return &Client{
 		ctx: ctx,
@@ -38,12 +38,12 @@ func New(ctx context.Context, log *logger.Zerolog) *Client {
 	}
 }
 
-// SetSettings sets application settings
+// SetSettings sets application settings.
 func (c *Client) SetSettings(cfg *entity.Settings) {
 	c.cfg = cfg
 }
 
-// PortForward port forward
+// PortForward port forward.
 func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardControl, error) {
 	config, client, err := c.createClient(r.ClientConfig)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardContro
 		if _, err := ctrl.errOut.Write([]byte(err.Error())); err != nil {
 			c.log.Error().Msgf("failed write to error stream: %v", err)
 		}
-		readyCh <- struct{}{}
+		close(readyCh)
 	}
 
 	if r.ErrHandler != nil {

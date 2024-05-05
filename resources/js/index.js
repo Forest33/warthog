@@ -26,7 +26,6 @@ import {
     setRequestTitle,
 } from "./server.js";
 import {hideStreamControl, initStreamControl, query, response, showQueryError,} from "./request.js";
-import {template} from "./template.js";
 
 let currentSettings = undefined;
 let treeRootNodes = new Set();
@@ -58,6 +57,9 @@ $(document).ready(function () {
                     break;
                 case "message.error":
                     showQueryError(message.payload)
+                    break;
+                case "check.updates":
+                    showUpdates(message.payload);
                     break;
             }
         });
@@ -340,6 +342,21 @@ function showAbout(data) {
     modal.find(".astilectron-version").html(data.astilectron_version);
     modal.find(".electron-version").html(data.electron_version);
     modal.find(".built-at").html(data.built_at);
+    modal.modal("show");
+}
+
+function showUpdates(data) {
+    let modal = $("#updatesModal");
+    if (!isNull(data)) {
+        modal.find(".new-version").show();
+        modal.find(".release-url").attr("href", data.url);
+        modal.find("modal-title").html("Update Available")
+        modal.find(".no-updates").hide();
+    } else {
+        modal.find(".new-version").hide();
+        modal.find("modal-title").html("No Updates Available")
+        modal.find(".no-updates").show();
+    }
     modal.modal("show");
 }
 

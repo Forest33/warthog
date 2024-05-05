@@ -34,7 +34,7 @@ func (c *Client) createMessage(method *entity.Method, data map[string]interface{
 			default:
 				err = errors.New("unknown panic")
 			}
-			err = fmt.Errorf("%v<br><pre>%s</pre>", err, debug.Stack())
+			err = fmt.Errorf("%w<br><pre>%s</pre>", err, debug.Stack())
 		}
 	}()
 
@@ -70,7 +70,7 @@ func (c *Client) createMessage(method *entity.Method, data map[string]interface{
 	return
 }
 
-// Query executes a gRPC request
+// Query executes a gRPC request.
 func (c *Client) Query(method *entity.Method, data map[string]interface{}, metadata []string) error {
 	if !c.isConnected() {
 		return entity.ErrNotConnected
@@ -106,7 +106,7 @@ func (c *Client) Query(method *entity.Method, data map[string]interface{}, metad
 	return nil
 }
 
-// CancelQuery aborting a running gRPC request
+// CancelQuery aborting a running gRPC request.
 func (c *Client) CancelQuery() {
 	if c.queryCancel == nil {
 		return
@@ -114,17 +114,17 @@ func (c *Client) CancelQuery() {
 	c.queryCancel()
 }
 
-// CloseStream stops a running gRPC stream
+// CloseStream stops a running gRPC stream.
 func (c *Client) CloseStream() {
 	c.closeStreamCh <- struct{}{}
 }
 
-// GetResponseChannel returns response channel
+// GetResponseChannel returns response channel.
 func (c *Client) GetResponseChannel() chan *entity.QueryResponse {
 	return c.responseCh
 }
 
-// GetSentCounter returns sent messages counter
+// GetSentCounter returns sent messages counter.
 func (c *Client) GetSentCounter() uint {
 	return c.sentMessages
 }
@@ -216,7 +216,7 @@ func (c *Client) serverStream(method *entity.Method, ms *dynamic.Message) {
 
 			for !isBreak {
 				data, err := stream.RecvMsg()
-				if err == io.EOF {
+				if errors.Is(err, io.EOF) {
 					isBreak = true
 				} else if status.Code(err) == codes.Canceled {
 					c.responseError(err, time.Since(c.queryStartTime).String())
@@ -260,7 +260,7 @@ func (c *Client) bidiStream(method *entity.Method) {
 
 			for !isBreak {
 				data, err := stream.RecvMsg()
-				if err == io.EOF || isStreamEOF(err) {
+				if errors.Is(err, io.EOF) || isStreamEOF(err) {
 					isBreak = true
 				} else if status.Code(err) == codes.Canceled {
 					c.responseError(err, time.Since(c.queryStartTime).String())
@@ -313,16 +313,19 @@ func (c *Client) getResponse(m proto.Message) (string, error) {
 
 	switch t := m.(type) {
 	case *dynamic.Message:
-		buf, err := t.MarshalJSONPB(&jsonpb.Marshaler{Indent: "  ", OrigName: true})
+		buf, err := t.MarshalJSONPB(&jsonpb.Marshaler{Indent: "  ", OrigName: true, EmitDefaults: c.cfg.IsEmitDefaults()})
 		if err != nil {
-			return "", err
+			return err.Error(), err
 		}
 		return string(buf), nil
 	case *emptypb.Empty:
 		return "google.protobuf.Empty", nil
 	default:
-		err := fmt.Errorf("unknown response type: %s", reflect.TypeOf(m).Elem().String())
-		return err.Error(), err
+		m, err := dynamic.AsDynamicMessage(t)
+		if err != nil {
+			return err.Error(), err
+		}
+		return c.getResponse(m)
 	}
 }
 
@@ -338,7 +341,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 
 	switch field.Type {
 	case entity.TypeString:
-		resp = entity.GetString(field, data)
+		resp, err = entity.GetString(field, data)
 	case entity.TypeBytes:
 		resp, err = entity.GetBytes(field, data)
 	case entity.TypeInt32, entity.TypeSInt32, entity.TypeSFixed32:
@@ -354,7 +357,7 @@ func (c *Client) getArgument(field *entity.Field, data interface{}) (interface{}
 	case entity.TypeFloat:
 		resp, err = entity.GetFloat32(field, data)
 	case entity.TypeBool:
-		resp = entity.GetBool(field, data)
+		resp, err = entity.GetBool(field, data)
 	case entity.TypeEnum:
 		resp, err = entity.GetInt32(field, data)
 	case entity.TypeMessage:

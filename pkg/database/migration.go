@@ -13,21 +13,21 @@ import (
 	"go.uber.org/multierr"
 )
 
-// constants for database package
+// constants for database package.
 const (
 	DefaultMigrationsDir = "migrations"
 	MigrationsTable      = "schema_migrations"
 	SQLiteDriver         = "sqlite3"
 )
 
-// BinDataConfig configuration for golang-migrate bindata migrating
+// BinDataConfig configuration for golang-migrate bindata migrating.
 type BinDataConfig struct {
 	AssetDirFunc AssetDirFunc
 	Dir          string
 	AssetFunc    bin.AssetFunc
 }
 
-// AssetDirFunc returns names files in migrations directory
+// AssetDirFunc returns names files in migrations directory.
 type AssetDirFunc func(name string) ([]string, error)
 
 func (db *Database) migrate() (uint, error) {

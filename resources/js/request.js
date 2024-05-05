@@ -138,6 +138,8 @@ function response(data) {
             $("#time-spent").html(data.spent_time);
             if (data.json_string !== "") {
                 $("#query-result").html(syntaxHighlight(data.json_string));
+            } else {
+                $("#query-result").html("the server returned an empty response");
             }
             streamStopped = false;
         } else if (data.json_string !== "") {
@@ -374,7 +376,7 @@ function showQueryError(err) {
     }
 
     $(tmpl.find(".message")[0]).html(err.message);
-    $("#query-error").html(tmpl).show();
+    $("#query-error").append(tmpl).show();
     $("#query-result").html("").hide();
     $("#time-spent").html("");
     if (err.code_description !== "") {
