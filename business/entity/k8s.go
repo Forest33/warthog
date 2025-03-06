@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"strconv"
+
+	"k8s.io/apimachinery/pkg/util/runtime"
 )
 
 // K8SClientConfig k8s client config.
@@ -33,7 +35,7 @@ type K8SPortForward struct {
 	// PodPort is the target port for the pod.
 	PodPort uint16 `json:"pod_port"`
 	// ErrHandler error handler.
-	ErrHandler func(err error) `json:"-"`
+	ErrHandler runtime.ErrorHandler `json:"-"`
 }
 
 // GCSAuth GCS authentication request.

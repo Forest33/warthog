@@ -96,7 +96,7 @@ func (uc *WorkspaceUseCase) UpdateServerRequest(payload map[string]interface{}) 
 }
 
 func (uc *WorkspaceUseCase) successServerResponse(server *entity.Workspace) *entity.GUIResponse {
-	w, err := uc.workspaceRepo.Get()
+	w, err := uc.workspaceRepo.Get(nil)
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
 		return entity.ErrorGUIResponse(err)

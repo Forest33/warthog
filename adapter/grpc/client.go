@@ -120,9 +120,13 @@ func (c *Client) getDialOptions() ([]grpc.DialOption, error) {
 }
 
 func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) {
-	pool := x509.NewCertPool()
-	if !pool.AppendCertsFromPEM([]byte(c.opts.rootCertificate)) {
-		return nil, errors.New("failed to add server CA's certificate")
+	var pool *x509.CertPool
+
+	if len(c.opts.rootCertificate) != 0 {
+		pool = x509.NewCertPool()
+		if !pool.AppendCertsFromPEM([]byte(c.opts.rootCertificate)) {
+			return nil, errors.New("failed to add server CA's certificate")
+		}
 	}
 
 	// nolint:gosec
@@ -131,7 +135,7 @@ func (c *Client) loadTLSCredentials() (credentials.TransportCredentials, error) 
 		InsecureSkipVerify: c.opts.insecureSkipVerify,
 	}
 
-	if c.opts.clientCertificate != "" && c.opts.clientKey != "" {
+	if len(c.opts.clientCertificate) != 0 && len(c.opts.clientKey) != 0 {
 		certificates, err := tls.X509KeyPair([]byte(c.opts.clientCertificate), []byte(c.opts.clientKey))
 		if err != nil {
 			return nil, err

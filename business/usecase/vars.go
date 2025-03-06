@@ -11,7 +11,7 @@ var (
 
 // WorkspaceRepo is the common interface implemented WorkspaceRepository methods.
 type WorkspaceRepo interface {
-	Get() ([]*entity.Workspace, error)
+	Get(filter *entity.WorkspaceFilter) ([]*entity.Workspace, error)
 	GetByID(id int64) (*entity.Workspace, error)
 	Create(in *entity.Workspace) (*entity.Workspace, error)
 	Update(in *entity.Workspace) (*entity.Workspace, error)

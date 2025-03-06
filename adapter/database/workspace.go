@@ -166,14 +166,36 @@ func (repo *WorkspaceRepository) GetByParentID(parentID int64, tx *sqlx.Tx) ([]*
 }
 
 // Get returns workspace.
-func (repo *WorkspaceRepository) Get() ([]*entity.Workspace, error) {
-	var dto []*workspaceDTO
+func (repo *WorkspaceRepository) Get(filter *entity.WorkspaceFilter) ([]*entity.Workspace, error) {
+	var (
+		dto    []*workspaceDTO
+		attrs  = make([]string, 0, 2)
+		mapper = make(map[string]interface{}, 2)
+		where  string
+	)
 
-	err := repo.db.Connector.SelectContext(repo.ctx, &dto, fmt.Sprintf(`
+	if filter != nil {
+		if filter.ParentID != nil {
+			attrs = append(attrs, "parent_id = :parent_id")
+			mapper["parent_id"] = *filter.ParentID
+		}
+		if len(filter.Title) > 0 {
+			attrs = append(attrs, "title = :title")
+			mapper["title"] = filter.Title
+		}
+		if len(attrs) > 0 {
+			where = "WHERE " + strings.Join(attrs, " AND ")
+		}
+	}
+
+	query, args, err := repo.db.Connector.BindNamed(fmt.Sprintf(`
 		SELECT %s 
-		FROM %s
-		ORDER BY type, sort, created_at;`, workspaceTableFields, workspaceTable))
+		FROM %s %s
+		ORDER BY type, sort, created_at;`, workspaceTableFields, workspaceTable, where), mapper)
 	if err != nil {
+		return nil, err
+	}
+	if err := repo.db.Connector.SelectContext(repo.ctx, &dto, query, args...); err != nil {
 		return nil, err
 	}
 

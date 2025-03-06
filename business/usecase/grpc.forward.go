@@ -1,11 +1,15 @@
 package usecase
 
 import (
+	"context"
+
+	"k8s.io/apimachinery/pkg/util/runtime"
+
 	"github.com/forest33/warthog/business/entity"
 )
 
-func (uc *GrpcUseCase) getPortForwardErrorHandler(srv entity.WorkspaceItemServer, serverID int64) func(error) {
-	return func(err error) {
+func (uc *GrpcUseCase) getPortForwardErrorHandler(srv entity.WorkspaceItemServer, serverID int64) runtime.ErrorHandler {
+	return func(ctx context.Context, err error, msg string, keysAndValues ...interface{}) {
 		uc.deletePortForward(srv)
 		if uc.curConnectedServerID == serverID {
 			uc.curConnectedServerID = 0
@@ -51,6 +55,10 @@ func (uc *GrpcUseCase) deletePortForward(srv entity.WorkspaceItemServer) {
 
 	if uc.forwardPorts == nil {
 		return
+	}
+
+	if pf, ok := uc.forwardPorts[srv.K8SPortForward.LocalPort]; ok && pf.control != nil {
+		uc.forwardPorts[srv.K8SPortForward.LocalPort].control.Close()
 	}
 
 	delete(uc.forwardPorts, srv.K8SPortForward.LocalPort)

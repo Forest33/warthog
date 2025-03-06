@@ -76,11 +76,10 @@ func (c *Client) PortForward(r *entity.K8SPortForward) (entity.PortForwardContro
 		if _, err := ctrl.errOut.Write([]byte(err.Error())); err != nil {
 			c.log.Error().Msgf("failed write to error stream: %v", err)
 		}
-		close(readyCh)
 	}
 
 	if r.ErrHandler != nil {
-		runtime.ErrorHandlers = []func(error){r.ErrHandler}
+		runtime.ErrorHandlers = []runtime.ErrorHandler{r.ErrHandler}
 	}
 
 	go func() {

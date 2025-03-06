@@ -36,7 +36,7 @@ func (uc *WorkspaceUseCase) UpdateQuery(payload map[string]interface{}) *entity.
 		return entity.ErrorGUIResponse(err)
 	}
 
-	w, err := uc.workspaceRepo.Get()
+	w, err := uc.workspaceRepo.Get(nil)
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
 		return entity.ErrorGUIResponse(err)

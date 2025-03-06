@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/forest33/warthog/business/entity"
+	"github.com/forest33/warthog/pkg/structs"
 )
 
 // AddProtobuf adds protobuf files.
@@ -34,7 +35,6 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 
 	var (
 		protoWarn []*entity.ProtobufError
-		protoErr  *entity.ProtobufError
 	)
 
 	warningReporter := func(err protoparse.ErrorWithPos) {
@@ -48,13 +48,12 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 	}
 
 	errorReporter := func(err protoparse.ErrorWithPos) error {
-		protoErr = &entity.ProtobufError{
+		return &entity.ProtobufError{
 			Code:            uint32(status.Code(err)),
 			CodeDescription: status.Code(err).String(),
 			Pos:             err.GetPosition(),
 			Err:             err.Unwrap(),
 		}
-		return err
 	}
 
 	parser := protoparse.Parser{
@@ -66,9 +65,11 @@ func (c *Client) LoadFromProtobuf() ([]*entity.Service, []*entity.ProtobufError,
 	services := make([]*entity.Service, 0, len(c.protoPath))
 
 	for _, p := range c.protoPath {
+		structs.ForEach(c.importPath, func(imp string) { p = strings.Replace(p, imp, "", 1) })
+
 		fd, err := parser.ParseFiles(p)
 		if err != nil {
-			return nil, nil, protoErr
+			return nil, nil, &entity.ProtobufError{Err: err}
 		}
 		if len(fd) != 1 {
 			return nil, nil, &entity.ProtobufError{Err: errors.New("wrong parse result")}
@@ -216,9 +217,9 @@ func (c *Client) getFields(fd []*desc.FieldDescriptor, parent *desc.FieldDescrip
 				fields = append(fields, mapField)
 			} else {
 				messageFields, fqn := c.getMessageFields(f.GetMessageType().GetFields(), fqn)
-				if len(messageFields) == 0 {
-					break
-				}
+				//if len(messageFields) == 0 {
+				//	break
+				//}
 
 				loopFQN, protoFQN := getFQN(f, fqn)
 				msgField := &entity.Field{

@@ -85,6 +85,7 @@ func (uc *GrpcUseCase) initSubscriptions() {
 				uc.curServer = w.Data.(*entity.WorkspaceItemServer)
 				uc.curConnectedServerID = 0
 			}
+			uc.deletePortForward(*w.Data.(*entity.WorkspaceItemServer))
 		default:
 			uc.log.Error().Msgf("unknown workspace event: %s", e.String())
 		}
