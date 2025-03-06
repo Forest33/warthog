@@ -84,25 +84,10 @@ func getMenuOptions() []*astilectron.MenuItemOptions {
 					Visible: astikit.BoolPtr(entity.IsDebug()),
 				},
 				{
-					Type:    astilectron.MenuItemTypeSeparator,
-					Visible: astikit.BoolPtr(entity.IsDebug()),
-				},
-				{
-					Label:       astikit.StrPtr("Export"),
-					Accelerator: astilectron.NewAccelerator("CommandOrControl+e"),
-					OnClick:     menuExportFile,
-				},
-				{
-					Label:       astikit.StrPtr("Import"),
-					Accelerator: astilectron.NewAccelerator("CommandOrControl+i"),
-					OnClick:     menuImportFile,
-				},
-				{
 					Label:       astikit.StrPtr("Settings"),
 					Accelerator: astilectron.NewAccelerator("CommandOrControl+,"),
 					OnClick:     menuSettings,
 				},
-				{Type: astilectron.MenuItemTypeSeparator},
 				{
 					Label: astikit.StrPtr("Exit"),
 					Role:  astilectron.MenuItemRoleQuit,
@@ -343,22 +328,6 @@ func menuCheckUpdates() {
 	settingsUseCase.CheckUpdates(getCheckUpdatesCallback(false))
 }
 
-func menuExportFile(e astilectron.Event) (deleteListener bool) {
-	err := window.SendMessage(&entity.GUIRequest{Cmd: entity.CmdMenuExportFile}, func(_ *astilectron.EventMessage) {})
-	if err != nil {
-		zlog.Error().Msgf("failed to send message: %v", err)
-	}
-	return false
-}
-
-func menuImportFile(e astilectron.Event) (deleteListener bool) {
-	err := window.SendMessage(&entity.GUIRequest{Cmd: entity.CmdMenuImportFile}, func(_ *astilectron.EventMessage) {})
-	if err != nil {
-		zlog.Error().Msgf("failed to send message: %v", err)
-	}
-	return false
-}
-
 func menuSettings(e astilectron.Event) (deleteListener bool) {
 	err := window.SendMessage(&entity.GUIRequest{Cmd: entity.CmdMenuSettings}, func(_ *astilectron.EventMessage) {})
 	if err != nil {
@@ -393,10 +362,6 @@ func getApplicationState() *entity.GUIResponse {
 
 func getCheckUpdatesCallback(background bool) func(r *entity.GithubRelease) {
 	return func(r *entity.GithubRelease) {
-		if AppVersion == "" && background {
-			return
-		}
-
 		req := &entity.GUIRequest{
 			Cmd: entity.CmdCheckUpdates,
 		}

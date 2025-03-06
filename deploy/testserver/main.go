@@ -36,9 +36,6 @@ import (
 const (
 	addr    = ":33333"
 	withTLS = false
-	//tlsAuthType = tls.NoClientCert
-	//tlsAuthType = tls.RequireAndVerifyClientCert
-	tlsAuthType = tls.VerifyClientCertIfGiven
 )
 
 // Server object capable of interacting with Server.
@@ -95,7 +92,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 
 	config := &tls.Config{
 		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tlsAuthType,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
 		ClientCAs:    certPool,
 	}
 

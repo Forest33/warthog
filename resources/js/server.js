@@ -255,11 +255,7 @@ function getFieldTemplate(field, attr, showOneOf) {
                     return;
                 }
                 let oneOf = oneOfNodes.get(oneOfFqn);
-                let field = oneOf.choices.get(this.value);
-                if (field.message !== undefined && field.message.fields === undefined) {
-                    return;
-                }
-                let input = getFieldTemplate(field, {}, true);
+                let input = getFieldTemplate(oneOf.choices.get(this.value), {}, true);
                 oneOf.container.append(input);
                 oneOf.container.show();
             });
@@ -316,7 +312,8 @@ function getFieldTemplate(field, attr, showOneOf) {
         case protoTypeMessage:
             let fieldType = field.type;
             if (field.map !== undefined) {
-                fieldType = "map&lt;" + field.map.key_type + "," + field.map.value_type + "&gt;";
+                fieldType =
+                    "map&lt;" + field.map.key_type + "," + field.map.value_type + "&gt;";
             } else if (field.message !== undefined) {
                 fieldType = field.message.name;
             }

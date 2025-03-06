@@ -1,9 +1,9 @@
 export {initWorkspaceModal, editServer};
 import {onTreeNodeRender, WorkspaceTypeFolder} from "./tree.js";
-import {isNull, modalTreeExpandedNodes, showModalError} from "./index.js";
+import {isNull, modalTreeExpandedNodes} from "./index.js";
 import {loadServer} from "./server.js";
 import {getServerAuth, initAuth, setServerAuth, validateAuthJWTPayload} from "./auth.js";
-import {getServerK8S, initK8S, setServerK8S, syncK8SLocalPort} from "./k8s.js";
+import {getServerK8S, initK8S, setServerK8S} from "./k8s.js";
 
 function initWorkspaceModal() {
     let workspaceModal = document.getElementById("workspaceModal");
@@ -146,12 +146,6 @@ function initWorkspaceModal() {
 
     initAuth();
     initK8S();
-
-    $("#workspace-modal-grpc-addr").change(function () {
-        if ($("#workspace-modal-k8s-enabled").is(":checked")) {
-            syncK8SLocalPort();
-        }
-    });
 }
 
 function createFolder() {
@@ -175,11 +169,6 @@ function createFolder() {
     }
 
     astilectron.sendMessage(req, function (message) {
-        if (message.payload.status !== "ok") {
-            showModalError(message);
-            return;
-        }
-
         let folderId = message.payload.data.folder.id;
         let tree = $("#workspace-modal-tree");
         let folderNode = {};
@@ -401,12 +390,6 @@ function editServer(srv) {
     if (!isNull(srv.data.k8s)) {
         setServerK8S(srv.data.k8s);
     }
-
-    $("#workspace-modal-grpc-addr").change(function () {
-        if ($("#workspace-modal-k8s-enabled").is(":checked")) {
-            syncK8SLocalPort();
-        }
-    });
 
     $("#workspaceModal").modal("show");
 }

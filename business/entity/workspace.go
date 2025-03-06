@@ -61,12 +61,6 @@ type WorkspaceRequest struct {
 	SelectedID int64           `json:"selected_id"`
 }
 
-// WorkspaceFilter filter for workspace search.
-type WorkspaceFilter struct {
-	Title    string
-	ParentID *int64
-}
-
 // Model creates WorkspaceRequest from UI request.
 func (r *WorkspaceRequest) Model(payload map[string]interface{}) error {
 	if payload == nil {

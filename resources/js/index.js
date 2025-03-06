@@ -2,12 +2,10 @@ export {
     currentSettings,
     modalTreeExpandedNodes,
     treeRootNodes,
-    treeNodeNames,
     dataIdToNode,
     isNull,
     setCurrentSettings,
     loadFile,
-    showModalError
 };
 
 import {saveQuery} from "./query.js";
@@ -28,13 +26,11 @@ import {
     setRequestTitle,
 } from "./server.js";
 import {hideStreamControl, initStreamControl, query, response, showQueryError,} from "./request.js";
-import {workspaceExport, workspaceImport} from "./workspace.export.js";
 
 let currentSettings = undefined;
 let treeRootNodes = new Set();
 let modalTreeExpandedNodes = new Set();
 let dataIdToNode = new Map();
-let treeNodeNames = new Map();
 
 $(document).ready(function () {
     document.addEventListener("astilectron-ready", function () {
@@ -46,12 +42,6 @@ $(document).ready(function () {
             switch (message.name) {
                 case "server.load":
                     loadServer({id: message.payload.id});
-                    break;
-                case "menu.export.file":
-                    workspaceExport();
-                    break;
-                case "menu.import.file":
-                    workspaceImport();
                     break;
                 case "menu.settings":
                     showSettingsModal();
@@ -338,9 +328,6 @@ function addMetadataRow(elm) {
 
 function removeMetadataRow(elm) {
     if ($("#nav-request-metadata .metadata-row").length <= 1) {
-        let row = $(elm).closest(".metadata-row");
-        row.find(".metadata-key").val("");
-        row.find(".metadata-value").val("");
         return;
     }
     $(elm).closest(".metadata-row").remove();
@@ -407,9 +394,4 @@ function addInfoMessage(data) {
     }
     info.append("<div>" + data.message + "</div>");
     info.show();
-}
-
-function showModalError(message) {
-    $('#errorModal .error-description').html(message.payload.error.message);
-    $('#errorModal').modal("show");
 }

@@ -561,12 +561,3 @@ h6 {
   margin-right: 10px;
   margin-bottom: 0;
 }
-
-#errorModal .error-description {
-  margin-top: 1rem;
-  color: #d9534f;
-}
-
-#errorModal .modal-body {
-  overflow: hidden;
-}

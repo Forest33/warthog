@@ -34,10 +34,6 @@ func eventsHandler(r *entity.GUIRequest) *entity.GUIResponse {
 		resp = workspaceUseCase.Delete(payload)
 	case entity.CmdExpandWorkspace:
 		resp = workspaceUseCase.Expand(payload)
-	case entity.CmdExportFileWorkspace:
-		resp = workspaceUseCase.ExportFile(payload)
-	case entity.CmdImportFileWorkspace:
-		resp = workspaceUseCase.ImportFile(payload)
 	case entity.CmdCreateFolder:
 		resp = workspaceUseCase.CreateFolder(payload)
 	case entity.CmdUpdateFolder:

@@ -57,8 +57,8 @@ func (uc *GrpcUseCase) deletePortForward(srv entity.WorkspaceItemServer) {
 		return
 	}
 
-	if pf, ok := uc.forwardPorts[srv.K8SPortForward.LocalPort]; ok && pf.control != nil {
-		uc.forwardPorts[srv.K8SPortForward.LocalPort].control.Close()
+	if fp, ok := uc.forwardPorts[srv.K8SPortForward.LocalPort]; ok && fp.control != nil {
+		fp.control.Close()
 	}
 
 	delete(uc.forwardPorts, srv.K8SPortForward.LocalPort)

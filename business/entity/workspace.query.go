@@ -34,23 +34,13 @@ func (r *QueryRequest) Model(req map[string]interface{}) error {
 	}
 
 	if v, ok := req["id"]; ok && v != nil {
-		if id, ok := v.(float64); !ok {
-			return errors.New("id not a float")
-		} else {
-			r.ID = int64(id)
-		}
+		r.ID = int64(v.(float64))
 	}
 	if v, ok := req["server_id"]; ok && v != nil {
-		if id, ok := v.(float64); !ok {
-			return errors.New("server id not a float")
-		} else {
-			r.ID = int64(id)
-		}
+		r.ServerID = int64(v.(float64))
 	}
 	if v, ok := req["title"]; ok && v != nil {
-		if r.Title, ok = v.(string); !ok {
-			return errors.New("title not a string")
-		}
+		r.Title = v.(string)
 	}
 
 	r.WorkspaceItemQuery = WorkspaceItemQuery{}
@@ -65,28 +55,18 @@ func (s *WorkspaceItemQuery) Model(req map[string]interface{}) error {
 	}
 
 	if v, ok := req["service"]; ok && v != nil {
-		if s.Service, ok = v.(string); !ok {
-			return errors.New("service not a string")
-		}
+		s.Service = v.(string)
 	}
 	if v, ok := req["method"]; ok && v != nil {
-		if s.Method, ok = v.(string); !ok {
-			return errors.New("method not a string")
-		}
+		s.Method = v.(string)
 	}
 	if v, ok := req["request"]; ok && v != nil {
-		r, ok := req["request"].(map[string]interface{})
-		if !ok {
-			return errors.New("request not a map[string]interface{}")
-		}
 		sq := &SavedQuery{}
-		sq.Model(r)
+		sq.Model(req["request"].(map[string]interface{}))
 		s.Request = sq
 	}
 	if v, ok := req["description"]; ok && v != nil {
-		if s.Description, ok = v.(string); !ok {
-			return errors.New("description not a string")
-		}
+		s.Description = v.(string)
 	}
 
 	return nil

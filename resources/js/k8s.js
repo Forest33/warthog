@@ -2,7 +2,6 @@ export {
     initK8S,
     setServerK8S,
     getServerK8S,
-    syncK8SLocalPort,
 }
 
 import {isNull, loadFile} from "./index.js";
@@ -11,7 +10,6 @@ function initK8S() {
     $("#workspace-modal-k8s-enabled").change(function () {
         if ($(this).is(":checked")) {
             $("#nav-workspace-k8s .k8s").attr("disabled", false);
-            syncK8SLocalPort();
         } else {
             $("#nav-workspace-k8s .k8s").attr("disabled", true);
         }
@@ -50,12 +48,6 @@ function initK8S() {
             name.removeAttr("required");
         }
     });
-
-    $("#k8s-local-port").change(function () {
-        if ($("#workspace-modal-k8s-enabled").is(":checked")) {
-            syncK8SLocalPort();
-        }
-    })
 }
 
 function setServerK8S(k8s) {
@@ -109,12 +101,6 @@ function setServerK8S(k8s) {
             $("workspace-modal-k8s-gcs-enabled").prop("checked", false).trigger('change');
         }
     }
-
-    $("#k8s-local-port").change(function () {
-        if ($("#workspace-modal-k8s-enabled").is(":checked")) {
-            syncK8SLocalPort();
-        }
-    });
 }
 
 function getServerK8S() {
@@ -156,18 +142,4 @@ function addK8SConfigFile() {
         return;
     }
     $("#k8s-config-file-path").val(files[0]);
-}
-
-function syncK8SLocalPort() {
-    let addr = $("#workspace-modal-grpc-addr").val().split(':');
-    let k8sPort = $("#k8s-local-port").val();
-    let basicPort = '';
-    if (addr.length === 2) {
-        basicPort = addr[1];
-    }
-    if (basicPort !== '') {
-        $("#k8s-local-port").val(basicPort);
-    } else if (k8sPort !== '') {
-        $("#workspace-modal-grpc-addr").val(addr[0] + ':' + k8sPort);
-    }
 }

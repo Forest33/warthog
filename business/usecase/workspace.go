@@ -43,7 +43,7 @@ func (uc *WorkspaceUseCase) Get(payload map[string]interface{}) *entity.GUIRespo
 		filter.Type = req.Type
 	}
 
-	w, err := uc.workspaceRepo.Get(nil)
+	w, err := uc.workspaceRepo.Get()
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
 		return entity.ErrorGUIResponse(err)
@@ -100,7 +100,7 @@ func (uc *WorkspaceUseCase) Expand(payload map[string]interface{}) *entity.GUIRe
 
 // GetState returns count of folders/servers/queries.
 func (uc *WorkspaceUseCase) GetState() (*entity.WorkspaceState, error) {
-	workspaces, err := uc.workspaceRepo.Get(nil)
+	workspaces, err := uc.workspaceRepo.Get()
 	if err != nil {
 		uc.log.Error().Msgf("failed to get workspace: %v", err)
 		return nil, err
@@ -166,7 +166,7 @@ func (uc *WorkspaceUseCase) Duplicate(payload map[string]interface{}) *entity.GU
 
 // GetBreadcrumb returns the breadcrumbs.
 func (uc *WorkspaceUseCase) GetBreadcrumb(id int64) ([]string, error) {
-	w, err := uc.workspaceRepo.Get(nil)
+	w, err := uc.workspaceRepo.Get()
 	if err != nil {
 		return nil, err
 	}
